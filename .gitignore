@@ -1,0 +1,17 @@
+# Outils locaux / config Claude Code
+.claude/
+
+# Bot WhatsApp — jamais de secrets ni de session dans le dépôt
+whatsapp-bot/node_modules/
+whatsapp-bot/.env
+whatsapp-bot/session/
+whatsapp-bot/conversations/
+
+# Sauvegardes automatiques locales (pas utiles en ligne)
+*.precedent.csv
+*.precedent2.csv
+*.precedent.json
+
+# Fichiers système
+Thumbs.db
+.DS_Store

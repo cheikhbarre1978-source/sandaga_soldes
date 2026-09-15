@@ -1,0 +1,1528 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sandaga Soldes — Électroménager livré aujourd'hui à Dakar</title>
+<meta name="description" content="Réfrigérateurs, congélateurs, machines à laver, cuisinières et climatiseurs. Commandé avant 16h, livré aujourd'hui à Dakar. Facture et garantie 1 an.">
+<link rel="canonical" href="https://sandagasoldes.com/">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Sandaga Soldes — Électroménager livré aujourd'hui à Dakar">
+<meta property="og:description" content="Réfrigérateurs, congélateurs, machines à laver, cuisinières et climatiseurs. Commandé avant 16h, livré aujourd'hui à Dakar. Facture et garantie 1 an.">
+<meta property="og:url" content="https://sandagasoldes.com/">
+<meta property="og:site_name" content="Sandaga Soldes">
+<meta property="og:image" content="https://sandagasoldes.com/logo.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"Store","name":"Sandaga Soldes","url":"https://sandagasoldes.com/","logo":"https://sandagasoldes.com/logo.jpg","image":"https://sandagasoldes.com/logo.jpg","telephone":"+221788800808","priceRange":"F CFA","areaServed":{"@type":"City","name":"Dakar"},"address":{"@type":"PostalAddress","addressLocality":"Dakar","addressCountry":"SN"}}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebSite","name":"Sandaga Soldes","url":"https://sandagasoldes.com/"}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@75..125,400..800&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+<style>
+/* ============================================================
+   JETONS — palette tirée du sujet : émail d'électroménager,
+   acier, chrome, étiquette de prix rouge, drapeau "aujourd'hui".
+   Le rouge ne sert QU'aux prix. L'ambre QU'à la livraison du jour.
+   ============================================================ */
+:root{
+  --email:#F1F2EE;
+  --blanc:#FFFFFF;
+  --acier:#17252B;
+  --acier-60:#5A6B72;
+  --chrome:#CBD1CD;
+  --chrome-clair:#E3E6E2;
+  --prix:#C81E2B;
+  --jour:#F5A300;
+  --r:4px;
+  --max:1180px;
+  --pad:20px;
+}
+
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%;overflow-x:hidden}
+body{
+  margin:0;
+  overflow-x:hidden;
+  background:var(--email);
+  color:var(--acier);
+  font-family:"Archivo",system-ui,-apple-system,"Segoe UI",sans-serif;
+  font-size:16px;
+  line-height:1.5;
+  font-variant-numeric:tabular-nums;
+}
+h1,h2,h3{margin:0;font-weight:800;letter-spacing:-0.02em;line-height:1.05}
+p{margin:0}
+button{font:inherit;color:inherit}
+a{color:inherit;text-decoration:none}
+
+:focus-visible{outline:3px solid var(--jour);outline-offset:2px}
+
+.wrap{max-width:var(--max);margin:0 auto;padding:0 var(--pad)}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+
+/* ---------- En-tête ---------- */
+.bandeau{
+  background:var(--acier);color:var(--email);
+  font-size:13px;letter-spacing:.01em;
+}
+.bandeau .wrap{display:flex;gap:16px;align-items:center;justify-content:space-between;min-height:38px;padding-top:6px;padding-bottom:6px}
+.bandeau .tel{white-space:nowrap;text-decoration:none;font-weight:600}
+.point-jour{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--jour);margin-right:7px;vertical-align:middle}
+
+.entete-haut{display:flex;align-items:center;gap:14px;min-height:90px}
+.logo-lien{display:flex;flex-direction:column;text-decoration:none;line-height:1;flex:none}
+.logo-img{height:96px;width:auto;display:block}
+.logo-sous{display:block;font-size:14px;font-weight:500;letter-spacing:.04em;color:var(--acier-60);margin-top:6px}
+.entete-haut .cta-wa{margin-left:auto}
+.panier-bt{
+  position:relative;display:inline-flex;align-items:center;gap:8px;font-weight:700;font-size:14.5px;
+  padding:11px 16px;border:1px solid var(--chrome);border-radius:var(--r);background:var(--blanc);
+  color:var(--acier);cursor:pointer;
+}
+.panier-bt:hover{border-color:var(--acier)}
+.panier-bt svg{width:19px;height:19px;stroke:var(--acier);stroke-width:2;fill:none;stroke-linecap:round;stroke-linejoin:round}
+.panier-badge{
+  position:absolute;top:-7px;right:-7px;min-width:19px;height:19px;padding:0 4px;border-radius:999px;
+  background:var(--acier);color:#fff;font-size:11px;font-weight:800;display:grid;place-items:center;
+}
+.panier-badge[hidden]{display:none}
+
+/* ---------- Bandeau fusionné : logo + héros en un seul grand bloc ---------- */
+.entete--bandeau{background:var(--blanc);border-bottom:1px solid var(--chrome)}
+
+/* ---------- Bouton WhatsApp ---------- */
+.wa{
+  display:inline-flex;align-items:center;gap:8px;
+  background:#128C4A;color:#fff;border:none;border-radius:var(--r);
+  padding:11px 15px;font-weight:700;font-size:15px;text-decoration:none;cursor:pointer;
+  line-height:1.1;
+}
+.wa:hover{background:#0E7A40}
+.wa svg{width:18px;height:18px;flex:none;fill:currentColor}
+.wa--bloc{width:100%;justify-content:center;padding:15px;font-size:17px}
+
+/* ---------- Héros : la recherche EST le héros ---------- */
+.heros-grille{display:grid;gap:34px;padding:36px 0 44px}
+@media(min-width:940px){.heros-grille{grid-template-columns:0.8fr 1.6fr;align-items:start}}
+.heros-texte h1{font-size:clamp(19px,4.6vw,33px);font-stretch:108%;max-width:15ch}
+.heros-texte .sous{margin-top:8px;color:var(--acier-60);font-size:clamp(12px,2.3vw,14px);max-width:44ch}
+
+.rech{margin-top:14px;display:flex;border:2px solid var(--acier);border-radius:var(--r);background:var(--blanc);overflow:hidden;max-width:340px}
+.rech input{
+  flex:1;min-width:0;border:none;padding:8px 11px;font:inherit;font-size:13px;background:transparent;
+}
+.rech input:focus{outline:none}
+.rech:focus-within{box-shadow:0 0 0 3px var(--jour)}
+.rech button{border:none;background:var(--acier);color:var(--email);padding:0 13px;font-weight:700;font-size:12.5px;cursor:pointer}
+.rech button:hover{background:#0E1A1F}
+.astuce{margin-top:7px;font-size:11.5px;color:var(--acier-60)}
+.astuce b{font-weight:600;color:var(--acier)}
+
+.reassure{display:flex;flex-wrap:wrap;gap:7px 16px;margin-top:14px;padding-top:13px;border-top:1px solid var(--chrome)}
+.reassure li{display:flex;align-items:center;gap:6px;font-size:11.5px;font-weight:600;color:var(--acier-60);list-style:none}
+.reassure svg{width:14px;height:14px;flex:none;stroke:var(--jour);stroke-width:2.4;fill:none;stroke-linecap:round;stroke-linejoin:round}
+
+/* ---------- Promo de la semaine — style "affiche" ---------- */
+.promo{
+  background:
+    radial-gradient(120% 100% at 85% 0%, #FFE9B8 0%, transparent 55%),
+    radial-gradient(90% 90% at 0% 100%, #FFD9DC 0%, transparent 50%),
+    linear-gradient(155deg, #FFF8EC 0%, #FDEFE4 45%, #FCE7E6 100%);
+  border:1px solid var(--chrome);border-radius:var(--r);
+  padding:0 0 24px;position:relative;overflow:hidden;
+}
+.promo-ruban{
+  position:absolute;top:16px;left:-38px;z-index:3;
+  background:var(--prix);color:#fff;font-weight:800;font-size:12.5px;line-height:1.25;
+  text-align:center;letter-spacing:.02em;
+  padding:7px 42px;transform:rotate(-8deg);
+  box-shadow:0 2px 0 rgba(0,0,0,.08);
+}
+.promo-visuel{
+  margin-top:0;aspect-ratio:4/3;max-height:260px;background:transparent;border-radius:0;
+  display:grid;place-items:center;position:relative;overflow:hidden;
+}
+.promo-visuel svg{width:34%;height:52%;stroke:var(--acier);stroke-width:2.2;fill:none;stroke-linecap:round;stroke-linejoin:round}
+.promo-visuel .foto{position:absolute;inset:0;z-index:1;width:100%;height:100%;object-fit:contain;padding:5%;box-sizing:border-box;filter:drop-shadow(0 14px 16px rgba(23,37,43,.14));transition:opacity .35s ease}
+.promo-dots{display:flex;justify-content:center;gap:7px;margin-top:4px;position:relative;z-index:2}
+.promo-dots button{
+  width:8px;height:8px;padding:0;border:none;border-radius:50%;background:#FFFFFFB0;cursor:pointer;
+}
+.promo-dots button[aria-current="true"]{background:var(--prix);width:22px;border-radius:5px;transition:width .25s ease}
+.promo-corps{padding:14px 22px 0}
+.promo-marque{font-size:12.5px;font-weight:800;color:var(--acier-60);letter-spacing:.06em;text-transform:uppercase}
+.promo-nom{
+  font-size:22px;margin-top:3px;letter-spacing:-.01em;line-height:1.15;
+  min-height:calc(1.15em * 2);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;
+}
+.promo-points{list-style:none;margin:12px 0 0;padding:0;display:grid;grid-template-columns:1fr 1fr;gap:7px}
+.promo-points li{
+  display:flex;align-items:center;gap:7px;font-size:12px;font-weight:700;color:var(--acier);
+  background:var(--blanc);border:1px solid var(--chrome);border-radius:var(--r);padding:6px 8px;line-height:1.2;
+  min-height:44px;box-sizing:border-box;
+}
+.promo-points li span{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.promo-points svg{
+  width:19px;height:19px;flex:none;padding:4px;box-sizing:border-box;border-radius:50%;
+  background:#FFF3D6;stroke:var(--jour);stroke-width:3;fill:none;stroke-linecap:round;stroke-linejoin:round;
+}
+.promo-prix{margin-top:12px;display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+.promo-prix>span:first-child{font-size:38px;font-weight:800;color:var(--prix);letter-spacing:-0.03em;line-height:1}
+.promo-prix .devise{font-size:14px;font-weight:700;color:var(--prix)}
+.promo-barre{font-size:14px;color:var(--acier-60);text-decoration:line-through}
+.promo .wa--bloc{margin:14px 22px 0;width:calc(100% - 44px);padding:13px}
+
+@media(min-width:760px){
+  .promo{display:flex;align-items:stretch}
+  .promo-media{flex:0 0 44%;display:flex;flex-direction:column;min-height:0}
+  .promo-visuel{flex:1;max-height:none;aspect-ratio:auto;min-height:0}
+  .promo-info{flex:1;display:flex;flex-direction:column;padding-bottom:22px;min-height:0}
+  .promo-corps{padding-top:22px;flex:1}
+  .promo .wa--bloc{margin-top:auto}
+}
+
+/* ---------- Rayons ---------- */
+.rayons{border-bottom:1px solid var(--chrome);background:var(--blanc)}
+.rayons .piste{display:flex;gap:9px;overflow-x:auto;scrollbar-width:thin;padding:14px var(--pad)}
+.rayon{
+  flex:none;cursor:pointer;
+  padding:10px 17px;font-weight:600;font-size:14.5px;white-space:nowrap;
+  border:1px solid var(--chrome);border-radius:999px;background:var(--blanc);color:var(--acier-60);
+}
+.rayon:hover{color:var(--acier);border-color:var(--acier-60)}
+.rayon[aria-pressed="true"]{color:var(--acier);border-color:var(--acier);background:var(--chrome-clair)}
+
+/* Rayons vedettes — les 4 couleurs du mot "SOLDES" du logo, pour les
+   rayons les plus fournis (placés au centre de la piste). */
+.rayon[data-vedette]{font-weight:800}
+.rayon[data-vedette="bleu"]{color:#1D5FAE;border-color:#1D5FAE55}
+.rayon[data-vedette="orange"]{color:#D9660B;border-color:#F5821F66}
+.rayon[data-vedette="jaune"]{color:#9A7A00;border-color:#FBC02D77}
+.rayon[data-vedette="rouge"]{color:#C81E1E;border-color:#E3242466}
+.rayon[data-vedette="bleu"][aria-pressed="true"]{border-color:#1D5FAE;background:#1D5FAE14}
+.rayon[data-vedette="orange"][aria-pressed="true"]{border-color:#F5821F;background:#F5821F1c}
+.rayon[data-vedette="jaune"][aria-pressed="true"]{border-color:#FBC02D;background:#FBC02D22}
+.rayon[data-vedette="rouge"][aria-pressed="true"]{border-color:#E32424;background:#E3242414}
+
+/* Sur mobile, les rayons deviennent une grille bien rangée de petits boutons
+   de même taille (2 par ligne), plutôt qu'un bandeau à faire défiler
+   horizontalement ou des puces de largeurs inégales. */
+@media(max-width:759px){
+  .rayons{border-bottom:none}
+  .rayons .piste{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;padding:14px var(--pad)}
+  .rayon{
+    width:100%;text-align:center;white-space:normal;line-height:1.25;padding:12px 10px;font-size:13.5px;
+    border:1px solid var(--chrome);border-radius:var(--r);background:var(--blanc);
+  }
+  /* sélection générique (rayons non-vedettes, dont "Tout") : neutre, pour ne pas
+     se confondre avec le rouge réservé au rayon vedette "Téléviseurs" */
+  .rayon[aria-pressed="true"]{border-color:var(--acier);background:var(--chrome-clair)}
+  .rayon[data-vedette]{border-bottom:1px solid var(--chrome);border-bottom-width:1px}
+  .rayon[data-vedette="bleu"]{border-color:#1D5FAE}
+  .rayon[data-vedette="orange"]{border-color:#F5821F}
+  .rayon[data-vedette="jaune"]{border-color:#FBC02D}
+  .rayon[data-vedette="rouge"]{border-color:#E32424}
+  .rayon[data-vedette="bleu"][aria-pressed="true"]{background:#1D5FAE14}
+  .rayon[data-vedette="orange"][aria-pressed="true"]{background:#F5821F1c}
+  .rayon[data-vedette="jaune"][aria-pressed="true"]{background:#FBC02D22}
+  .rayon[data-vedette="rouge"][aria-pressed="true"]{background:#E3242414}
+}
+
+/* ---------- Sous-filtres (famille / taille selon le rayon) ---------- */
+.sousfiltres{display:flex;gap:8px;overflow-x:auto;padding:16px 0 0;scrollbar-width:thin}
+.sousfiltres:not([hidden]) + .filtres{padding-top:12px}
+.souschip{
+  flex:none;font:inherit;font-size:13.5px;font-weight:600;white-space:nowrap;cursor:pointer;
+  padding:7px 13px;border:1px solid var(--chrome);border-radius:999px;background:var(--blanc);color:var(--acier-60);
+}
+.souschip:hover{color:var(--acier);border-color:var(--acier-60)}
+.souschip[aria-pressed="true"]{background:var(--acier);border-color:var(--acier);color:var(--blanc)}
+
+/* ---------- Filtres ---------- */
+.filtres{display:flex;flex-wrap:wrap;gap:10px;align-items:center;padding:18px 0 4px}
+.filtres select{
+  font:inherit;font-size:14.5px;padding:9px 11px;border:1px solid var(--chrome);
+  border-radius:var(--r);background:var(--blanc);cursor:pointer;
+}
+.bascule{
+  display:inline-flex;align-items:center;gap:8px;font-size:14.5px;font-weight:600;
+  padding:9px 12px;border:1px solid var(--chrome);border-radius:var(--r);background:var(--blanc);cursor:pointer;
+}
+.bascule[aria-pressed="true"]{border-color:var(--jour);background:#FFF8E8}
+.bascule input{accent-color:var(--jour);width:16px;height:16px;margin:0}
+.compte{margin-left:auto;font-size:14px;color:var(--acier-60)}
+
+/* ---------- Grille produits ---------- */
+/* ---------- Les plus demandés ---------- */
+.populaires{background:var(--blanc);border-bottom:1px solid var(--chrome)}
+.populaires-titre{padding:20px 0 4px;font-size:19px}
+.populaires-piste{display:flex;gap:14px;overflow-x:auto;padding:14px 0 22px;scrollbar-width:thin}
+.populaires-piste .fiche{flex:none;width:180px}
+@media(min-width:700px){.populaires-piste .fiche{width:210px}}
+
+.grille{
+  display:grid;gap:14px;padding:18px 0 44px;
+  grid-template-columns:repeat(2,1fr);
+}
+@media(min-width:700px){.grille{grid-template-columns:repeat(3,1fr);gap:18px}}
+@media(min-width:980px){.grille{grid-template-columns:repeat(4,1fr)}}
+
+.fiche{
+  background:var(--blanc);border:1px solid var(--chrome);border-radius:var(--r);
+  display:flex;flex-direction:column;text-align:left;cursor:pointer;overflow:hidden;
+  padding:0;
+}
+.fiche:hover{border-color:var(--acier)}
+.visuel{
+  aspect-ratio:1/1;background:var(--chrome-clair);display:grid;place-items:center;position:relative;
+  border-bottom:1px solid var(--chrome);
+}
+.visuel svg{width:62%;height:62%;stroke:var(--acier);stroke-width:2.4;fill:none;stroke-linecap:round;stroke-linejoin:round;opacity:.82}
+.visuel .foto{position:absolute;inset:0;z-index:1;width:100%;height:100%;object-fit:contain;background:var(--blanc);padding:6%}
+.drapeau{
+  position:absolute;top:8px;left:8px;background:var(--jour);color:#2A1C00;
+  font-size:11px;font-weight:700;padding:3px 7px;border-radius:2px;line-height:1.3;
+}
+.drapeau--cmd{background:var(--chrome);color:var(--acier)}
+.ajouter-panier{
+  position:absolute;bottom:8px;right:8px;z-index:2;width:34px;height:34px;border-radius:999px;
+  background:var(--acier);color:#fff;border:none;display:grid;place-items:center;cursor:pointer;
+  box-shadow:0 2px 6px rgba(23,37,43,.25);
+}
+.ajouter-panier:hover{filter:brightness(1.25)}
+.ajouter-panier svg{width:17px;height:17px;stroke:currentColor;stroke-width:2.4;fill:none;stroke-linecap:round;stroke-linejoin:round}
+.corps{padding:11px 12px 13px;display:flex;flex-direction:column;gap:3px;flex:1}
+.marque{font-size:11.5px;font-weight:700;color:var(--acier-60);letter-spacing:.03em}
+.titre{font-size:14.5px;font-weight:600;line-height:1.25}
+.cap{font-size:12.5px;color:var(--acier-60)}
+.tarif{margin-top:auto;padding-top:9px}
+.montant{font-size:clamp(19px,4.6vw,23px);font-weight:800;color:var(--prix);letter-spacing:-0.025em}
+.devise{font-size:12.5px;font-weight:500;color:var(--acier-60);margin-left:4px}
+
+/* ---------- Vide ---------- */
+.vide{padding:56px 0;text-align:center}
+.vide h3{font-size:21px}
+.vide p{margin-top:9px;color:var(--acier-60)}
+.vide .wa{margin-top:18px}
+
+.avis{margin:14px 0 0;padding:10px 13px;border:1px solid var(--jour);background:#FFF8E8;border-radius:var(--r);font-size:13.5px}
+.avis--faute{border-color:var(--prix);background:#FDECEC}
+
+/* ---------- Panneau produit ---------- */
+.voile{
+  position:fixed;inset:0;background:rgba(23,37,43,.55);z-index:60;
+  display:none;
+}
+.voile[data-ouvert="1"]{display:block}
+.panneau{
+  position:fixed;z-index:61;background:var(--email);
+  inset:auto 0 0 0;max-height:92vh;overflow-y:auto;
+  border-top:3px solid var(--acier);
+  display:none;
+}
+.panneau[data-ouvert="1"]{display:block}
+@media(min-width:760px){
+  .panneau{inset:0 0 0 auto;width:520px;max-height:none;border-top:none;border-left:3px solid var(--acier)}
+}
+
+/* ---------- Panier ---------- */
+.panier-vide{padding:30px 0;text-align:center;color:var(--acier-60)}
+.panier-ligne{display:flex;gap:11px;padding:13px 0;border-bottom:1px solid var(--chrome-clair)}
+.panier-visuel{
+  flex:none;width:64px;height:64px;border-radius:var(--r);background:var(--chrome-clair);
+  display:grid;place-items:center;position:relative;overflow:hidden;
+}
+.panier-visuel svg{width:60%;height:60%;stroke:var(--acier);stroke-width:2.4;fill:none;opacity:.8}
+.panier-visuel .foto{position:absolute;inset:0;z-index:1;width:100%;height:100%;object-fit:contain;background:var(--blanc);padding:6%}
+.panier-info{flex:1;display:flex;flex-direction:column;gap:3px;min-width:0}
+.panier-marque{font-size:11px;font-weight:700;color:var(--acier-60);letter-spacing:.03em}
+.panier-nom{font-size:13.5px;font-weight:600;line-height:1.25;overflow:hidden;text-overflow:ellipsis;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+.panier-qte{display:flex;align-items:center;gap:10px;margin-top:2px}
+.panier-qte button{
+  width:26px;height:26px;border:1px solid var(--chrome);border-radius:var(--r);background:var(--blanc);
+  font-weight:700;font-size:15px;cursor:pointer;line-height:1;
+}
+.panier-qte button:hover{border-color:var(--acier)}
+.panier-qte span{font-size:13.5px;font-weight:700;min-width:16px;text-align:center}
+.panier-droite{flex:none;display:flex;flex-direction:column;align-items:flex-end;justify-content:space-between}
+.panier-prix{font-size:13.5px;font-weight:800;color:var(--prix);white-space:nowrap}
+.panier-retirer{border:none;background:none;color:var(--acier-60);font-size:12px;text-decoration:underline;cursor:pointer;padding:0}
+.panier-retirer:hover{color:var(--prix)}
+.panier-total{
+  display:flex;align-items:baseline;justify-content:space-between;padding:14px 0;
+  border-top:2px solid var(--acier);margin-top:6px;font-weight:800;font-size:16px;
+}
+.panier-total b{font-size:22px;color:var(--prix)}
+
+.avis-panier{
+  position:fixed;left:50%;bottom:24px;transform:translate(-50%,20px);z-index:70;
+  background:var(--acier);color:#fff;font-size:14px;font-weight:600;padding:12px 20px;border-radius:var(--r);
+  box-shadow:0 6px 20px rgba(23,37,43,.3);opacity:0;pointer-events:none;transition:opacity .2s ease,transform .2s ease;
+  max-width:calc(100% - 32px);text-align:center;
+}
+.avis-panier[data-visible="1"]{opacity:1;transform:translate(-50%,0)}
+@media(prefers-reduced-motion:no-preference){
+  .panneau[data-ouvert="1"]{animation:monte .18s ease-out}
+  @keyframes monte{from{transform:translateY(14px);opacity:.4}to{transform:none;opacity:1}}
+}
+.panneau .haut{
+  position:sticky;top:0;background:var(--email);border-bottom:1px solid var(--chrome);
+  display:flex;align-items:center;justify-content:space-between;padding:13px var(--pad);z-index:2;
+}
+.fermer{border:1px solid var(--chrome);background:var(--blanc);border-radius:var(--r);padding:8px 13px;font-weight:600;cursor:pointer}
+.lien-copier{margin-left:auto;margin-right:10px;border:1px solid var(--chrome);background:var(--blanc);border-radius:var(--r);padding:8px 13px;font-weight:600;font-size:13.5px;cursor:pointer;color:var(--acier-60)}
+.lien-copier:hover{border-color:var(--acier);color:var(--acier)}
+.lien-copier[data-copie="1"]{color:var(--ok,#128C4A);border-color:var(--ok,#128C4A)}
+.panneau .contenu{padding:20px var(--pad) 34px}
+.pvisuel{background:var(--blanc);border:1px solid var(--chrome);border-radius:var(--r);aspect-ratio:16/11;display:grid;place-items:center;position:relative}
+.pvisuel svg{width:46%;height:70%;stroke:var(--acier);stroke-width:2.2;fill:none;stroke-linecap:round;stroke-linejoin:round}
+.pvisuel .foto{position:absolute;inset:0;z-index:1;width:100%;height:100%;object-fit:contain;background:var(--blanc);padding:5%}
+.pvignettes{display:flex;gap:8px;margin-top:8px;overflow-x:auto}
+.pvignettes button{
+  flex:none;width:56px;height:56px;padding:0;border-radius:calc(var(--r) - 1px);
+  border:2px solid var(--chrome);background:var(--blanc);cursor:pointer;overflow:hidden;
+}
+.pvignettes button[aria-current="true"]{border-color:var(--acier)}
+.pvignettes img{width:100%;height:100%;object-fit:contain}
+.panneau h2{font-size:24px;margin-top:16px}
+.pmarque{font-size:12.5px;font-weight:700;color:var(--acier-60);letter-spacing:.04em;margin-top:14px}
+.pmontant{font-size:38px;font-weight:800;color:var(--prix);letter-spacing:-0.03em;margin-top:10px;line-height:1}
+.pmontant .devise{font-size:16px}
+
+/* plaque signalétique */
+.plaque{margin-top:20px;border:1px solid var(--chrome);border-radius:var(--r);background:var(--blanc);overflow:hidden}
+.plaque .ligne{display:flex;justify-content:space-between;gap:16px;padding:10px 13px;font-size:14px;border-bottom:1px solid var(--chrome-clair)}
+.plaque .ligne:last-child{border-bottom:none}
+.plaque .ligne dt{color:var(--acier-60);margin:0}
+.plaque .ligne dd{margin:0;font-weight:600;text-align:right}
+
+.pdescription{margin-top:20px}
+.pdescription h3{font-size:14px;text-transform:uppercase;letter-spacing:.04em;color:var(--acier-60);font-weight:700}
+.pdescription p{margin-top:8px;font-size:14px;line-height:1.6;color:var(--acier-60)}
+
+.bloc-livraison{margin-top:20px;border:1px solid var(--chrome);border-radius:var(--r);padding:14px;background:var(--blanc)}
+.bloc-livraison label{display:block;font-size:13.5px;color:var(--acier-60);margin-bottom:7px}
+.bloc-livraison select{width:100%;font:inherit;padding:11px;border:1px solid var(--chrome);border-radius:var(--r);background:var(--email)}
+.resultat-liv{margin-top:11px;font-size:14.5px;line-height:1.45}
+.resultat-liv b{font-weight:700}
+.panneau .wa--bloc{margin-top:18px}
+.note-panneau{margin-top:11px;font-size:13px;color:var(--acier-60);text-align:center}
+
+/* ---------- Pied ---------- */
+.pied{background:var(--acier);color:var(--email);padding:38px 0 46px;margin-top:10px}
+.pied .cols{display:grid;gap:26px}
+@media(min-width:760px){.pied .cols{grid-template-columns:1.3fr 1fr 1fr}}
+.pied h3{font-size:15px;margin-bottom:9px}
+.pied p,.pied li{font-size:14px;color:#B9C4C8;line-height:1.65}
+.pied ul{list-style:none;margin:0;padding:0}
+.pied .logo{color:var(--email);font-size:22px}
+.lien-flux{background:none;border:none;padding:0;color:var(--jour);font-weight:600;cursor:pointer;text-decoration:underline;font-size:14px}
+
+/* ---------- Flux Meta ---------- */
+.flux{display:none;position:fixed;inset:0;z-index:70;background:var(--email);flex-direction:column}
+.flux[data-ouvert="1"]{display:flex}
+.flux .haut{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:13px var(--pad);border-bottom:1px solid var(--chrome);background:var(--blanc)}
+.flux .haut h2{font-size:17px}
+.flux .expl{padding:14px var(--pad);font-size:14px;color:var(--acier-60);border-bottom:1px solid var(--chrome)}
+.flux pre{
+  flex:1;overflow:auto;margin:0;padding:16px var(--pad);
+  font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;font-size:12.5px;line-height:1.6;
+  background:var(--blanc);
+}
+.flux .actions{display:flex;gap:9px}
+.bt{border:1px solid var(--chrome);background:var(--blanc);border-radius:var(--r);padding:9px 13px;font-weight:600;cursor:pointer;font-size:14px}
+.bt--plein{background:var(--acier);color:var(--email);border-color:var(--acier)}
+
+/* ---------- Bouton flottant ---------- */
+.flottant{
+  position:fixed;right:16px;bottom:16px;z-index:35;box-shadow:0 6px 20px rgba(23,37,43,.28);
+  width:52px;height:52px;padding:0;border-radius:50%;justify-content:center;
+}
+.flottant svg{width:24px;height:24px}
+@media(min-width:760px){.flottant{display:none}}
+</style>
+</head>
+<body>
+
+<div class="bandeau">
+  <div class="wrap">
+    <span><span class="point-jour"></span>Commande validée avant 16h, livrée aujourd'hui</span>
+    <a class="tel" href="tel:+221788800808">78 880 08 08</a>
+  </div>
+</div>
+
+<header class="entete entete--bandeau">
+  <div class="wrap">
+    <div class="entete-haut">
+      <a class="logo-lien" href="#"><img class="logo-img" src="logo.jpg" alt="Sandaga Soldes"><span class="logo-sous">Électroménager · Dakar</span></a>
+      <button type="button" class="panier-bt" id="btnPanier" aria-label="Voir le panier">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+        Panier
+        <span class="panier-badge" id="panierBadge" hidden>0</span>
+      </button>
+      <a class="wa cta-wa" id="waEntete" href="#" target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2 22l5.25-1.38a9.9 9.9 0 0 0 4.79 1.22h.01c5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.82 9.82 0 0 0 12.04 2m0 1.67c2.2 0 4.27.86 5.83 2.42a8.2 8.2 0 0 1 2.41 5.82c0 4.54-3.7 8.24-8.25 8.24-1.48 0-2.93-.4-4.2-1.15l-.3-.18-3.12.82.83-3.04-.2-.31a8.19 8.19 0 0 1-1.26-4.38c0-4.54 3.7-8.24 8.26-8.24m-4.5 4.2c-.21 0-.55.08-.84.39-.29.31-1.1 1.08-1.1 2.63 0 1.55 1.13 3.05 1.29 3.26.16.21 2.19 3.34 5.3 4.55 2.59 1.02 3.12.82 3.68.77.56-.05 1.81-.74 2.07-1.46.25-.72.25-1.33.18-1.46-.08-.13-.29-.21-.6-.36-.31-.16-1.81-.9-2.09-1-.28-.1-.49-.16-.69.16-.21.31-.79 1-.97 1.2-.18.21-.36.23-.66.08-.31-.16-1.29-.48-2.46-1.52-.91-.81-1.52-1.81-1.7-2.12-.18-.31-.02-.48.14-.63.14-.14.31-.36.47-.54.15-.18.2-.31.31-.52.1-.21.05-.39-.03-.54-.08-.16-.69-1.66-.94-2.27-.25-.6-.5-.52-.69-.53z"/></svg>
+        WhatsApp
+      </a>
+    </div>
+
+    <div class="heros-grille">
+      <div class="heros-texte">
+        <h1>Livraison rapide, sous 4h à Dakar.</h1>
+        <p class="sous">Produits de qualité vérifiée, facture, garantie 1 an. Paiement à la livraison ou par Wave.</p>
+
+        <div class="rech" role="search">
+          <label class="sr" for="q">Rechercher un appareil</label>
+          <input id="q" type="search" placeholder="frigo, congélateur, clim, machine…" autocomplete="off">
+          <button type="button" id="btnRech">Chercher</button>
+        </div>
+
+        <p class="astuce">Tapez comme vous parlez : <b>frigo</b>, <b>congélateur</b>, <b>clim</b>, <b>split</b>, <b>machine</b> — tout est reconnu.</p>
+
+        <ul class="reassure">
+          <li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>Livré aujourd'hui à Dakar</li>
+          <li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>Facture à notre nom, garantie 1 an</li>
+          <li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>Espèces à la livraison ou Wave</li>
+        </ul>
+      </div>
+
+      <aside class="promo">
+        <span class="promo-ruban">Promo<br>de la semaine</span>
+        <div class="promo-media">
+          <div class="promo-visuel" id="promoVisuel"></div>
+          <div class="promo-dots" id="promoDots"></div>
+        </div>
+        <div class="promo-info">
+          <div class="promo-corps">
+            <p class="promo-marque" id="promoMarque"></p>
+            <h2 class="promo-nom" id="promoNom"></h2>
+            <ul class="promo-points" id="promoPoints"></ul>
+            <p class="promo-prix">
+              <span id="promoPrix"></span><span class="devise"> F CFA</span>
+              <span class="promo-barre" id="promoBarre"></span>
+            </p>
+          </div>
+          <button type="button" class="panier-bt" id="promoAjouterPanier" style="width:100%;justify-content:center;margin-bottom:8px" hidden>
+            <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+            Ajouter au panier
+          </button>
+          <a class="wa wa--bloc" id="promoWa" href="#" target="_blank" rel="noopener">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2 22l5.25-1.38a9.9 9.9 0 0 0 4.79 1.22h.01c5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.82 9.82 0 0 0 12.04 2m0 1.67c2.2 0 4.27.86 5.83 2.42a8.2 8.2 0 0 1 2.41 5.82c0 4.54-3.7 8.24-8.25 8.24-1.48 0-2.93-.4-4.2-1.15l-.3-.18-3.12.82.83-3.04-.2-.31a8.19 8.19 0 0 1-1.26-4.38c0-4.54 3.7-8.24 8.26-8.24m-4.5 4.2c-.21 0-.55.08-.84.39-.29.31-1.1 1.08-1.1 2.63 0 1.55 1.13 3.05 1.29 3.26.16.21 2.19 3.34 5.3 4.55 2.59 1.02 3.12.82 3.68.77.56-.05 1.81-.74 2.07-1.46.25-.72.25-1.33.18-1.46-.08-.13-.29-.21-.6-.36-.31-.16-1.81-.9-2.09-1-.28-.1-.49-.16-.69.16-.21.31-.79 1-.97 1.2-.18.21-.36.23-.66.08-.31-.16-1.29-.48-2.46-1.52-.91-.81-1.52-1.81-1.7-2.12-.18-.31-.02-.48.14-.63.14-.14.31-.36.47-.54.15-.18.2-.31.31-.52.1-.21.05-.39-.03-.54-.08-.16-.69-1.66-.94-2.27-.25-.6-.5-.52-.69-.53z"/></svg>
+            Commander cette promo
+          </a>
+        </div>
+      </aside>
+    </div>
+  </div>
+</header>
+
+<section class="populaires" id="sectionPopulaires" hidden>
+  <div class="wrap">
+    <h2 class="populaires-titre">🔥 Les plus demandés</h2>
+    <div class="populaires-piste" id="populairesGrille"></div>
+  </div>
+</section>
+
+<nav class="rayons" aria-label="Rayons" id="catalogue">
+  <div class="wrap"><div class="piste" id="piste"></div></div>
+</nav>
+
+<main class="wrap">
+  <h2 style="padding-top:26px">Tout le catalogue</h2>
+  <div class="sousfiltres" id="sousfiltres" hidden></div>
+  <div class="filtres">
+    <label class="sr" for="fMarque">Marque</label>
+    <select id="fMarque"><option value="">Toutes les marques</option></select>
+
+    <label class="sr" for="fPrix">Budget</label>
+    <select id="fPrix">
+      <option value="">Tous les budgets</option>
+      <option value="0-50000">Moins de 50 000 F</option>
+      <option value="50000-150000">50 000 à 150 000 F</option>
+      <option value="150000-300000">150 000 à 300 000 F</option>
+      <option value="300000-99999999">Plus de 300 000 F</option>
+    </select>
+
+    <label class="sr" for="fTri">Trier</label>
+    <select id="fTri">
+      <option value="pertinence">Tri : pertinence</option>
+      <option value="prix-asc">Prix croissant</option>
+      <option value="prix-desc">Prix décroissant</option>
+      <option value="marque">Marque A → Z</option>
+    </select>
+
+    <span class="compte" id="compte"></span>
+  </div>
+
+  <p class="avis" id="avisCatalogue" hidden></p>
+
+  <div class="grille" id="grille"></div>
+
+  <div class="vide" id="vide" hidden>
+    <h3>Aucun appareil ne correspond</h3>
+    <p>Dites-nous ce que vous cherchez, on peut le faire venir sous 5 jours.</p>
+    <a class="wa" id="waVide" href="#" target="_blank" rel="noopener">Demander sur WhatsApp</a>
+  </div>
+</main>
+
+<footer class="pied">
+  <div class="wrap cols">
+    <div>
+      <div class="logo">Sandaga Soldes</div>
+      <p style="margin-top:10px">Vente d'électroménager à Dakar. Commande par WhatsApp, livraison le jour même, facture et garantie constructeur d'un an.</p>
+    </div>
+    <div>
+      <h3>Livraison</h3>
+      <ul id="pListeZones"></ul>
+    </div>
+    <div>
+      <h3>Paiement</h3>
+      <ul>
+        <li>Acompte par Wave à la commande</li>
+        <li>Solde en espèces à la livraison</li>
+        <li>Orange Money accepté</li>
+      </ul>
+      <h3 style="margin-top:18px">Pour la pub</h3>
+      <button class="lien-flux" id="btnFlux" type="button">Voir le flux produit Meta</button>
+    </div>
+  </div>
+</footer>
+
+<a class="wa flottant" id="waFlottant" href="#" target="_blank" rel="noopener" aria-label="Commander sur WhatsApp">
+  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2 22l5.25-1.38a9.9 9.9 0 0 0 4.79 1.22h.01c5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.82 9.82 0 0 0 12.04 2m0 1.67c2.2 0 4.27.86 5.83 2.42a8.2 8.2 0 0 1 2.41 5.82c0 4.54-3.7 8.24-8.25 8.24-1.48 0-2.93-.4-4.2-1.15l-.3-.18-3.12.82.83-3.04-.2-.31a8.19 8.19 0 0 1-1.26-4.38c0-4.54 3.7-8.24 8.26-8.24m-4.5 4.2c-.21 0-.55.08-.84.39-.29.31-1.1 1.08-1.1 2.63 0 1.55 1.13 3.05 1.29 3.26.16.21 2.19 3.34 5.3 4.55 2.59 1.02 3.12.82 3.68.77.56-.05 1.81-.74 2.07-1.46.25-.72.25-1.33.18-1.46-.08-.13-.29-.21-.6-.36-.31-.16-1.81-.9-2.09-1-.28-.1-.49-.16-.69.16-.21.31-.79 1-.97 1.2-.18.21-.36.23-.66.08-.31-.16-1.29-.48-2.46-1.52-.91-.81-1.52-1.81-1.7-2.12-.18-.31-.02-.48.14-.63.14-.14.31-.36.47-.54.15-.18.2-.31.31-.52.1-.21.05-.39-.03-.54-.08-.16-.69-1.66-.94-2.27-.25-.6-.5-.52-.69-.53z"/></svg>
+</a>
+
+<div class="voile" id="voile"></div>
+
+<aside class="panneau" id="panneau" role="dialog" aria-modal="true" aria-labelledby="pTitre">
+  <div class="haut">
+    <strong id="pRef" style="font-size:13px;color:var(--acier-60);min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap"></strong>
+    <button class="lien-copier" id="pCopier" type="button">Copier le lien</button>
+    <button class="fermer" id="pFermer" type="button">Fermer</button>
+  </div>
+  <div class="contenu">
+    <div class="pvisuel" id="pVisuel"></div>
+    <div class="pvignettes" id="pVignettes"></div>
+    <p class="pmarque" id="pMarque"></p>
+    <h2 id="pTitre"></h2>
+    <p class="pmontant"><span id="pMontant"></span><span class="devise"> F CFA</span></p>
+
+    <dl class="plaque" id="pPlaque"></dl>
+
+    <div class="pdescription" id="pDescription" hidden>
+      <h3>Description</h3>
+      <p id="pDescriptionTexte"></p>
+    </div>
+
+    <div class="bloc-livraison">
+      <label for="pZone">Votre zone de livraison</label>
+      <select id="pZone"></select>
+      <p class="resultat-liv" id="pLiv"></p>
+    </div>
+
+    <button type="button" class="panier-bt" id="pAjouterPanier" style="width:100%;justify-content:center;margin-top:10px">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+      Ajouter au panier
+    </button>
+    <a class="wa wa--bloc" id="pWa" href="#" target="_blank" rel="noopener">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2 22l5.25-1.38a9.9 9.9 0 0 0 4.79 1.22h.01c5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.82 9.82 0 0 0 12.04 2m0 1.67c2.2 0 4.27.86 5.83 2.42a8.2 8.2 0 0 1 2.41 5.82c0 4.54-3.7 8.24-8.25 8.24-1.48 0-2.93-.4-4.2-1.15l-.3-.18-3.12.82.83-3.04-.2-.31a8.19 8.19 0 0 1-1.26-4.38c0-4.54 3.7-8.24 8.26-8.24m-4.5 4.2c-.21 0-.55.08-.84.39-.29.31-1.1 1.08-1.1 2.63 0 1.55 1.13 3.05 1.29 3.26.16.21 2.19 3.34 5.3 4.55 2.59 1.02 3.12.82 3.68.77.56-.05 1.81-.74 2.07-1.46.25-.72.25-1.33.18-1.46-.08-.13-.29-.21-.6-.36-.31-.16-1.81-.9-2.09-1-.28-.1-.49-.16-.69.16-.21.31-.79 1-.97 1.2-.18.21-.36.23-.66.08-.31-.16-1.29-.48-2.46-1.52-.91-.81-1.52-1.81-1.7-2.12-.18-.31-.02-.48.14-.63.14-.14.31-.36.47-.54.15-.18.2-.31.31-.52.1-.21.05-.39-.03-.54-.08-.16-.69-1.66-.94-2.27-.25-.6-.5-.52-.69-.53z"/></svg>
+      Commander sur WhatsApp
+    </a>
+    <p class="note-panneau">La conversation s'ouvre avec la référence déjà remplie.</p>
+  </div>
+</aside>
+
+<aside class="panneau" id="panneauPanier" role="dialog" aria-modal="true" aria-labelledby="panierTitreDrawer">
+  <div class="haut">
+    <strong id="panierTitreDrawer">Mon panier</strong>
+    <button class="fermer" id="panierFermer" type="button">Fermer</button>
+  </div>
+  <div class="contenu">
+    <div id="panierListe"></div>
+
+    <div class="bloc-livraison">
+      <label for="panierZone">Votre zone de livraison</label>
+      <select id="panierZone"></select>
+      <p class="resultat-liv" id="panierLiv"></p>
+    </div>
+
+    <div class="panier-total">
+      <span>Total à prévoir</span>
+      <b id="panierTotal">0</b>
+    </div>
+    <a class="wa wa--bloc" id="panierValider" href="#" target="_blank" rel="noopener">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2 22l5.25-1.38a9.9 9.9 0 0 0 4.79 1.22h.01c5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.82 9.82 0 0 0 12.04 2m0 1.67c2.2 0 4.27.86 5.83 2.42a8.2 8.2 0 0 1 2.41 5.82c0 4.54-3.7 8.24-8.25 8.24-1.48 0-2.93-.4-4.2-1.15l-.3-.18-3.12.82.83-3.04-.2-.31a8.19 8.19 0 0 1-1.26-4.38c0-4.54 3.7-8.24 8.26-8.24m-4.5 4.2c-.21 0-.55.08-.84.39-.29.31-1.1 1.08-1.1 2.63 0 1.55 1.13 3.05 1.29 3.26.16.21 2.19 3.34 5.3 4.55 2.59 1.02 3.12.82 3.68.77.56-.05 1.81-.74 2.07-1.46.25-.72.25-1.33.18-1.46-.08-.13-.29-.21-.6-.36-.31-.16-1.81-.9-2.09-1-.28-.1-.49-.16-.69.16-.21.31-.79 1-.97 1.2-.18.21-.36.23-.66.08-.31-.16-1.29-.48-2.46-1.52-.91-.81-1.52-1.81-1.7-2.12-.18-.31-.02-.48.14-.63.14-.14.31-.36.47-.54.15-.18.2-.31.31-.52.1-.21.05-.39-.03-.54-.08-.16-.69-1.66-.94-2.27-.25-.6-.5-.52-.69-.53z"/></svg>
+      Valider la commande sur WhatsApp
+    </a>
+    <p class="note-panneau">Envoie la liste complète en un seul message, on te recontacte pour confirmer.</p>
+  </div>
+</aside>
+
+<div class="avis-panier" id="avisPanier" data-visible="0"></div>
+
+<div class="flux" id="flux" role="dialog" aria-modal="true" aria-labelledby="fluxTitre">
+  <div class="haut">
+    <h2 id="fluxTitre">Flux produit — catalogue Meta</h2>
+    <div class="actions">
+      <button class="bt" id="fluxCopier" type="button">Copier</button>
+      <button class="bt bt--plein" id="fluxFermer" type="button">Fermer</button>
+    </div>
+  </div>
+  <p class="expl">Ce fichier est généré à partir du même catalogue que le site. Déposez-le sur une URL fixe (par exemple <code>sandagasoldes.com/feed.xml</code>) et déclarez-la dans le Commerce Manager avec une actualisation programmée. Meta fabrique alors les pubs carrousel, la boutique Instagram et le catalogue WhatsApp à partir de là.</p>
+  <pre id="fluxContenu"></pre>
+</div>
+
+<script>
+/* ============================================================
+   À REMPLACER AVANT MISE EN LIGNE
+   ============================================================ */
+const WHATSAPP = "221788800808";        // numéro WhatsApp Business
+const SITE     = "https://sandagasoldes.com";
+
+/* ------------------------------------------------------------
+   PROMOS DE LA SEMAINE — jusqu'à 4 produits, défilement automatique.
+   Chargées depuis promos.json (modifiable via console-admin.html).
+   Ce tableau ci-dessous ne sert que de repli si promos.json est
+   introuvable ou invalide.
+   ------------------------------------------------------------ */
+// Refs de produits mis en avant comme "les plus demandés" — liste éditable
+// depuis la console admin, chargée depuis populaires.json (repli : vide, section masquée).
+let REFS_POPULAIRES = [];
+
+let PROMOS_SEMAINE = [
+  {
+    marque: "Beko",
+    nom: "Réfrigérateur 2 portes 170 L",
+    icone: "frigo",
+    photo: "https://www.baramboupelectronics.com/wp-content/uploads/2026/03/6824efbb7697a_ff34ff-300x300.jpg",
+    prix: 159300,
+    prixBarre: 189000,
+    points: ["Froid efficace","170 litres","Économie d'énergie","Robuste et durable"]
+  },
+  {
+    marque: "Elactron",
+    nom: "Réfrigérateur vitrine 800 L",
+    icone: "frigo",
+    photo: "https://www.baramboupelectronics.com/wp-content/uploads/2026/03/69443b0f18e80_image_2025-12-18_173406479-300x300.png",
+    prix: 370000,
+    prixBarre: 430000,
+    points: ["800 litres","Vitrine 2 portes","Grande capacité","Idéal boutique"]
+  },
+  {
+    marque: "Konka",
+    nom: "Téléviseur 55\" Google TV",
+    icone: "tv",
+    photo: "https://www.baramboupelectronics.com/wp-content/uploads/2026/03/693bf3356bd0a_konka-televiseur-55-300x300.jpg",
+    prix: 187000,
+    prixBarre: 220000,
+    points: ["Écran 55 pouces","Google TV intégré","4K UHD","Netflix, YouTube"]
+  },
+  {
+    marque: "Haier",
+    nom: "Climatiseur Split 24 000 BTU",
+    icone: "split",
+    photo: "https://www.baramboupelectronics.com/wp-content/uploads/2026/03/688200b2f1412_bmeJ_-300x300.jpg",
+    prix: 310000,
+    prixBarre: 360000,
+    points: ["3 CV","Inverter","Armoire extérieure","Installation incluse"]
+  }
+];
+
+/* ------------------------------------------------------------
+   ZONES DE LIVRAISON
+   ------------------------------------------------------------ */
+const ZONES = [
+  {id:"plateau",  nom:"Plateau / Médina",               frais:3000,  delai:"sous 4h"},
+  {id:"granddak", nom:"Grand Dakar / Point E / Mermoz", frais:4000,  delai:"sous 4h"},
+  {id:"parcelles",nom:"Parcelles / Pikine / Guédiawaye",frais:5000,  delai:"sous 4h"},
+  {id:"keurm",    nom:"Keur Massar / Malika",           frais:7000,  delai:"sous 4h"},
+  {id:"rufisque", nom:"Rufisque / Bargny",              frais:10000, delai:"délai à convenir avec vous"},
+  {id:"thies",    nom:"Thiès / Mbour",                  frais:20000, delai:"délai à convenir avec vous"}
+];
+
+/* ------------------------------------------------------------
+   RAYONS
+   ------------------------------------------------------------ */
+/* Ordre : rayons les plus fournis (= les plus demandés) au centre,
+   mis en valeur avec les 4 couleurs du mot "SOLDES" du logo. */
+const RAYONS = [
+  {id:"tout",        nom:"Tout"},
+  {id:"ventilation", nom:"Ventilation"},
+  {id:"froid",       nom:"Froid",          vedette:"bleu"},
+  {id:"cuisson",     nom:"Cuisson",        vedette:"orange"},
+  {id:"clim",        nom:"Climatisation",  vedette:"jaune"},
+  {id:"tv",          nom:"Téléviseurs",    vedette:"rouge"},
+  {id:"petit",       nom:"Petit électroménager"},
+  {id:"lavage",      nom:"Lavage"}
+];
+
+/* ------------------------------------------------------------
+   CATALOGUE — chargé depuis une feuille Google Sheets publiée
+   en CSV. Voir "GUIDE GOOGLE SHEET" un peu plus bas pour la
+   structure exacte des colonnes et les étapes de publication.
+   ------------------------------------------------------------ */
+const SHEET_CSV_URL = "catalogue.csv"; // fichier local pour l'instant — à remplacer par le lien Google Sheets "Publier sur le web" en CSV quand tu veux pouvoir éditer les prix sans coder (voir guide)
+
+// Catalogue de secours affiché si la feuille n'est pas encore
+// configurée ou injoignable, pour que le site ne soit jamais vide.
+// tant que catalogueChargee est faux, CATALOGUE peut n'être que ce repli à 4 produits :
+// on ne doit jamais purger le panier d'un client sur cette base, seulement une fois le vrai catalogue en place.
+let catalogueChargee = false;
+let CATALOGUE = [
+  {ref:"CB-200", marque:"Astech", nom:"Congélateur horizontal 200 L", rayon:"froid", famille:"Congélateurs", prix:185000, icone:"horizontal", dispo:"jour", cap:"200 L", specs:{"Type":"Coffre horizontal","Capacité":"200 litres","Garantie":"12 mois"}},
+  {ref:"RF-200", marque:"Astech", nom:"Réfrigérateur combiné 2 portes 200 L", rayon:"froid", famille:"Réfrigérateurs", prix:175000, icone:"frigo", dispo:"jour", cap:"200 L", specs:{"Type":"Combiné 2 portes","Capacité":"200 litres","Garantie":"12 mois"}},
+  {ref:"WP-SA7", marque:"Westpool", nom:"Machine à laver semi-automatique 7 kg", rayon:"lavage", famille:"Machines à laver", prix:95000, icone:"semiauto", dispo:"jour", cap:"7 kg", specs:{"Type":"Semi-automatique","Capacité":"7 kg","Garantie":"12 mois"}},
+  {ref:"IN-S9", marque:"Innova", nom:"Climatiseur split 1 CV — 9 000 BTU", rayon:"clim", famille:"Climatiseurs", prix:195000, icone:"split", dispo:"jour", cap:"9 000 BTU", specs:{"Type":"Split mural","Puissance":"9 000 BTU","Garantie":"12 mois"}}
+];
+
+/* -------- lecture d'une colonne "specs" du type
+   "Type: Combiné 2 portes | Capacité: 200 litres | Garantie: 12 mois" -------- */
+function analyserSpecs(txt){
+  const specs = {};
+  String(txt||"").split("|").forEach(part=>{
+    const i = part.indexOf(":");
+    if(i===-1) return;
+    const cle = part.slice(0,i).trim();
+    const val = part.slice(i+1).trim();
+    if(cle && val) specs[cle] = val;
+  });
+  return specs;
+}
+
+function versNombre(txt){
+  const n = Number(String(txt||"").replace(/[^\d.-]/g,""));
+  return Number.isFinite(n) ? n : 0;
+}
+
+const RAYONS_VALIDES = ["froid","lavage","cuisson","clim","ventilation","petit","tv"];
+
+async function chargerCatalogueDistant(){
+  if(!SHEET_CSV_URL) throw new Error("URL non configurée");
+  const reponse = await fetch(SHEET_CSV_URL, {cache:"no-store"});
+  if(!reponse.ok) throw new Error("Réponse HTTP "+reponse.status);
+  const texte = await reponse.text();
+  const analyse = Papa.parse(texte, {header:true, skipEmptyLines:true});
+  const lignes = analyse.data
+    .map(l=>({
+      ref:     String(l.ref||"").trim(),
+      marque:  String(l.marque||"").trim(),
+      nom:     String(l.nom||"").trim(),
+      rayon:   String(l.rayon||"").trim().toLowerCase(),
+      famille: String(l.famille||"").trim(),
+      prix:    versNombre(l.prix),
+      icone:   ICONES[String(l.icone||"").trim()] ? String(l.icone||"").trim() : "frigo",
+      dispo:   String(l.dispo||"").trim().toLowerCase()==="jour" ? "jour" : "commande",
+      cap:     String(l.cap||"").trim(),
+      specs:   analyserSpecs(l.specs),
+      photo:   String(l.photo||"").trim(),
+      photos:  String(l.photos||"").split(";").map(s=>s.trim()).filter(Boolean),
+      actif:   String(l.actif||"oui").trim().toLowerCase()!=="non",
+      description: String(l.description||"").trim()
+    }))
+    .filter(p=>p.ref && p.nom && p.actif && RAYONS_VALIDES.includes(p.rayon));
+  if(!lignes.length) throw new Error("Feuille vide ou colonnes mal nommées");
+  return lignes;
+}
+
+/* ------------------------------------------------------------
+   SYNONYMES — la manière dont les gens tapent réellement
+   ------------------------------------------------------------ */
+const SYNONYMES = {
+  "refrigerateur":["frigo","frigos","frigidaire","refrigerateur","refregerateur","rfrigrateur","combine"],
+  "congelateur":  ["congelateur","congel","congelo","horizontal","vertical","bahut","coffre","freezer","conservateur"],
+  "machine a laver":["machine","machines","laveuse","lave linge","lavelinge","laver","hublot","semi automatique"],
+  "climatiseur":  ["clim","climatiseur","climatisation","split","ac","btu","cv"],
+  "cuisiniere":   ["cuisiniere","cuisiniere","gaziniere","rechaud","fourneau","feux","gaz"],
+  "micro ondes":  ["micro","microonde","micro onde","micro ondes","mo"],
+  "four":         ["four","fourelectrique"],
+  "ventilateur":  ["ventilo","ventilateur","brasseur","pale","helice"],
+  "fer a repasser":["fer","repasser","repassage"],
+  "bouilloire":   ["bouilloire","chauffe eau","theiere"],
+  "blender":      ["blender","mixeur","moulin","broyeur","robot"],
+  "aspirateur":   ["aspirateur","aspiro","aspi"],
+  "televiseur":   ["tv","televiseur","television","tele","ecran","smart tv"]
+};
+
+/* ------------------------------------------------------------
+   DESSINS — remplacer par les photos produit avant lancement
+   ------------------------------------------------------------ */
+const ICONES = {
+  frigo:'<svg viewBox="0 0 100 100"><rect x="28" y="10" width="44" height="80" rx="4"/><line x1="28" y1="38" x2="72" y2="38"/><line x1="64" y1="20" x2="64" y2="31"/><line x1="64" y1="45" x2="64" y2="58"/></svg>',
+  horizontal:'<svg viewBox="0 0 100 100"><rect x="12" y="34" width="76" height="42" rx="4"/><line x1="12" y1="46" x2="88" y2="46"/><rect x="60" y="52" width="18" height="5" rx="2"/><line x1="22" y1="76" x2="22" y2="84"/><line x1="78" y1="76" x2="78" y2="84"/></svg>',
+  vertical:'<svg viewBox="0 0 100 100"><rect x="30" y="10" width="40" height="80" rx="4"/><line x1="30" y1="28" x2="70" y2="28"/><line x1="30" y1="44" x2="70" y2="44"/><line x1="30" y1="60" x2="70" y2="60"/><line x1="30" y1="76" x2="70" y2="76"/></svg>',
+  hublot:'<svg viewBox="0 0 100 100"><rect x="18" y="14" width="64" height="72" rx="4"/><circle cx="50" cy="56" r="20"/><circle cx="50" cy="56" r="12"/><circle cx="30" cy="26" r="3"/><line x1="42" y1="26" x2="72" y2="26"/></svg>',
+  semiauto:'<svg viewBox="0 0 100 100"><rect x="10" y="20" width="80" height="60" rx="5"/><circle cx="34" cy="50" r="15"/><circle cx="70" cy="50" r="11"/><line x1="10" y1="32" x2="90" y2="32"/></svg>',
+  cuisine:'<svg viewBox="0 0 100 100"><rect x="18" y="24" width="64" height="62" rx="4"/><circle cx="34" cy="36" r="5"/><circle cx="66" cy="36" r="5"/><rect x="26" y="50" width="48" height="30" rx="3"/><line x1="26" y1="60" x2="74" y2="60"/><line x1="18" y1="86" x2="18" y2="92"/><line x1="82" y1="86" x2="82" y2="92"/></svg>',
+  micro:'<svg viewBox="0 0 100 100"><rect x="10" y="28" width="80" height="44" rx="4"/><rect x="18" y="36" width="46" height="28" rx="2"/><circle cx="76" cy="42" r="4"/><line x1="70" y1="56" x2="82" y2="56"/><line x1="70" y1="62" x2="82" y2="62"/></svg>',
+  four:'<svg viewBox="0 0 100 100"><rect x="12" y="30" width="76" height="42" rx="4"/><rect x="20" y="38" width="48" height="26" rx="2"/><line x1="24" y1="50" x2="64" y2="50"/><circle cx="78" cy="44" r="4"/><circle cx="78" cy="58" r="4"/></svg>',
+  split:'<svg viewBox="0 0 100 100"><rect x="8" y="34" width="84" height="24" rx="6"/><line x1="14" y1="58" x2="86" y2="58"/><line x1="24" y1="64" x2="36" y2="72"/><line x1="46" y1="64" x2="58" y2="72"/><line x1="68" y1="64" x2="80" y2="72"/><circle cx="80" cy="42" r="2.5"/></svg>',
+  brasseur:'<svg viewBox="0 0 100 100"><line x1="50" y1="12" x2="50" y2="34"/><circle cx="50" cy="44" r="9"/><path d="M41 44 C20 38 12 50 16 60 C26 62 38 56 43 50"/><path d="M59 44 C80 38 88 50 84 60 C74 62 62 56 57 50"/><path d="M50 53 C54 72 44 84 34 82 C30 72 40 60 47 56"/></svg>',
+  ventilo:'<svg viewBox="0 0 100 100"><circle cx="50" cy="38" r="24"/><circle cx="50" cy="38" r="6"/><path d="M50 32 C44 18 52 12 60 16 C62 24 56 30 50 34"/><path d="M55 41 C69 37 74 45 70 52 C62 53 56 47 54 42"/><path d="M45 41 C38 53 28 52 26 44 C31 37 40 38 44 41"/><line x1="50" y1="62" x2="50" y2="82"/><line x1="36" y1="86" x2="64" y2="86"/></svg>',
+  blender:'<svg viewBox="0 0 100 100"><path d="M36 16 L64 16 L60 58 L40 58 Z"/><rect x="32" y="58" width="36" height="24" rx="4"/><line x1="40" y1="68" x2="60" y2="68"/><line x1="36" y1="24" x2="64" y2="24"/></svg>',
+  fer:'<svg viewBox="0 0 100 100"><path d="M16 68 L84 68 L84 58 C84 40 68 30 50 30 L32 30 C22 30 16 40 16 52 Z"/><path d="M32 30 C34 22 42 18 52 18"/><line x1="16" y1="74" x2="84" y2="74"/></svg>',
+  bouilloire:'<svg viewBox="0 0 100 100"><path d="M30 34 L70 34 L74 74 L26 74 Z"/><path d="M70 40 L86 30 L86 46"/><path d="M34 34 C34 24 42 20 50 20 C58 20 66 24 66 34"/><line x1="22" y1="80" x2="78" y2="80"/></svg>',
+  aspi:'<svg viewBox="0 0 100 100"><rect x="14" y="50" width="52" height="30" rx="8"/><circle cx="28" cy="80" r="6"/><circle cx="56" cy="80" r="6"/><path d="M66 58 C84 54 88 34 74 26 C64 20 54 26 52 34"/><line x1="24" y1="58" x2="40" y2="58"/></svg>',
+  tv:'<svg viewBox="0 0 100 100"><rect x="10" y="22" width="80" height="50" rx="4"/><line x1="50" y1="72" x2="50" y2="82"/><line x1="32" y1="86" x2="68" y2="86"/><line x1="22" y1="34" x2="66" y2="34"/><line x1="22" y1="44" x2="58" y2="44"/></svg>'
+};
+
+/* ------------------------------------------------------------
+   OUTILS
+   ------------------------------------------------------------ */
+const $ = s => document.querySelector(s);
+const fmt = n => n.toLocaleString("fr-FR").replace(/\u202f|\u00a0/g," ");
+// \u00e9chappe le texte issu du catalogue avant de l'ins\u00e9rer dans du HTML (innerHTML) \u2014
+// les noms/marques viennent du fournisseur et ne doivent jamais \u00eatre trait\u00e9s comme du code.
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const norm = s => (s||"").toLowerCase().normalize("NFD")
+  .replace(/[\u0300-\u036f]/g,"").replace(/[^a-z0-9]+/g," ").trim();
+
+function lev(a,b){
+  if(Math.abs(a.length-b.length)>2) return 9;
+  const d=[];
+  for(let i=0;i<=a.length;i++){d[i]=[i];}
+  for(let j=0;j<=b.length;j++){d[0][j]=j;}
+  for(let i=1;i<=a.length;i++)for(let j=1;j<=b.length;j++){
+    d[i][j]=Math.min(d[i-1][j]+1,d[i][j-1]+1,d[i-1][j-1]+(a[i-1]===b[j-1]?0:1));
+  }
+  return d[a.length][b.length];
+}
+
+/* étend la requête avec les synonymes */
+function etendre(tokens){
+  const out = new Set(tokens);
+  tokens.forEach(t=>{
+    for(const [canon,variantes] of Object.entries(SYNONYMES)){
+      const liste = variantes.map(norm);
+      if(liste.some(v => v===t || v.startsWith(t) || (t.length>=4 && lev(v,t)<=1))){
+        norm(canon).split(" ").forEach(m=>out.add(m));
+        liste.forEach(v=>v.split(" ").forEach(m=>out.add(m)));
+      }
+    }
+  });
+  return [...out];
+}
+
+function botteDeFoin(p){
+  return norm([p.nom,p.marque,p.ref,p.famille,p.cap,Object.values(p.specs).join(" ")].join(" ")).split(" ");
+}
+
+function correspond(p,tokensEtendus,tokensBruts){
+  if(!tokensBruts.length) return true;
+  const foin = botteDeFoin(p);
+  return tokensBruts.every(brut=>{
+    const cibles = etendre([brut]);
+    return cibles.some(c => foin.some(m => m===c || m.startsWith(c) || (c.length>=5 && lev(m,c)<=1)));
+  });
+}
+
+/* ------------------------------------------------------------
+   ÉTAT
+   ------------------------------------------------------------ */
+const etat = {q:"", rayon:"tout", marque:"", prix:"", tri:"pertinence", zone:ZONES[0].id, produit:null, souscat:""};
+
+// tranches de taille d'écran pour le sous-filtre des téléviseurs (à partir du champ "cap", ex. 55")
+const TAILLES_TV = [
+  {id:"24-39",  nom:"24-39\"", min:24,  max:39},
+  {id:"40-49",  nom:"40-49\"", min:40,  max:49},
+  {id:"50-59",  nom:"50-59\"", min:50,  max:59},
+  {id:"60-69",  nom:"60-69\"", min:60,  max:69},
+  {id:"70-79",  nom:"70-79\"", min:70,  max:79},
+  {id:"80-99",  nom:"80-99\"", min:80,  max:99},
+  {id:"100+",   nom:"100\" et +", min:100, max:9999},
+];
+function tailleTvDe(p){
+  const n = Number(String(p.cap||"").replace(/[^\d]/g,""));
+  return TAILLES_TV.find(t => n>=t.min && n<=t.max)?.id || "";
+}
+
+// Met en avant, pour chaque marque, son produit le moins cher : tous les "moins chers
+// de leur marque" d'abord (triés par prix), puis les deuxièmes moins chers, etc.
+function moinsCherParMarqueDabord(liste){
+  const parMarque = new Map();
+  liste.forEach(p=>{
+    if(!parMarque.has(p.marque)) parMarque.set(p.marque, []);
+    parMarque.get(p.marque).push(p);
+  });
+  const rang = new Map();
+  parMarque.forEach(produits=>{
+    produits.slice().sort((a,b)=>a.prix-b.prix).forEach((p,i)=>rang.set(p,i));
+  });
+  return liste.slice().sort((a,b)=>(rang.get(a)-rang.get(b)) || (a.prix-b.prix));
+}
+
+/* ------------------------------------------------------------
+   RENDU
+   ------------------------------------------------------------ */
+function filtrer(){
+  const bruts = norm(etat.q).split(" ").filter(Boolean);
+  const etendus = etendre(bruts);
+  let r = CATALOGUE.filter(p=>{
+    if(etat.rayon!=="tout" && p.rayon!==etat.rayon) return false;
+    if(etat.souscat){
+      if(etat.rayon==="tv"){ if(tailleTvDe(p)!==etat.souscat) return false; }
+      else if(p.famille!==etat.souscat) return false;
+    }
+    if(etat.marque && p.marque!==etat.marque) return false;
+    if(etat.prix){
+      const [a,b]=etat.prix.split("-").map(Number);
+      if(p.prix<a || p.prix>b) return false;
+    }
+    return correspond(p,etendus,bruts);
+  });
+  if(etat.tri==="prix-asc")  r.sort((a,b)=>a.prix-b.prix);
+  else if(etat.tri==="prix-desc") r.sort((a,b)=>b.prix-a.prix);
+  else if(etat.tri==="marque")    r.sort((a,b)=>a.marque.localeCompare(b.marque) || a.nom.localeCompare(b.nom));
+  else if(etat.rayon!=="tout") r = moinsCherParMarqueDabord(r);
+  return r;
+}
+
+function lienWa(texte){
+  return "https://wa.me/"+WHATSAPP+"?text="+encodeURIComponent(texte);
+}
+
+/* ------------------------------------------------------------
+   PANIER — pas de compte, pas de serveur : juste une liste
+   gardée dans le navigateur du client (localStorage), regroupée
+   en un seul message WhatsApp au moment de valider.
+   ------------------------------------------------------------ */
+function chargerPanier(){
+  try {
+    const d = JSON.parse(localStorage.getItem("sandaga_panier")||"[]");
+    return Array.isArray(d) ? d.filter(l=>l && l.ref && l.qte>0) : [];
+  } catch(_){ return []; }
+}
+let PANIER = chargerPanier();
+
+function sauverPanier(){
+  try { localStorage.setItem("sandaga_panier", JSON.stringify(PANIER)); } catch(_){}
+  majBadgePanier();
+}
+function trouverProduit(ref){ return CATALOGUE.find(p=>p.ref===ref); }
+
+function rendrePopulaires(){
+  const produits = REFS_POPULAIRES.map(trouverProduit).filter(Boolean);
+  const section = $("#sectionPopulaires");
+  section.hidden = produits.length === 0;
+  if (!produits.length) return;
+  const zone = $("#populairesGrille");
+  zone.innerHTML = "";
+  produits.forEach(p => zone.appendChild(carte(p)));
+}
+function nbArticlesPanier(){
+  // avant le chargement du vrai catalogue, on ne peut pas encore savoir quelles lignes
+  // sont valides : on compte tout pour ne pas afficher un badge à zéro à tort.
+  const lignes = catalogueChargee ? PANIER.filter(l=>trouverProduit(l.ref)) : PANIER;
+  return lignes.reduce((s,l)=>s+l.qte,0);
+}
+function totalPanier(){
+  return PANIER.reduce((s,l)=>{ const p=trouverProduit(l.ref); return s + (p ? p.prix*l.qte : 0); },0);
+}
+function majBadgePanier(){
+  const n = nbArticlesPanier();
+  const badge = $("#panierBadge");
+  badge.textContent = n;
+  badge.hidden = n===0;
+}
+function ajouterAuPanier(ref, qte){
+  qte = qte||1;
+  const ligne = PANIER.find(l=>l.ref===ref);
+  if(ligne) ligne.qte += qte; else PANIER.push({ref, qte});
+  sauverPanier();
+  afficherAvisPanier(`Ajouté au panier (${nbArticlesPanier()} article${nbArticlesPanier()>1?"s":""}).`);
+}
+function changerQtePanier(ref, delta){
+  const ligne = PANIER.find(l=>l.ref===ref);
+  if(!ligne) return;
+  ligne.qte += delta;
+  if(ligne.qte<=0){ PANIER = PANIER.filter(l=>l.ref!==ref); }
+  sauverPanier();
+  rendrePanier();
+}
+function retirerDuPanier(ref){
+  PANIER = PANIER.filter(l=>l.ref!==ref);
+  sauverPanier();
+  rendrePanier();
+}
+function afficherAvisPanier(message){
+  const el = $("#avisPanier");
+  if(!el) return;
+  el.textContent = message;
+  el.dataset.visible = "1";
+  clearTimeout(afficherAvisPanier._t);
+  afficherAvisPanier._t = setTimeout(()=>{ el.dataset.visible = "0"; }, 2200);
+}
+function rendrePanier(){
+  // purge les lignes dont le produit n'existe plus dans le VRAI catalogue — jamais sur la
+  // base du catalogue de secours (4 produits), qui ferait disparaître le panier d'un client
+  // le temps que le vrai catalogue.csv finisse de charger.
+  if(catalogueChargee){
+    const avant = PANIER.length;
+    PANIER = PANIER.filter(l=>trouverProduit(l.ref));
+    if(PANIER.length !== avant) sauverPanier();
+  }
+
+  // pour l'affichage : si le vrai catalogue n'est pas encore chargé, on masque juste
+  // temporairement les lignes pas encore résolvables (sans les supprimer du panier, voir ci-dessus).
+  const lignes = PANIER.map(l=>({...l, produit: trouverProduit(l.ref)})).filter(l=>l.produit);
+  const zone = $("#panierListe");
+  zone.innerHTML = lignes.length ? lignes.map(l=>`
+    <div class="panier-ligne" data-ref="${esc(l.ref)}">
+      <div class="panier-visuel">${visuel(l.produit)}</div>
+      <div class="panier-info">
+        <span class="panier-marque">${esc(l.produit.marque)}</span>
+        <span class="panier-nom">${esc(l.produit.nom)}</span>
+        <div class="panier-qte">
+          <button type="button" data-action="moins" aria-label="Diminuer la quantité">−</button>
+          <span>${l.qte}</span>
+          <button type="button" data-action="plus" aria-label="Augmenter la quantité">+</button>
+        </div>
+      </div>
+      <div class="panier-droite">
+        <span class="panier-prix">${fmt(l.produit.prix*l.qte)} F</span>
+        <button type="button" class="panier-retirer" data-action="retirer">Retirer</button>
+      </div>
+    </div>
+  `).join("") : `<p class="panier-vide">Ton panier est vide. Ajoute des produits depuis le catalogue.</p>`;
+
+  majLivraisonPanier(lignes);
+  majBadgePanier();
+}
+
+// calcule et affiche les frais/délai de livraison du panier, et reconstruit le message
+// WhatsApp — appelée après chaque rendu du panier ET quand le client change de zone.
+function majLivraisonPanier(lignes){
+  lignes = lignes || PANIER.map(l=>({...l, produit: trouverProduit(l.ref)})).filter(l=>l.produit);
+  const z = ZONES.find(z=>z.id===etat.zone);
+  const sousTotal = lignes.reduce((s,l)=>s+l.produit.prix*l.qte,0);
+  const total = sousTotal + (lignes.length ? z.frais : 0);
+  const delai = z.delai;
+
+  $("#panierLiv").innerHTML = lignes.length
+    ? `Livraison ${z.nom} : <b>${fmt(z.frais)} F</b>, ${delai}.`
+    : "";
+  $("#panierTotal").textContent = fmt(total)+" F CFA";
+
+  const bouton = $("#panierValider");
+  if(!lignes.length){
+    bouton.setAttribute("aria-disabled","true");
+    bouton.style.opacity=".5"; bouton.style.pointerEvents="none";
+  } else {
+    bouton.removeAttribute("aria-disabled");
+    bouton.style.opacity=""; bouton.style.pointerEvents="";
+    const items = lignes.map(l=>`• ${l.produit.marque} ${l.produit.nom} (réf. ${l.produit.ref}) x${l.qte} — ${fmt(l.produit.prix*l.qte)} F CFA`).join("\n");
+    bouton.href = lienWa(
+      `Bonjour Sandaga Soldes, je veux commander :\n\n${items}\n\nSous-total produits : ${fmt(sousTotal)} F CFA\nLivraison ${z.nom} : ${fmt(z.frais)} F, ${delai}\nTotal : ${fmt(total)} F CFA\n\nC'est disponible ?`
+    );
+  }
+}
+function ouvrirPanier(){
+  if($("#panneau").dataset.ouvert==="1") fermer();
+  rendrePanier();
+  $("#voile").dataset.ouvert="1";
+  $("#panneauPanier").dataset.ouvert="1";
+  document.body.style.overflow="hidden";
+}
+function fermerPanier(){
+  $("#voile").dataset.ouvert="0";
+  $("#panneauPanier").dataset.ouvert="0";
+  document.body.style.overflow="";
+}
+
+/* nom de fichier de la fiche produit — doit rester identique à celui utilisé
+   par le générateur de pages (generate_product_pages.js) */
+function refUrl(ref){
+  return ref.toLowerCase().replace(/[\/\\:*?"<>|]+/g,"-");
+}
+
+/* photo réelle si disponible, sinon icône dessinée — avec repli automatique
+   sur l'icône si la photo ne charge pas (lien externe cassé) */
+function visuel(p, src){
+  const icone = ICONES[p.icone]||ICONES.frigo;
+  const photo = src || p.photo;
+  if(!photo) return icone;
+  return `<img class="foto" src="${esc(photo)}" alt="${esc(p.nom)}" loading="lazy" onerror="this.remove()">${icone}`;
+}
+
+function carte(p){
+  const b = document.createElement("a");
+  b.className = "fiche";
+  b.href = "produit/"+refUrl(p.ref)+".html";
+  b.setAttribute("aria-label", p.nom+" — "+fmt(p.prix)+" francs CFA");
+  b.innerHTML = `
+    <div class="visuel">
+      ${visuel(p)}
+      <button type="button" class="ajouter-panier" aria-label="Ajouter ${esc(p.nom)} au panier">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+      </button>
+    </div>
+    <div class="corps">
+      <span class="marque">${esc(p.marque)}</span>
+      <span class="titre">${esc(p.nom)}</span>
+      <span class="cap">${esc(p.cap)} · réf. ${esc(p.ref)}</span>
+      <div class="tarif"><span class="montant">${fmt(p.prix)}</span><span class="devise">F CFA</span></div>
+    </div>`;
+  // clic normal : ouvre le panneau sans quitter la page.
+  // Ctrl/Cmd/molette/clic droit : le vrai lien produit.html fait son travail normalement.
+  b.addEventListener("click",e=>{
+    if (e.button!==0 || e.ctrlKey || e.metaKey || e.shiftKey || e.altKey) return;
+    e.preventDefault();
+    ouvrir(p);
+  });
+  b.querySelector(".ajouter-panier").addEventListener("click",e=>{
+    e.preventDefault();
+    e.stopPropagation();
+    ajouterAuPanier(p.ref);
+  });
+  return b;
+}
+
+function choisirRayon(id, defiler){
+  etat.rayon = id;
+  etat.marque = "";
+  etat.souscat = "";
+  $("#fMarque").value = "";
+  document.querySelectorAll(".rayon").forEach(x=>x.setAttribute("aria-pressed", x.dataset.rayon===id ? "true":"false"));
+  remplirMarques();
+  remplirSousFiltres();
+  rendre();
+  if(defiler) $("#catalogue").scrollIntoView({behavior:"smooth", block:"start"});
+}
+
+function remplirSousFiltres(){
+  const zone = $("#sousfiltres");
+  zone.innerHTML = "";
+  let options = []; // [{id, nom}]
+
+  if(etat.rayon==="tv"){
+    const presentes = new Set(CATALOGUE.filter(p=>p.rayon==="tv").map(tailleTvDe));
+    options = TAILLES_TV.filter(t=>presentes.has(t.id)).map(t=>({id:t.id, nom:t.nom}));
+  } else if(etat.rayon!=="tout"){
+    const source = CATALOGUE.filter(p=>p.rayon===etat.rayon && p.famille);
+    const comptes = new Map();
+    source.forEach(p=>comptes.set(p.famille, (comptes.get(p.famille)||0)+1));
+    options = [...comptes.entries()].sort((a,b)=>b[1]-a[1]).map(([nom])=>({id:nom, nom}));
+  }
+
+  if(options.length < 2){ zone.hidden = true; return; }
+  zone.hidden = false;
+  options.forEach(o=>{
+    const b = document.createElement("button");
+    b.type = "button"; b.className = "souschip"; b.textContent = o.nom;
+    b.dataset.souscat = o.id;
+    b.setAttribute("aria-pressed", etat.souscat===o.id ? "true":"false");
+    b.addEventListener("click",()=>{
+      etat.souscat = etat.souscat===o.id ? "" : o.id;
+      zone.querySelectorAll(".souschip").forEach(x=>x.setAttribute("aria-pressed", x.dataset.souscat===etat.souscat ? "true":"false"));
+      rendre();
+    });
+    zone.appendChild(b);
+  });
+}
+
+let promoIndex = 0;
+let promoMinuteur = null;
+
+function afficherPromo(i){
+  promoIndex = i;
+  const p = PROMOS_SEMAINE[i];
+  $("#promoVisuel").innerHTML = visuel(p);
+  $("#promoMarque").textContent = p.marque;
+  $("#promoNom").textContent = p.nom;
+  $("#promoPrix").textContent = fmt(p.prix);
+  $("#promoBarre").textContent = p.prixBarre ? fmt(p.prixBarre)+" F CFA" : "";
+  $("#promoPoints").innerHTML = p.points.map(pt=>
+    `<li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg><span>${esc(pt)}</span></li>`
+  ).join("");
+  $("#promoWa").href = lienWa(
+    `Bonjour Sandaga Soldes, je suis intéressé par la promo de la semaine :\n\n${p.marque} ${p.nom}\nPrix : ${fmt(p.prix)} F CFA\n\nElle est encore disponible ?`
+  );
+  // le bouton panier n'existe que si la promo est bien reliée à un vrai produit du catalogue
+  // (référence renseignée depuis la console admin) — sinon impossible de la retrouver dans le panier.
+  $("#promoAjouterPanier").hidden = !(p.ref && trouverProduit(p.ref));
+  document.querySelectorAll("#promoDots button").forEach((b,idx)=>
+    b.setAttribute("aria-current", idx===i ? "true":"false")
+  );
+}
+
+function demarrerCarrouselPromo(){
+  clearInterval(promoMinuteur);
+  promoMinuteur = setInterval(()=>{
+    afficherPromo((promoIndex+1) % PROMOS_SEMAINE.length);
+  }, 5000);
+}
+
+function remplirPromo(){
+  $("#promoDots").innerHTML = PROMOS_SEMAINE.map((_,i)=>
+    `<button type="button" aria-label="Promo ${i+1}" aria-current="${i===0?"true":"false"}"></button>`
+  ).join("");
+  document.querySelectorAll("#promoDots button").forEach((b,i)=>
+    b.addEventListener("click",()=>{ afficherPromo(i); demarrerCarrouselPromo(); })
+  );
+  afficherPromo(0);
+  if (PROMOS_SEMAINE.length > 1) demarrerCarrouselPromo();
+}
+
+function remplirMarques(){
+  const select = $("#fMarque");
+  select.querySelectorAll("option:not(:first-child)").forEach(o=>o.remove());
+  const source = etat.rayon==="tout" ? CATALOGUE : CATALOGUE.filter(p=>p.rayon===etat.rayon);
+  [...new Set(source.map(p=>p.marque))].sort().forEach(m=>{
+    const o=document.createElement("option"); o.value=m; o.textContent=m; select.appendChild(o);
+  });
+}
+
+function afficherAvis(message, faute){
+  const el = $("#avisCatalogue");
+  el.textContent = message;
+  el.className = "avis" + (faute ? " avis--faute" : "");
+  el.hidden = false;
+}
+
+function rendre(){
+  const liste = filtrer();
+  const g = $("#grille");
+  g.innerHTML = "";
+  liste.forEach(p=>g.appendChild(carte(p)));
+  $("#vide").hidden = liste.length>0;
+  $("#compte").textContent = liste.length ? liste.length+(liste.length>1?" appareils":" appareil") : "";
+  const dem = etat.q ? `Bonjour, je cherche : ${etat.q}. Vous avez ça ?` : "Bonjour, je cherche un appareil. Vous pouvez me conseiller ?";
+  $("#waVide").href = lienWa(dem);
+}
+
+/* ------------------------------------------------------------
+   PANNEAU PRODUIT
+   ------------------------------------------------------------ */
+function majLivraison(){
+  const p = etat.produit; if(!p) return;
+  const z = ZONES.find(z=>z.id===etat.zone);
+  const total = p.prix + z.frais;
+  const delai = z.delai;
+  $("#pLiv").innerHTML =
+    `Livraison ${z.nom} : <b>${fmt(z.frais)} F</b>, ${delai}.<br>Total à prévoir : <b>${fmt(total)} F CFA</b>, installation comprise.`;
+  $("#pWa").href = lienWa(
+    `Bonjour Sandaga Soldes, je veux commander :\n\n${p.nom}\nRéf. ${p.ref} — ${p.marque}\nPrix : ${fmt(p.prix)} F CFA\nLivraison ${z.nom} : ${fmt(z.frais)} F\nTotal : ${fmt(total)} F CFA\n\nC'est disponible ?`
+  );
+}
+
+function ouvrir(p){
+  if($("#panneauPanier").dataset.ouvert==="1") fermerPanier();
+  etat.produit = p;
+  $("#pRef").textContent = "Réf. "+p.ref;
+  const photos = (p.photos && p.photos.length) ? p.photos : (p.photo ? [p.photo] : []);
+  $("#pVisuel").innerHTML = visuel(p, photos[0]);
+  $("#pVignettes").innerHTML = photos.length > 1 ? photos.map((src,i)=>
+    `<button type="button" aria-current="${i===0?"true":"false"}" aria-label="Photo ${i+1}"><img src="${esc(src)}" alt="" loading="lazy"></button>`
+  ).join("") : "";
+  document.querySelectorAll("#pVignettes button").forEach((b,i)=>
+    b.addEventListener("click",()=>{
+      $("#pVisuel").innerHTML = visuel(p, photos[i]);
+      document.querySelectorAll("#pVignettes button").forEach((x,j)=>x.setAttribute("aria-current", j===i?"true":"false"));
+    })
+  );
+  $("#pMarque").textContent = p.marque;
+  $("#pTitre").textContent = p.nom;
+  $("#pMontant").textContent = fmt(p.prix);
+  $("#pPlaque").innerHTML = Object.entries(p.specs)
+    .map(([k,v])=>`<div class="ligne"><dt>${esc(k)}</dt><dd>${esc(v)}</dd></div>`).join("");
+  $("#pDescription").hidden = !p.description;
+  $("#pDescriptionTexte").textContent = p.description || "";
+  const copier = $("#pCopier");
+  copier.dataset.lien = SITE + "/produit/" + refUrl(p.ref) + ".html";
+  copier.dataset.copie = "0";
+  copier.textContent = "Copier le lien";
+  majLivraison();
+  $("#voile").dataset.ouvert="1";
+  $("#panneau").dataset.ouvert="1";
+  document.body.style.overflow="hidden";
+  $("#pFermer").focus();
+}
+
+function fermer(){
+  $("#voile").dataset.ouvert="0";
+  $("#panneau").dataset.ouvert="0";
+  document.body.style.overflow="";
+}
+
+/* ------------------------------------------------------------
+   FLUX PRODUIT META
+   ------------------------------------------------------------ */
+function genererFlux(){
+  const items = CATALOGUE.map(p=>`    <item>
+      <g:id>${esc(p.ref)}</g:id>
+      <g:title>${esc(p.marque+" "+p.nom)}</g:title>
+      <g:description>${esc(p.nom+" "+p.marque+". "+Object.entries(p.specs).map(([k,v])=>k+" : "+v).join(". ")+". Livraison et installation à Dakar.")}</g:description>
+      <g:availability>${p.dispo==="jour"?"in stock":"available for order"}</g:availability>
+      <g:condition>new</g:condition>
+      <g:price>${p.prix} XOF</g:price>
+      <g:link>${SITE}/produit/${esc(refUrl(p.ref))}.html</g:link>
+      <g:image_link>${esc(p.photo ? (p.photo.startsWith("http") ? p.photo : SITE+"/"+p.photo) : SITE+"/img/"+p.ref.toLowerCase()+".jpg")}</g:image_link>
+      <g:brand>${esc(p.marque)}</g:brand>
+      <g:product_type>${esc(RAYONS.find(r=>r.id===p.rayon).nom+" &gt; "+p.famille)}</g:product_type>
+    </item>`).join("\n");
+
+  return `<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:g="http://base.google.com/ns/1.0">
+  <channel>
+    <title>Sandaga Soldes — Électroménager Dakar</title>
+    <link>${SITE}</link>
+    <description>Catalogue produit pour les pubs carrousel Meta, la boutique Instagram et le catalogue WhatsApp.</description>
+${items}
+  </channel>
+</rss>`;
+}
+
+/* ------------------------------------------------------------
+   BRANCHEMENTS
+   ------------------------------------------------------------ */
+function init(){
+  // rayons
+  const piste = $("#piste");
+  RAYONS.forEach(r=>{
+    const b=document.createElement("button");
+    b.className="rayon"; b.type="button"; b.textContent=r.nom;
+    b.dataset.rayon=r.id;
+    if(r.vedette) b.dataset.vedette=r.vedette;
+    b.setAttribute("aria-pressed", r.id===etat.rayon ? "true":"false");
+    b.addEventListener("click",()=>choisirRayon(r.id,false));
+    piste.appendChild(b);
+  });
+
+  // zones
+  ZONES.forEach(z=>{
+    const o=document.createElement("option"); o.value=z.id;
+    o.textContent=`${z.nom} — ${fmt(z.frais)} F, ${z.delai}`;
+    $("#pZone").appendChild(o);
+    const o2=document.createElement("option"); o2.value=z.id;
+    o2.textContent=`${z.nom} — ${fmt(z.frais)} F, ${z.delai}`;
+    $("#panierZone").appendChild(o2);
+    const li=document.createElement("li");
+    li.textContent=`${z.nom} — ${fmt(z.frais)} F, ${z.delai}`;
+    $("#pListeZones").appendChild(li);
+  });
+  $("#panierZone").value = etat.zone;
+
+  // recherche
+  let t;
+  $("#q").addEventListener("input",e=>{
+    clearTimeout(t);
+    t=setTimeout(()=>{etat.q=e.target.value; rendre();},140);
+  });
+  $("#btnRech").addEventListener("click",()=>{etat.q=$("#q").value; rendre();});
+  $("#q").addEventListener("keydown",e=>{if(e.key==="Enter"){etat.q=e.target.value;rendre();}});
+
+  // filtres
+  $("#fMarque").addEventListener("change",e=>{etat.marque=e.target.value;rendre();});
+  $("#fPrix").addEventListener("change",e=>{etat.prix=e.target.value;rendre();});
+  $("#fTri").addEventListener("change",e=>{etat.tri=e.target.value;rendre();});
+
+  // panneau
+  $("#pFermer").addEventListener("click",fermer);
+  $("#voile").addEventListener("click",()=>{
+    if($("#panneauPanier").dataset.ouvert==="1") fermerPanier(); else fermer();
+  });
+  $("#btnPanier").addEventListener("click",ouvrirPanier);
+  $("#panierFermer").addEventListener("click",fermerPanier);
+  $("#pAjouterPanier").addEventListener("click",()=>{
+    if(etat.produit) ajouterAuPanier(etat.produit.ref);
+  });
+  $("#promoAjouterPanier").addEventListener("click",()=>{
+    const p = PROMOS_SEMAINE[promoIndex];
+    if(p && p.ref) ajouterAuPanier(p.ref);
+  });
+  $("#panierListe").addEventListener("click",e=>{
+    const b = e.target.closest("button[data-action]");
+    if(!b) return;
+    const ref = b.closest(".panier-ligne").dataset.ref;
+    if(b.dataset.action==="plus") changerQtePanier(ref, 1);
+    else if(b.dataset.action==="moins") changerQtePanier(ref, -1);
+    else if(b.dataset.action==="retirer") retirerDuPanier(ref);
+  });
+  majBadgePanier();
+  $("#pCopier").addEventListener("click", async e=>{
+    const lien = e.currentTarget.dataset.lien;
+    try{
+      await navigator.clipboard.writeText(lien);
+      e.currentTarget.textContent = "Lien copié";
+      e.currentTarget.dataset.copie = "1";
+      setTimeout(()=>{ e.currentTarget.textContent = "Copier le lien"; e.currentTarget.dataset.copie = "0"; }, 2200);
+    }catch(_){ prompt("Copie manuelle du lien :", lien); }
+  });
+  $("#pZone").addEventListener("change",e=>{etat.zone=e.target.value;$("#panierZone").value=etat.zone;majLivraison();});
+  $("#panierZone").addEventListener("change",e=>{etat.zone=e.target.value;$("#pZone").value=etat.zone;majLivraisonPanier();});
+  document.addEventListener("keydown",e=>{
+    if(e.key!=="Escape") return;
+    if($("#flux").dataset.ouvert==="1"){ $("#flux").dataset.ouvert="0"; document.body.style.overflow=""; return; }
+    if($("#panneauPanier").dataset.ouvert==="1") fermerPanier();
+    else if($("#panneau").dataset.ouvert==="1") fermer();
+  });
+
+  // liens WhatsApp généraux
+  const bonjour = "Bonjour Sandaga Soldes, j'ai une question sur un appareil.";
+  $("#waEntete").href = lienWa(bonjour);
+  $("#waFlottant").href = lienWa(bonjour);
+
+  // flux
+  $("#btnFlux").addEventListener("click",()=>{
+    $("#fluxContenu").textContent = genererFlux();
+    $("#flux").dataset.ouvert="1";
+    document.body.style.overflow="hidden";
+    $("#fluxFermer").focus();
+  });
+  $("#fluxFermer").addEventListener("click",()=>{
+    $("#flux").dataset.ouvert="0"; document.body.style.overflow="";
+  });
+  $("#fluxCopier").addEventListener("click",async()=>{
+    const b=$("#fluxCopier");
+    try{ await navigator.clipboard.writeText(genererFlux()); b.textContent="Copié"; }
+    catch(_){ b.textContent="Copie refusée par le navigateur"; }
+    setTimeout(()=>b.textContent="Copier",1800);
+  });
+
+  remplirMarques();
+  remplirSousFiltres();
+  remplirPromo();
+  rendre();
+
+  fetch("promos.json", {cache:"no-store"})
+    .then(r => r.ok ? r.json() : Promise.reject())
+    .then(promos => {
+      if (Array.isArray(promos) && promos.length) {
+        PROMOS_SEMAINE = promos;
+        remplirPromo();
+      }
+    })
+    .catch(()=>{ /* promos.json absent ou invalide : on garde le repli intégré */ });
+
+  fetch("populaires.json", {cache:"no-store"})
+    .then(r => r.ok ? r.json() : Promise.reject())
+    .then(refs => {
+      if (Array.isArray(refs) && refs.length) {
+        REFS_POPULAIRES = refs;
+        rendrePopulaires();
+      }
+    })
+    .catch(()=>{ /* populaires.json absent : la section reste masquée */ });
+
+  chargerCatalogueDistant()
+    .then(lignes=>{
+      CATALOGUE = lignes;
+      catalogueChargee = true;
+      remplirMarques();
+      remplirSousFiltres();
+      rendre();
+      if($("#panneauPanier").dataset.ouvert==="1") rendrePanier();
+      afficherPromo(promoIndex); // réévalue le bouton "Ajouter au panier" avec le vrai catalogue
+      rendrePopulaires(); // idem : les produits populaires ne se résolvent qu'une fois le vrai catalogue chargé
+    })
+    .catch(erreur=>{
+      const messageBase = SHEET_CSV_URL
+        ? "Impossible de lire la feuille Google Sheets, le catalogue de démonstration reste affiché. "
+        : "Aucune feuille Google Sheets configurée pour l'instant, le catalogue de démonstration reste affiché. ";
+      afficherAvis(messageBase + "(" + erreur.message + ")", true);
+    });
+}
+init();
+</script>
+</body>
+</html>

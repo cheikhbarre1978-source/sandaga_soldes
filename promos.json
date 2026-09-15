@@ -1,0 +1,59 @@
+[
+  {
+    "ref": "TVHIS75-75Q6NQL",
+    "marque": "Hisense",
+    "nom": "Téléviseur Hisense 75' LED Smart vidaa 4K QLED quantum dot 75q6q",
+    "icone": "tv",
+    "photo": "images/TVHIS75-75Q6NQL-2.png",
+    "prix": 545000,
+    "prixBarre": "",
+    "points": [
+      "Type QLED",
+      "Taille 75 pouces",
+      "Fonctions Smart",
+      "Résolution 4K UHD"
+    ]
+  },
+  {
+    "ref": "REFSMA19-STR190",
+    "marque": "Smart Technology",
+    "nom": "réfrigérateur Smart Technology 2portes 160 litres gris str190m",
+    "icone": "frigo",
+    "photo": "images/REFSMA19-STR190-1.jpg",
+    "prix": 121500,
+    "prixBarre": "",
+    "points": [
+      "Capacité 160 L",
+      "Couleur Gris",
+      "Garantie 12 mois"
+    ]
+  },
+  {
+    "ref": "MALSAM21KG-21KG",
+    "marque": "Samsung",
+    "nom": "Machine à laver Samsung 21 kg/12 kg sechage inverter noir wd21t6300gv/nq + installation gratuite",
+    "icone": "hublot",
+    "photo": "images/MALSAM21KG-21KG-1.png",
+    "prix": 691000,
+    "prixBarre": "",
+    "points": [
+      "Type Inverter",
+      "Capacité 21 kg",
+      "Couleur Noir",
+      "Garantie 12 mois"
+    ]
+  },
+  {
+    "ref": "FONFIN25-HD2503",
+    "marque": "Finix",
+    "nom": "Fontaine finix avec frigo et glacon blanc hd2503z (310x325x960mm)",
+    "icone": "frigo",
+    "photo": "images/FONFIN25-HD2503-1.png",
+    "prix": 103000,
+    "prixBarre": "",
+    "points": [
+      "Couleur Blanc",
+      "Garantie 12 mois"
+    ]
+  }
+]

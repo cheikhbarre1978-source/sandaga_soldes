@@ -1,0 +1,18 @@
+{
+  "name": "sandaga-soldes-whatsapp-bot",
+  "version": "1.0.0",
+  "description": "Agent WhatsApp IA pour Sandaga Soldes — répond aux clients à partir du vrai catalogue, jamais de prix/dispo inventés, transmet à un humain sur demande.",
+  "main": "bot.js",
+  "type": "commonjs",
+  "scripts": {
+    "start": "node bot.js"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.32.1",
+    "@whiskeysockets/baileys": "^6.7.9",
+    "dotenv": "^16.4.5",
+    "papaparse": "^5.7.0",
+    "pino": "^9.5.0",
+    "qrcode-terminal": "^0.12.0"
+  }
+}

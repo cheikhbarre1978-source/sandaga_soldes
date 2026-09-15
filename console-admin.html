@@ -1,0 +1,1278 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Console — Sandaga Soldes</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+<style>
+:root{
+  --email:#F1F2EE; --blanc:#FFFFFF; --acier:#17252B; --acier-60:#5A6B72;
+  --chrome:#CBD1CD; --chrome-clair:#E3E6E2; --prix:#C81E2B; --ok:#128C4A; --r:4px;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{margin:0;background:var(--email);color:var(--acier);font:15px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;font-variant-numeric:tabular-nums}
+h1,h2,h3{margin:0;line-height:1.15;letter-spacing:-.01em}
+p{margin:0}
+button,input,select,textarea{font:inherit;color:inherit}
+.wrap{max-width:1280px;margin:0 auto;padding:0 20px}
+.espace{flex:1}
+
+/* barre du haut */
+.barre{background:var(--acier);color:var(--email)}
+.barre .wrap{display:flex;align-items:center;gap:12px;min-height:60px;flex-wrap:wrap;padding-top:8px;padding-bottom:8px}
+.barre h1{font-size:17px;font-weight:800}
+.barre .sous{font-size:12.5px;color:#AEB9BD}
+.dossier{font-size:13px;color:#AEB9BD}
+.dossier b{color:var(--email)}
+
+/* boutons */
+.bt{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--chrome);background:var(--blanc);color:var(--acier);border-radius:var(--r);padding:8px 13px;font-weight:600;font-size:14px;cursor:pointer;text-decoration:none;white-space:nowrap;line-height:1.2}
+.bt:hover{border-color:var(--acier)}
+.bt:disabled{opacity:.45;cursor:not-allowed}
+.bt--plein{background:var(--acier);color:var(--email);border-color:var(--acier)}
+.bt--plein:hover{background:#0E1A1F}
+.bt--ok{background:var(--ok);border-color:var(--ok);color:#fff}
+.bt--ok:hover{background:#0E7A40;border-color:#0E7A40}
+.bt--clair{background:transparent;color:var(--email);border-color:#3A4A51}
+.bt--clair:hover{border-color:var(--email)}
+.bt--danger{color:var(--prix)}
+.bt--petit{padding:5px 9px;font-size:13px}
+
+/* écran d'accueil */
+.accueil{max-width:660px;margin:48px auto;padding:0 20px}
+.carte{background:var(--blanc);border:1px solid var(--chrome);border-radius:var(--r);padding:24px}
+.accueil h2{font-size:22px}
+.accueil p{color:var(--acier-60);margin-top:10px}
+.accueil .actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:20px}
+.avert{margin-top:16px;padding:12px 14px;border:1px solid var(--chrome);border-left:3px solid var(--acier);background:var(--chrome-clair);font-size:14px}
+.manuel{margin-top:20px;padding-top:16px;border-top:1px solid var(--chrome);font-size:14px}
+.manuel label{display:block;color:var(--acier-60);margin:6px 0 8px}
+
+/* onglets */
+.onglets{border-bottom:1px solid var(--chrome);background:var(--blanc)}
+.onglets .wrap{display:flex;gap:4px}
+.onglet{border:none;background:none;padding:14px 16px 11px;border-bottom:3px solid transparent;font-weight:700;color:var(--acier-60);cursor:pointer}
+.onglet:hover{color:var(--acier)}
+.onglet[aria-selected="true"]{color:var(--acier);border-bottom-color:var(--acier)}
+.pastille{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--prix);margin-left:7px;vertical-align:middle}
+
+/* outils + tableau */
+.outils{display:flex;flex-wrap:wrap;gap:10px;align-items:center;padding:16px 0}
+.champ{border:1px solid var(--chrome);border-radius:var(--r);background:var(--blanc);padding:8px 10px}
+.champ.plein{width:100%}
+#recherche{flex:1 1 280px;min-width:200px}
+.compteur{font-size:13.5px;color:var(--acier-60)}
+.intro{color:var(--acier-60)}
+.table-cadre{overflow-x:auto;background:var(--blanc);border:1px solid var(--chrome);border-radius:var(--r)}
+table{width:100%;border-collapse:collapse;min-width:980px}
+th,td{padding:8px 10px;border-bottom:1px solid var(--chrome-clair);text-align:left;vertical-align:middle}
+th{font-size:11.5px;text-transform:uppercase;letter-spacing:.05em;color:var(--acier-60);background:var(--email);font-weight:700}
+th.d,td.c-prix{text-align:right}
+tr:last-child td{border-bottom:none}
+tr.modifie td{background:var(--chrome-clair)}
+tr.modifie td:first-child{box-shadow:inset 3px 0 0 var(--acier)}
+tr.masque .c-produit,tr.masque .c-photo img{opacity:.5}
+.c-photo img{width:44px;height:44px;object-fit:contain;display:block;background:var(--blanc)}
+.c-ref{font-size:12.5px;color:var(--acier-60);max-width:150px;overflow-wrap:anywhere}
+.t-marque{display:block;font-size:11.5px;font-weight:700;color:var(--acier-60)}
+.t-nom{display:block;font-weight:600}
+.t-famille{display:block;font-size:12px;color:var(--acier-60)}
+td input,td select{border:1px solid var(--chrome);border-radius:var(--r);padding:6px 8px;background:var(--blanc)}
+.c-prix input{width:120px;text-align:right}
+.bascule{display:inline-flex;gap:6px;align-items:center;cursor:pointer;font-size:13.5px;white-space:nowrap}
+.c-actions{white-space:nowrap;text-align:right}
+.vide{padding:28px;text-align:center;color:var(--acier-60)}
+.pagination{display:flex;gap:10px;align-items:center;justify-content:flex-end;padding:14px 0;font-size:14px}
+.barre-enreg{position:sticky;bottom:0;z-index:5;display:flex;gap:12px;align-items:center;justify-content:flex-end;background:var(--email);border-top:1px solid var(--chrome);padding:12px 0;margin-top:6px}
+#etatCat,#etatPromos{font-size:13.5px;color:var(--acier-60)}
+
+/* promos */
+.promos-grille{display:grid;gap:16px;grid-template-columns:1fr;padding-bottom:10px}
+@media(min-width:1000px){.promos-grille{grid-template-columns:1fr 1fr}}
+.promo{background:var(--blanc);border:1px solid var(--chrome);border-radius:var(--r)}
+.promo-tete{display:flex;gap:6px;align-items:center;padding:10px 14px;border-bottom:1px solid var(--chrome-clair)}
+.promo-corps{display:grid;grid-template-columns:150px 1fr;gap:14px;padding:14px}
+.promo-apercu{aspect-ratio:1;border:1px solid var(--chrome-clair);border-radius:var(--r);display:grid;place-items:center;background:var(--blanc);overflow:hidden;font-size:12px;color:var(--acier-60);text-align:center}
+.promo-apercu img{width:100%;height:100%;object-fit:contain;padding:6px}
+.promo-champs{display:flex;flex-direction:column;gap:9px}
+.promo-champs label{display:flex;flex-direction:column;gap:4px;font-size:12.5px;font-weight:600;color:var(--acier-60)}
+.promo-champs input,.promo-champs select{font-weight:400;color:var(--acier);border:1px solid var(--chrome);border-radius:var(--r);padding:7px 9px;background:var(--blanc)}
+.deux{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+fieldset{border:1px solid var(--chrome-clair);border-radius:var(--r);padding:8px 10px 10px;margin:0;display:grid;grid-template-columns:1fr 1fr;gap:6px}
+legend{font-size:12.5px;font-weight:600;color:var(--acier-60);padding:0 4px}
+@media(max-width:560px){.promo-corps{grid-template-columns:1fr}.promo-apercu{max-width:180px}}
+
+/* fenêtres */
+dialog{border:1px solid var(--chrome);border-radius:var(--r);padding:0;max-width:720px;width:calc(100% - 32px);color:var(--acier);background:var(--blanc)}
+dialog::backdrop{background:rgba(23,37,43,.45)}
+.dlg-tete{display:flex;align-items:center;gap:10px;padding:14px 18px;border-bottom:1px solid var(--chrome)}
+.dlg-tete h3{font-size:17px}
+.dlg-corps{padding:16px 18px;max-height:70vh;overflow:auto}
+.dlg-pied{display:flex;gap:10px;justify-content:flex-end;align-items:center;padding:12px 18px;border-top:1px solid var(--chrome)}
+.grille-form{display:grid;grid-template-columns:1fr 1fr;gap:12px 14px}
+.grille-form .large{grid-column:1/-1}
+.grille-form label{display:flex;flex-direction:column;gap:5px;font-size:13px;font-weight:600;color:var(--acier-60)}
+.grille-form input,.grille-form select,.grille-form textarea{font-weight:400;color:var(--acier);border:1px solid var(--chrome);border-radius:var(--r);padding:8px 10px;background:var(--blanc)}
+.grille-form textarea{resize:vertical}
+.grille-form .coche{flex-direction:row;align-items:center;gap:8px;color:var(--acier)}
+.aide{font-weight:400;font-size:12px;color:var(--acier-60)}
+.erreur{color:var(--prix);font-size:13.5px;margin-right:auto}
+.apercu{grid-column:1/-1;display:flex;gap:12px;align-items:center;min-height:40px}
+.apercu img{width:96px;height:96px;object-fit:contain;border:1px solid var(--chrome);border-radius:var(--r);background:var(--blanc)}
+@media(max-width:640px){.grille-form{grid-template-columns:1fr}}
+.choix-liste{list-style:none;margin:10px 0 0;padding:0;display:flex;flex-direction:column;gap:4px}
+.choix-liste button{width:100%;display:flex;gap:10px;align-items:center;text-align:left;border:1px solid var(--chrome-clair);background:var(--blanc);border-radius:var(--r);padding:6px 8px;cursor:pointer}
+.choix-liste button:hover{border-color:var(--acier)}
+.choix-liste img,.choix-liste .sans{width:44px;height:44px;object-fit:contain;flex:none;background:var(--email)}
+.choix-txt small{display:block;color:var(--acier-60);font-size:12px}
+
+.toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%);background:var(--acier);color:var(--email);padding:11px 16px;border-radius:var(--r);font-size:14px;max-width:min(92vw,640px);z-index:100}
+.toast--erreur{background:var(--prix)}
+</style>
+</head>
+<body>
+
+<header class="barre">
+  <div class="wrap">
+    <div>
+      <h1>Console d'administration</h1>
+      <div class="sous">Sandaga Soldes — catalogue et promos de la semaine</div>
+    </div>
+    <span class="espace"></span>
+    <span class="dossier" id="nomDossier"></span>
+    <button type="button" class="bt bt--clair" id="recharger" hidden>Recharger les fichiers</button>
+    <a class="bt bt--clair" href="index.html" target="_blank" rel="noopener">Voir le site ↗</a>
+  </div>
+</header>
+
+<section class="accueil" id="ecranAccueil">
+  <div class="carte">
+    <h2>Ouvre le dossier du site pour commencer</h2>
+    <p>La console lit et modifie directement les fichiers <b>catalogue.csv</b> et <b>promos.json</b> du dossier <b>sandaga-soldes-project</b>. Tes changements apparaissent sur le site dès que tu recharges la page.</p>
+    <div class="actions">
+      <button type="button" class="bt bt--plein" id="ouvrirDossier">Ouvrir le dossier du site</button>
+      <button type="button" class="bt" id="reprendre" hidden>Reprendre</button>
+    </div>
+    <div class="avert" id="nonSupporte" hidden>
+      Ce navigateur ne permet pas d'écrire directement dans tes fichiers. Utilise <b>Google Chrome</b> ou <b>Microsoft Edge</b> sur ordinateur — ou continue en mode manuel ci-dessous (les enregistrements seront téléchargés, à remettre ensuite dans le dossier du site).
+    </div>
+    <div class="manuel">
+      <strong>Mode manuel</strong>
+      <label for="fichiersManuels">Choisis <b>catalogue.csv</b> (et <b>promos.json</b> pour gérer les promos) :</label>
+      <input type="file" id="fichiersManuels" accept=".csv,.json,text/csv,application/json" multiple>
+    </div>
+  </div>
+</section>
+
+<div id="ecranConsole" hidden>
+  <nav class="onglets" aria-label="Sections">
+    <div class="wrap" role="tablist">
+      <button type="button" class="onglet" role="tab" aria-selected="true" data-pan="catalogue">Catalogue<span class="pastille" id="pastilleCat" hidden></span></button>
+      <button type="button" class="onglet" role="tab" aria-selected="false" data-pan="promos">Promos de la semaine<span class="pastille" id="pastillePromos" hidden></span></button>
+      <button type="button" class="onglet" role="tab" aria-selected="false" data-pan="populaires">Produits populaires<span class="pastille" id="pastillePopulaires" hidden></span></button>
+    </div>
+  </nav>
+
+  <main class="wrap">
+    <section id="panCatalogue">
+      <div class="outils">
+        <input type="search" class="champ" id="recherche" placeholder="Rechercher : nom, marque, référence…" aria-label="Rechercher un produit">
+        <select class="champ" id="filtreRayon" aria-label="Rayon"></select>
+        <select class="champ" id="filtreStatut" aria-label="Statut">
+          <option value="">Tous les produits</option>
+          <option value="visibles">Visibles sur le site</option>
+          <option value="masques">Masqués</option>
+          <option value="modifies">Modifiés (non enregistrés)</option>
+        </select>
+        <span class="compteur" id="compteur"></span>
+        <span class="espace"></span>
+        <button type="button" class="bt" id="ajouterProduit">+ Ajouter un produit</button>
+      </div>
+      <div class="table-cadre">
+        <table>
+          <thead><tr><th>Photo</th><th>Réf.</th><th>Produit</th><th>Rayon</th><th class="d">Prix (F CFA)</th><th>Livraison</th><th>Sur le site</th><th></th></tr></thead>
+          <tbody id="lignes"></tbody>
+        </table>
+      </div>
+      <div class="pagination">
+        <button type="button" class="bt bt--petit" id="pagePrec">← Précédente</button>
+        <span id="pageInfo"></span>
+        <button type="button" class="bt bt--petit" id="pageSuiv">Suivante →</button>
+      </div>
+      <div class="barre-enreg">
+        <span id="etatCat"></span>
+        <button type="button" class="bt" id="regenererFiches">Régénérer les fiches produit</button>
+        <button type="button" class="bt bt--ok" id="enregistrerCatalogue" disabled>Enregistrer le catalogue</button>
+      </div>
+    </section>
+
+    <section id="panPromos" hidden>
+      <div class="outils">
+        <p class="intro">Jusqu'à 4 produits qui défilent en haut de la page d'accueil, dans l'ordre ci-dessous.</p>
+        <span class="espace"></span>
+        <span class="compteur" id="compteurPromos"></span>
+        <button type="button" class="bt" id="genererPromo">🎲 Générer une promo</button>
+        <button type="button" class="bt" id="ajouterPromo">+ Ajouter une promo</button>
+      </div>
+      <div class="promos-grille" id="listePromos"></div>
+      <div class="barre-enreg">
+        <span id="etatPromos"></span>
+        <button type="button" class="bt bt--ok" id="enregistrerPromos" disabled>Enregistrer les promos</button>
+      </div>
+    </section>
+
+    <section id="panPopulaires" hidden>
+      <div class="outils">
+        <p class="intro">Produits mis en avant dans la section "🔥 Les plus demandés" de la page d'accueil, dans l'ordre ci-dessous.</p>
+        <span class="espace"></span>
+        <span class="compteur" id="compteurPopulaires"></span>
+        <button type="button" class="bt" id="ajouterPopulaire">+ Ajouter un produit</button>
+      </div>
+      <div class="promos-grille" id="listePopulaires"></div>
+      <div class="barre-enreg">
+        <span id="etatPopulaires"></span>
+        <button type="button" class="bt bt--ok" id="enregistrerPopulaires" disabled>Enregistrer</button>
+      </div>
+    </section>
+  </main>
+</div>
+
+<dialog id="dlgProduit" aria-labelledby="dlgTitre">
+  <form id="formProduit" novalidate>
+    <div class="dlg-tete"><h3 id="dlgTitre">Modifier le produit</h3><span class="espace"></span><button type="button" class="bt bt--petit" data-fermer>Fermer</button></div>
+    <div class="dlg-corps grille-form">
+      <div class="apercu" id="apercuProduit"></div>
+      <label>Référence *<input name="ref" autocomplete="off"></label>
+      <label>Marque<input name="marque" autocomplete="off"></label>
+      <label class="large">Nom du produit *<input name="nom" autocomplete="off"></label>
+      <label>Rayon<select name="rayon"></select></label>
+      <label>Famille<input name="famille" list="listeFamilles" autocomplete="off"></label>
+      <label>Prix (F CFA) *<input name="prix" type="number" min="0" step="500" inputmode="numeric"></label>
+      <label>Capacité / taille<input name="cap" placeholder="ex. 200 L, 7 kg, 55&quot;" autocomplete="off"></label>
+      <label>Livraison<select name="dispo"><option value="commande">Sous 5 jours (sur commande)</option><option value="jour">Livré aujourd'hui (en stock)</option></select></label>
+      <label>Icône de repli<select name="icone"></select></label>
+      <label class="large">Caractéristiques <span class="aide">une par ligne, format « Clé: Valeur »</span><textarea name="specs" rows="4"></textarea></label>
+      <label class="large">Photo principale <span class="aide">chemin (images/…) ou lien internet</span><input name="photo" autocomplete="off"></label>
+      <label class="large">Toutes les photos <span class="aide">une par ligne, dans l'ordre de la galerie</span><textarea name="photos" rows="3"></textarea></label>
+      <label class="large">Description <span class="aide">texte libre affiché sur la fiche produit, facultatif</span><textarea name="description" rows="4"></textarea></label>
+      <label class="coche large"><input type="checkbox" name="actif"> Visible sur le site</label>
+    </div>
+    <div class="dlg-pied"><span class="erreur" id="erreurProduit" role="alert"></span><button type="button" class="bt" data-fermer>Annuler</button><button type="submit" class="bt bt--plein">Valider</button></div>
+  </form>
+</dialog>
+<datalist id="listeFamilles"></datalist>
+
+<dialog id="dlgChoix" aria-labelledby="choixTitre">
+  <div class="dlg-tete"><h3 id="choixTitre">Choisir un produit du catalogue</h3><span class="espace"></span><button type="button" class="bt bt--petit" data-fermer>Fermer</button></div>
+  <div class="dlg-corps">
+    <input type="search" class="champ plein" id="rechercheChoix" placeholder="ex. beko, split 12000, konka 55…" aria-label="Rechercher dans le catalogue">
+    <ul class="choix-liste" id="resultatsChoix"></ul>
+  </div>
+</dialog>
+
+<div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
+
+<script>
+const COLONNES = ["ref","marque","nom","rayon","famille","prix","icone","dispo","cap","specs","photo","photos","actif","description"];
+const RAYONS = [["froid","Froid"],["lavage","Lavage"],["cuisson","Cuisson"],["clim","Climatisation"],["ventilation","Ventilation"],["petit","Petit électroménager"],["tv","Téléviseurs"]];
+const ICONES = ["frigo","horizontal","vertical","hublot","semiauto","cuisine","micro","four","split","brasseur","ventilo","blender","fer","bouilloire","aspi","tv"];
+const PAR_PAGE = 50;
+const peutEcrire = "showDirectoryPicker" in window;
+const SITE = "https://sandagasoldes.com";
+const WHATSAPP = "221788800808";
+const ZONES_LIVRAISON = [
+  {id:"plateau",  nom:"Plateau / Médina",               frais:3000,  delai:"sous 4h"},
+  {id:"granddak", nom:"Grand Dakar / Point E / Mermoz", frais:4000,  delai:"sous 4h"},
+  {id:"parcelles",nom:"Parcelles / Pikine / Guédiawaye",frais:5000,  delai:"sous 4h"},
+  {id:"keurm",    nom:"Keur Massar / Malika",           frais:7000,  delai:"sous 4h"},
+  {id:"rufisque", nom:"Rufisque / Bargny",              frais:10000, delai:"délai à convenir avec vous"},
+  {id:"thies",    nom:"Thiès / Mbour",                  frais:20000, delai:"délai à convenir avec vous"}
+];
+
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+// JSON.stringify n'échappe pas "<" : une description contenant littéralement une balise de
+// fermeture de script couperait le bloc JSON-LD en plein milieu — on neutralise "<".
+const jsonLdSafe = obj => JSON.stringify(obj).replace(/</g, "\\u003c");
+const fmt = n => Math.round(Number(n)||0).toLocaleString("fr-FR").replace(/ | /g," ");
+const norm = s => String(s||"").toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g,"");
+
+let dossier = null;
+let produits = [];
+let promos = [];
+let populairesRefs = [];
+let modifsCatalogue = false, modifsPromos = false, modifsPopulaires = false, suppressions = 0;
+const lignesModifiees = new Set();
+let page = 1;
+let indexEdition = null;
+let promoCible = null;
+let modeChoix = "promo"; // "promo" ou "populaire" — quel usage fait de la sélection dans dlgChoix
+
+/* ---------- mémoriser le dossier choisi (IndexedDB) ---------- */
+function ouvrirBase(){
+  return new Promise((res, rej) => {
+    const r = indexedDB.open("sandaga-console", 1);
+    r.onupgradeneeded = () => r.result.createObjectStore("kv");
+    r.onsuccess = () => res(r.result);
+    r.onerror = () => rej(r.error);
+  });
+}
+async function kvSet(k, v){
+  const db = await ouvrirBase();
+  return new Promise((res, rej) => { const tx = db.transaction("kv","readwrite"); tx.objectStore("kv").put(v,k); tx.oncomplete = res; tx.onerror = () => rej(tx.error); });
+}
+async function kvGet(k){
+  const db = await ouvrirBase();
+  return new Promise((res, rej) => { const q = db.transaction("kv","readonly").objectStore("kv").get(k); q.onsuccess = () => res(q.result); q.onerror = () => rej(q.error); });
+}
+
+/* ---------- lecture / écriture des fichiers ---------- */
+async function lireFichier(h, nom){
+  const fh = await h.getFileHandle(nom);
+  return (await fh.getFile()).text();
+}
+async function ecrireFichier(nom, texte){
+  const fh = await dossier.getFileHandle(nom, {create:true});
+  const w = await fh.createWritable();
+  await w.write(texte);
+  await w.close();
+}
+// Garde toujours la version précédente (.precedent) avant d'écraser : une erreur reste rattrapable.
+async function sauver(nom, texte, nomPrecedent){
+  if (dossier) {
+    try { await ecrireFichier(nomPrecedent, await lireFichier(dossier, nom)); } catch(_) {}
+    await ecrireFichier(nom, texte);
+    return "ecrit";
+  }
+  const blob = new Blob([texte], {type: nom.endsWith(".json") ? "application/json" : "text/csv;charset=utf-8"});
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = nom;
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(a.href), 2000);
+  return "telecharge";
+}
+
+function analyserCatalogue(texte){
+  const res = Papa.parse(texte.replace(/^﻿/, ""), {header:true, skipEmptyLines:true});
+  const champs = res.meta.fields || [];
+  if (!champs.includes("ref") || !champs.includes("nom")) throw new Error("Ce fichier ne ressemble pas à catalogue.csv (colonnes ref et nom introuvables).");
+  return res.data.map(l => ({
+    ref: (l.ref||"").trim(),
+    marque: (l.marque||"").trim(),
+    nom: (l.nom||"").trim(),
+    rayon: (l.rayon||"").trim().toLowerCase(),
+    famille: (l.famille||"").trim(),
+    prix: Number(String(l.prix||"").replace(/[^\d.-]/g,"")) || 0,
+    icone: (l.icone||"").trim(),
+    dispo: (l.dispo||"").trim().toLowerCase() === "jour" ? "jour" : "commande",
+    cap: (l.cap||"").trim(),
+    specs: (l.specs||"").trim(),
+    photo: (l.photo||"").trim(),
+    photos: String(l.photos||"").split(";").map(s => s.trim()).filter(Boolean),
+    actif: String(l.actif||"oui").trim().toLowerCase() !== "non",
+    description: (l.description||"").trim()
+  })).filter(p => p.ref || p.nom);
+}
+function versCSV(){
+  return Papa.unparse(produits.map(p => ({
+    ref:p.ref, marque:p.marque, nom:p.nom, rayon:p.rayon, famille:p.famille,
+    prix:String(Math.round(p.prix)), icone:p.icone, dispo:p.dispo, cap:p.cap, specs:p.specs,
+    photo:p.photo, photos:p.photos.join(";"), actif:p.actif ? "oui" : "non", description:p.description||""
+  })), {columns: COLONNES, newline: "\r\n"});
+}
+
+function normPromo(p){
+  return {
+    ref: String(p.ref||""), // référence catalogue réelle — permet au client de retrouver la promo dans son panier
+    marque: String(p.marque||""), nom: String(p.nom||""),
+    icone: ICONES.includes(p.icone) ? p.icone : "frigo",
+    photo: String(p.photo||""), prix: Number(p.prix)||0,
+    prixBarre: (p.prixBarre === "" || p.prixBarre == null) ? "" : (Number(p.prixBarre)||""),
+    points: Array.isArray(p.points) ? p.points.map(String).slice(0,4) : []
+  };
+}
+function analyserPromos(texte){
+  const d = JSON.parse(texte.replace(/^﻿/, ""));
+  if (!Array.isArray(d)) throw new Error("promos.json doit contenir une liste de promos.");
+  return d.slice(0,4).map(normPromo);
+}
+function versJSON(){
+  return JSON.stringify(promos.map(p => ({
+    ref: (p.ref||"").trim(),
+    marque: p.marque.trim(), nom: p.nom.trim(), icone: p.icone, photo: p.photo.trim(),
+    prix: Math.round(p.prix), prixBarre: p.prixBarre === "" ? "" : Math.round(p.prixBarre),
+    points: Array.from(p.points, s => (s||"").trim()).filter(Boolean)
+  })), null, 2) + "\n";
+}
+
+/* ---------- fiches produit statiques (produit/<ref>.html) ---------- */
+function refUrl(ref){
+  return ref.toLowerCase().replace(/[\/\\:*?"<>|]+/g,"-");
+}
+function absPhoto(photo){
+  if (!photo) return "";
+  return photo.startsWith("http") ? photo : SITE + "/" + photo;
+}
+function parseSpecsLigne(specsStr){
+  const out = {};
+  String(specsStr||"").split("|").forEach(part => {
+    const i = part.indexOf(":");
+    if (i === -1) return;
+    const k = part.slice(0,i).trim(), v = part.slice(i+1).trim();
+    if (k && v) out[k] = v;
+  });
+  return out;
+}
+function pageProduit(p){
+  const photos = (p.photos && p.photos.length) ? p.photos : (p.photo ? [p.photo] : []);
+  const photosAbs = photos.map(absPhoto).filter(Boolean);
+  const photoAbs = photosAbs[0] || "";
+  const specs = parseSpecsLigne(p.specs);
+  const titre = `${p.marque} ${p.nom} — Sandaga Soldes`.trim();
+  const descMeta = `${p.nom} à ${fmt(p.prix)} F CFA. Livraison rapide à Dakar, facture au nom de Sandaga Soldes, garantie constructeur 1 an.`;
+  const url = `${SITE}/produit/${refUrl(p.ref)}.html`;
+  const nomsRayons = Object.fromEntries(RAYONS);
+  const rayonNom = nomsRayons[p.rayon] || p.famille || "Catalogue";
+  // Texte affiché dans la section "Description" : le vrai texte s'il existe,
+  // sinon un résumé construit uniquement à partir de données réelles (marque, specs, politiques du site) —
+  // jamais de contenu inventé — pour éviter les pages trop pauvres en contenu (mauvais pour le référencement).
+  const specsTexte = Object.entries(specs).map(([k,v]) => `${k} : ${v}`).join(', ');
+  const descriptionTexte = p.description
+    ? p.description
+    : `${p.marque} ${p.nom}${specsTexte ? " — " + specsTexte : ""}. Livraison rapide à Dakar, facture à notre nom, garantie constructeur, paiement à la livraison ou par Wave.`;
+
+  const visuelHtml = photoAbs
+    ? `<img class="foto" src="../${esc(photos[0])}" alt="${esc(p.nom)}" id="photoPrincipale">`
+    : `<span class="repli">Photo à venir</span>`;
+  const vignettesHtml = photos.length > 1 ? `
+    <div class="vignettes">
+      ${photos.map((src,i) => `<button type="button" data-src="../${esc(src)}" class="${i===0?'actif':''}"><img src="../${esc(src)}" alt="" loading="lazy"></button>`).join('')}
+    </div>` : '';
+  const specsHtml = Object.entries(specs).map(([k,v]) =>
+    `<div class="ligne"><dt>${esc(k)}</dt><dd>${esc(v)}</dd></div>`
+  ).join('');
+  const descriptionHtml = `
+    <div class="description">
+      <h2>Description</h2>
+      <p>${esc(descriptionTexte)}</p>
+    </div>`;
+  const zonesOptions = ZONES_LIVRAISON.map(z =>
+    `<option value="${z.id}" data-frais="${z.frais}" data-delai="${esc(z.delai)}">${esc(z.nom)} — ${fmt(z.frais)} F, ${esc(z.delai)}</option>`
+  ).join('');
+
+  const jsonLdProduit = {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    "name": `${p.marque} ${p.nom}`.trim(),
+    "sku": p.ref,
+    "description": descriptionTexte,
+    ...(photosAbs.length ? {"image": photosAbs} : {}),
+    ...(p.marque ? {"brand": {"@type":"Brand","name": p.marque}} : {}),
+    "offers": {
+      "@type": "Offer",
+      "url": url,
+      "priceCurrency": "XOF",
+      "price": Math.round(p.prix),
+      "availability": p.dispo === "jour" ? "https://schema.org/InStock" : "https://schema.org/PreOrder",
+      "itemCondition": "https://schema.org/NewCondition",
+      "seller": {"@type":"Organization","name":"Sandaga Soldes"}
+    }
+  };
+  const jsonLdFil = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {"@type":"ListItem","position":1,"name":"Accueil","item": SITE + "/index.html"},
+      {"@type":"ListItem","position":2,"name": rayonNom,"item": SITE + "/index.html"},
+      {"@type":"ListItem","position":3,"name": `${p.marque} ${p.nom}`.trim()}
+    ]
+  };
+
+  return `<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>${esc(titre)}</title>
+<meta name="description" content="${esc(descMeta)}">
+<link rel="canonical" href="${url}">
+<meta property="og:type" content="product">
+<meta property="og:title" content="${esc(titre)}">
+<meta property="og:description" content="${esc(descMeta)}">
+<meta property="og:url" content="${url}">
+<meta property="og:site_name" content="Sandaga Soldes">
+${photoAbs ? `<meta property="og:image" content="${esc(photoAbs)}">` : ''}
+<meta name="twitter:card" content="summary_large_image">
+<meta property="product:price:amount" content="${Math.round(p.prix)}">
+<meta property="product:price:currency" content="XOF">
+<link rel="icon" href="../logo.jpg">
+<script type="application/ld+json">${jsonLdSafe(jsonLdProduit)}<\/script>
+<script type="application/ld+json">${jsonLdSafe(jsonLdFil)}<\/script>
+<style>
+:root{--email:#F1F2EE;--blanc:#FFFFFF;--acier:#17252B;--acier-60:#5A6B72;--chrome:#CBD1CD;--chrome-clair:#E3E6E2;--prix:#C81E2B;--jour:#F5A300;--r:4px;--max:760px;--pad:20px}
+*{box-sizing:border-box}
+body{margin:0;background:var(--email);color:var(--acier);font:16px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif}
+a{color:inherit}
+.wrap{max-width:var(--max);margin:0 auto;padding:0 var(--pad)}
+header{background:var(--blanc);border-bottom:1px solid var(--chrome)}
+header .wrap{display:flex;align-items:center;gap:14px;min-height:64px}
+header img{height:34px}
+.retour{margin-left:auto;font-size:13.5px;font-weight:600;color:var(--acier-60);text-decoration:none}
+.retour:hover{color:var(--acier)}
+main{padding:26px 0 50px}
+.filariane{font-size:12.5px;color:var(--acier-60);margin:0 0 14px}
+.filariane a{color:var(--acier-60);text-decoration:none}
+.filariane a:hover{text-decoration:underline}
+.visuel{background:var(--blanc);border:1px solid var(--chrome);border-radius:var(--r);aspect-ratio:16/11;display:grid;place-items:center;overflow:hidden}
+.visuel img{width:100%;height:100%;object-fit:contain;padding:5%}
+.visuel .repli{color:var(--acier-60);font-size:14px}
+.vignettes{display:flex;gap:8px;margin-top:8px;overflow-x:auto}
+.vignettes button{flex:none;width:56px;height:56px;padding:0;border:2px solid var(--chrome);border-radius:calc(var(--r) - 1px);background:var(--blanc);cursor:pointer;overflow:hidden}
+.vignettes button.actif{border-color:var(--acier)}
+.vignettes img{width:100%;height:100%;object-fit:contain}
+.marque{display:block;margin-top:18px;font-size:12.5px;font-weight:700;color:var(--acier-60);letter-spacing:.04em}
+h1{font-size:24px;margin:4px 0 0;letter-spacing:-.01em}
+.prix{font-size:38px;font-weight:800;color:var(--prix);margin-top:12px;letter-spacing:-.03em}
+.prix span{font-size:16px;font-weight:500}
+.plaque{margin-top:20px;border:1px solid var(--chrome);border-radius:var(--r);background:var(--blanc);overflow:hidden}
+.plaque .ligne{display:flex;justify-content:space-between;gap:16px;padding:10px 13px;font-size:14px;border-bottom:1px solid var(--chrome-clair)}
+.plaque .ligne:last-child{border-bottom:none}
+.plaque .ligne dt{color:var(--acier-60);margin:0}
+.plaque .ligne dd{margin:0;font-weight:600;text-align:right}
+.description h2{font-size:14px;text-transform:uppercase;letter-spacing:.04em;color:var(--acier-60);margin:20px 0 8px}
+.description p{margin:0;font-size:14px;line-height:1.6;color:var(--acier-60)}
+.livraison{margin-top:22px;border:1px solid var(--chrome);border-radius:var(--r);background:var(--blanc);padding:14px}
+.livraison label{display:block;font-size:13.5px;color:var(--acier-60);margin-bottom:7px}
+.livraison select{width:100%;font:inherit;padding:10px;border:1px solid var(--chrome);border-radius:var(--r);background:var(--email)}
+.resultat{margin-top:10px;font-size:13.5px;color:var(--acier-60)}
+.resultat b{color:var(--acier)}
+.wa{display:flex;align-items:center;justify-content:center;gap:8px;background:#128C4A;color:#fff;border:none;border-radius:var(--r);padding:15px;font-weight:700;font-size:17px;text-decoration:none;margin-top:16px}
+.wa:hover{background:#0E7A40}
+.wa svg{width:19px;height:19px;fill:currentColor}
+footer{background:var(--acier);color:var(--email);padding:26px 0;margin-top:20px;font-size:13.5px}
+footer a{text-decoration:underline}
+</style>
+</head>
+<body>
+<header><div class="wrap">
+  <a href="../index.html"><img src="../logo.jpg" alt="Sandaga Soldes"></a>
+  <a class="retour" href="../index.html">← Tout le catalogue</a>
+</div></header>
+<main class="wrap">
+  <p class="filariane"><a href="../index.html">Accueil</a> › ${esc(rayonNom)} › ${esc(p.marque)} ${esc(p.nom)}</p>
+  <div class="visuel">${visuelHtml}</div>
+  ${vignettesHtml}
+  <span class="marque">${esc(p.marque)}</span>
+  <h1>${esc(p.nom)}</h1>
+  <p class="prix">${fmt(p.prix)}<span> F CFA</span></p>
+  <dl class="plaque">${specsHtml}</dl>
+  ${descriptionHtml}
+  <div class="livraison">
+    <label for="zone">Votre zone de livraison</label>
+    <select id="zone">${zonesOptions}</select>
+    <p class="resultat" id="resultat"></p>
+  </div>
+  <a class="wa" id="btnWa" href="#" target="_blank" rel="noopener">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2 22l5.25-1.38a9.9 9.9 0 0 0 4.79 1.22h.01c5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.82 9.82 0 0 0 12.04 2m0 1.67c2.2 0 4.27.86 5.83 2.42a8.2 8.2 0 0 1 2.41 5.82c0 4.54-3.7 8.24-8.25 8.24-1.48 0-2.93-.4-4.2-1.15l-.3-.18-3.12.82.83-3.04-.2-.31a8.19 8.19 0 0 1-1.26-4.38c0-4.54 3.7-8.24 8.26-8.24m-4.5 4.2c-.21 0-.55.08-.84.39-.29.31-1.1 1.08-1.1 2.63 0 1.55 1.13 3.05 1.29 3.26.16.21 2.19 3.34 5.3 4.55 2.59 1.02 3.12.82 3.68.77.56-.05 1.81-.74 2.07-1.46.25-.72.25-1.33.18-1.46-.08-.13-.29-.21-.6-.36-.31-.16-1.81-.9-2.09-1-.28-.1-.49-.16-.69.16-.21.31-.79 1-.97 1.2-.18.21-.36.23-.66.08-.31-.16-1.29-.48-2.46-1.52-.91-.81-1.52-1.81-1.7-2.12-.18-.31-.02-.48.14-.63.14-.14.31-.36.47-.54.15-.18.2-.31.31-.52.1-.21.05-.39-.03-.54-.08-.16-.69-1.66-.94-2.27-.25-.6-.5-.52-.69-.53z"/></svg>
+    Commander sur WhatsApp
+  </a>
+</main>
+<footer><div class="wrap">
+  Sandaga Soldes — Électroménager · Dakar. Facture à notre nom, garantie constructeur 1 an.<br>
+  <a href="../index.html">Voir tout le catalogue ↗</a>
+</div></footer>
+<script>
+(function(){
+  var PRIX = ${Math.round(p.prix)};
+  var NOM = ${JSON.stringify(p.nom)};
+  var REF = ${JSON.stringify(p.ref)};
+  var MARQUE = ${JSON.stringify(p.marque)};
+  function fmt(n){ return Math.round(n).toLocaleString('fr-FR').replace(/\\u202f|\\u00a0/g,' '); }
+  var sel = document.getElementById('zone');
+  function maj(){
+    var o = sel.options[sel.selectedIndex];
+    var frais = Number(o.dataset.frais), delai = o.dataset.delai;
+    var total = PRIX + frais;
+    document.getElementById('resultat').innerHTML =
+      'Livraison ' + o.textContent.split(' — ')[0] + ' : <b>' + fmt(frais) + ' F</b>, ' + delai + '.<br>' +
+      'Total à prévoir : <b>' + fmt(total) + ' F CFA</b>, installation comprise.';
+    document.getElementById('btnWa').href = 'https://wa.me/${WHATSAPP}?text=' + encodeURIComponent(
+      'Bonjour Sandaga Soldes, je veux commander :\\n\\n' + NOM + '\\nRéf. ' + REF + ' — ' + MARQUE +
+      '\\nPrix : ' + fmt(PRIX) + ' F CFA\\nLivraison ' + o.textContent.split(' — ')[0] + ' : ' + fmt(frais) + ' F' +
+      '\\nTotal : ' + fmt(total) + ' F CFA\\n\\nC\\'est disponible ?'
+    );
+  }
+  sel.addEventListener('change', maj);
+  maj();
+  document.querySelectorAll('.vignettes button').forEach(function(b){
+    b.addEventListener('click', function(){
+      document.getElementById('photoPrincipale').src = b.dataset.src;
+      document.querySelectorAll('.vignettes button').forEach(function(x){ x.classList.remove('actif'); });
+      b.classList.add('actif');
+    });
+  });
+})();
+<\/script>
+</body>
+</html>
+`;
+}
+
+function genererSitemap(actifs){
+  const aujourdhui = new Date().toISOString().slice(0,10);
+  const urls = [
+    `  <url><loc>${SITE}/index.html</loc><lastmod>${aujourdhui}</lastmod><changefreq>daily</changefreq><priority>1.0</priority></url>`,
+    ...actifs.map(p => `  <url><loc>${SITE}/produit/${refUrl(p.ref)}.html</loc><lastmod>${aujourdhui}</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>`)
+  ];
+  return `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls.join("\n")}\n</urlset>\n`;
+}
+
+async function regenererFichesProduit(){
+  if (!dossier) { toast("Cette fonction demande le mode « Ouvrir le dossier » (pas le mode manuel).", true); return; }
+  const bouton = $("#regenererFiches");
+  // Mêmes critères de visibilité que le site public (index.html) : une fiche générée mais
+  // invisible sur le site (nom vide, rayon inconnu, prix nul) serait une page orpheline
+  // indexable par Google sans jamais être trouvable depuis le catalogue.
+  const idsRayonsValides = new Set(RAYONS.map(r => r[0]));
+  const rayonInvalides = [];
+  const actifs = produits.filter(p => {
+    if (!(p.ref && p.actif && p.nom.trim() && p.prix > 0)) return false;
+    if (!idsRayonsValides.has(p.rayon)) { rayonInvalides.push(p.ref); return false; }
+    return true;
+  });
+  const dossierProduit = await dossier.getDirectoryHandle("produit", {create:true});
+  let n = 0;
+  const vus = new Map(); // nomFichier -> ref déjà écrit, pour repérer les collisions
+  const collisions = [];
+  const uniques = [];
+  for (const p of actifs) {
+    const nomFichier = refUrl(p.ref) + ".html";
+    if (vus.has(nomFichier)) { collisions.push(`${p.ref} (comme ${vus.get(nomFichier)})`); continue; }
+    vus.set(nomFichier, p.ref);
+    uniques.push(p);
+    const fh = await dossierProduit.getFileHandle(nomFichier, {create:true});
+    const w = await fh.createWritable();
+    await w.write(pageProduit(p));
+    await w.close();
+    n++;
+    if (n % 100 === 0) bouton.textContent = `Génération… ${n}/${actifs.length}`;
+  }
+  const fhSitemap = await dossier.getFileHandle("sitemap.xml", {create:true});
+  const wSitemap = await fhSitemap.createWritable();
+  await wSitemap.write(genererSitemap(uniques));
+  await wSitemap.close();
+  bouton.textContent = "Régénérer les fiches produit";
+  const alertes = [];
+  if (rayonInvalides.length) alertes.push(`${rayonInvalides.length} produit(s) ignoré(s) — rayon invalide (${rayonInvalides.slice(0,5).join(', ')}${rayonInvalides.length>5?'…':''})`);
+  if (collisions.length) alertes.push(`${collisions.length} référence(s) en collision après nettoyage de l'URL, une seule fiche gardée (${collisions.slice(0,5).join(', ')}${collisions.length>5?'…':''})`);
+  toast(`${n} fiches produit régénérées dans le dossier produit/, sitemap.xml mis à jour.` + (alertes.length ? ' ⚠ ' + alertes.join(' — ') : ''), alertes.length>0);
+}
+
+/* ---------- ouverture ---------- */
+async function chargerDepuis(h){
+  let texteCat;
+  try { texteCat = await lireFichier(h, "catalogue.csv"); }
+  catch(_) { throw new Error("catalogue.csv introuvable dans « "+h.name+" ». Choisis le dossier sandaga-soldes-project."); }
+  const cat = analyserCatalogue(texteCat);
+  let pr = [];
+  try { pr = analyserPromos(await lireFichier(h, "promos.json")); } catch(_) {}
+  let pop = [];
+  try {
+    const d = JSON.parse((await lireFichier(h, "populaires.json")).replace(/^﻿/, ""));
+    if (Array.isArray(d)) pop = d.map(String).slice(0, 12);
+  } catch(_) {}
+  dossier = h;
+  produits = cat;
+  promos = pr;
+  populairesRefs = pop;
+  demarrerConsole();
+}
+async function ouvrirDossier(){
+  try {
+    const h = await window.showDirectoryPicker({mode:"readwrite", id:"sandaga"});
+    await chargerDepuis(h);
+    try { await kvSet("dossier", h); } catch(_) {}
+  } catch(e) {
+    if (e.name !== "AbortError") toast(e.message, true);
+  }
+}
+async function reprendre(){
+  try {
+    const h = await kvGet("dossier");
+    if (!h) return;
+    if (await h.requestPermission({mode:"readwrite"}) !== "granted") { toast("Accès au dossier refusé.", true); return; }
+    await chargerDepuis(h);
+  } catch(e) { toast("Impossible de reprendre : "+e.message, true); }
+}
+
+function demarrerConsole(){
+  $("#ecranAccueil").hidden = true;
+  $("#ecranConsole").hidden = false;
+  $("#recharger").hidden = !dossier;
+  $("#nomDossier").innerHTML = dossier
+    ? `Dossier : <b>${esc(dossier.name)}</b>`
+    : `Mode manuel : les enregistrements seront <b>téléchargés</b>`;
+  $("#regenererFiches").hidden = !dossier;
+  modifsCatalogue = false; modifsPromos = false; modifsPopulaires = false; suppressions = 0;
+  lignesModifiees.clear();
+  page = 1;
+  remplirSelects();
+  rendreCatalogue();
+  rendrePromos();
+  rendreListePopulaires();
+  majEtat();
+}
+
+function remplirSelects(){
+  const opts = RAYONS.map(([id,nom]) => `<option value="${id}">${esc(nom)}</option>`).join("");
+  $("#filtreRayon").innerHTML = `<option value="">Tous les rayons</option>` + opts;
+  const el = $("#formProduit").elements;
+  el.rayon.innerHTML = opts;
+  el.icone.innerHTML = ICONES.map(x => `<option value="${x}">${x}</option>`).join("");
+  const familles = [...new Set(produits.map(p => p.famille).filter(Boolean))].sort((a,b) => a.localeCompare(b,"fr"));
+  $("#listeFamilles").innerHTML = familles.map(f => `<option value="${esc(f)}">`).join("");
+}
+
+/* ---------- catalogue ---------- */
+function indicesFiltres(){
+  const mots = norm($("#recherche").value).trim().split(/\s+/).filter(Boolean);
+  const ray = $("#filtreRayon").value;
+  const st = $("#filtreStatut").value;
+  const idx = [];
+  produits.forEach((p, i) => {
+    if (ray && p.rayon !== ray) return;
+    if (st === "visibles" && !p.actif) return;
+    if (st === "masques" && p.actif) return;
+    if (st === "modifies" && !lignesModifiees.has(p)) return;
+    if (mots.length && !mots.every(m => norm(p.ref+" "+p.marque+" "+p.nom+" "+p.famille).includes(m))) return;
+    idx.push(i);
+  });
+  return idx;
+}
+
+function rendreCatalogue(){
+  const idx = indicesFiltres();
+  const pages = Math.max(1, Math.ceil(idx.length / PAR_PAGE));
+  page = Math.min(Math.max(page, 1), pages);
+  const vue = idx.slice((page-1)*PAR_PAGE, page*PAR_PAGE);
+  const nomsRayons = Object.fromEntries(RAYONS);
+  $("#compteur").textContent = `${fmt(idx.length)} produit${idx.length>1?"s":""}` + (idx.length !== produits.length ? ` sur ${fmt(produits.length)}` : "");
+  $("#pageInfo").textContent = `Page ${page} / ${pages}`;
+  $("#pagePrec").disabled = page <= 1;
+  $("#pageSuiv").disabled = page >= pages;
+  $("#lignes").innerHTML = vue.length ? vue.map(i => {
+    const p = produits[i];
+    const classes = [lignesModifiees.has(p) ? "modifie" : "", p.actif ? "" : "masque"].join(" ").trim();
+    return `<tr data-i="${i}" class="${classes}">
+      <td class="c-photo">${p.photo ? `<img src="${esc(p.photo)}" alt="" loading="lazy" onerror="this.style.visibility='hidden'">` : ""}</td>
+      <td class="c-ref">${esc(p.ref)}</td>
+      <td class="c-produit"><span class="t-marque">${esc(p.marque)}</span><span class="t-nom">${esc(p.nom)}</span><span class="t-famille">${esc(p.famille)}${p.cap ? " · "+esc(p.cap) : ""}</span></td>
+      <td>${esc(nomsRayons[p.rayon] || p.rayon)}</td>
+      <td class="c-prix"><input type="number" min="0" step="500" inputmode="numeric" data-champ="prix" value="${Math.round(p.prix)}" aria-label="Prix de ${esc(p.nom)}"></td>
+      <td><select data-champ="dispo" aria-label="Livraison de ${esc(p.nom)}"><option value="commande"${p.dispo==="commande"?" selected":""}>Sous 5 jours</option><option value="jour"${p.dispo==="jour"?" selected":""}>Aujourd'hui</option></select></td>
+      <td><label class="bascule"><input type="checkbox" data-champ="actif"${p.actif?" checked":""}><span>${p.actif?"Visible":"Masqué"}</span></label></td>
+      <td class="c-actions"><button type="button" class="bt bt--petit" data-action="modifier">Modifier</button> <button type="button" class="bt bt--petit bt--danger" data-action="supprimer">Supprimer</button></td>
+    </tr>`;
+  }).join("") : `<tr><td colspan="8" class="vide">Aucun produit ne correspond.</td></tr>`;
+}
+
+function marquer(p, tr){
+  lignesModifiees.add(p);
+  if (tr) tr.classList.add("modifie");
+  modifsCatalogue = true;
+  majEtat();
+}
+
+$("#lignes").addEventListener("input", e => {
+  const tr = e.target.closest("tr[data-i]");
+  if (!tr || e.target.dataset.champ !== "prix") return;
+  const p = produits[+tr.dataset.i];
+  p.prix = Math.max(0, Number(e.target.value) || 0);
+  marquer(p, tr);
+});
+$("#lignes").addEventListener("change", e => {
+  const tr = e.target.closest("tr[data-i]");
+  if (!tr) return;
+  const p = produits[+tr.dataset.i];
+  const champ = e.target.dataset.champ;
+  if (champ === "dispo") { p.dispo = e.target.value; marquer(p, tr); }
+  if (champ === "actif") {
+    p.actif = e.target.checked;
+    e.target.nextElementSibling.textContent = p.actif ? "Visible" : "Masqué";
+    tr.classList.toggle("masque", !p.actif);
+    marquer(p, tr);
+  }
+});
+$("#lignes").addEventListener("click", e => {
+  const b = e.target.closest("button[data-action]");
+  if (!b) return;
+  const i = +b.closest("tr").dataset.i;
+  if (b.dataset.action === "modifier") ouvrirEdition(i);
+  if (b.dataset.action === "supprimer") supprimer(i);
+});
+
+function supprimer(i){
+  const p = produits[i];
+  if (!confirm(`Supprimer définitivement « ${p.nom} » (${p.ref}) du catalogue ?\n\nPour le retirer seulement du site sans le perdre, décoche plutôt « Visible ».`)) return;
+  produits.splice(i, 1);
+  lignesModifiees.delete(p);
+  suppressions++;
+  modifsCatalogue = true;
+  rendreCatalogue();
+  majEtat();
+  toast(`« ${p.nom} » supprimé — pense à enregistrer.`);
+}
+
+function ouvrirEdition(i){
+  indexEdition = i;
+  const p = i == null
+    ? {ref:"", marque:"", nom:"", rayon:$("#filtreRayon").value || "froid", famille:"", prix:0, icone:"frigo", dispo:"commande", cap:"", specs:"Garantie: 12 mois", photo:"", photos:[], actif:true, description:""}
+    : produits[i];
+  const el = $("#formProduit").elements;
+  $("#dlgTitre").textContent = i == null ? "Ajouter un produit" : "Modifier le produit";
+  el.ref.value = p.ref;
+  el.marque.value = p.marque;
+  el.nom.value = p.nom;
+  el.rayon.value = p.rayon;
+  el.famille.value = p.famille;
+  el.prix.value = p.prix ? Math.round(p.prix) : "";
+  el.icone.value = ICONES.includes(p.icone) ? p.icone : "frigo";
+  el.dispo.value = p.dispo;
+  el.cap.value = p.cap;
+  el.specs.value = p.specs.split("|").map(s => s.trim()).filter(Boolean).join("\n");
+  el.photo.value = p.photo;
+  el.photos.value = p.photos.join("\n");
+  el.description.value = p.description || "";
+  el.actif.checked = p.actif;
+  $("#erreurProduit").textContent = "";
+  majApercu();
+  $("#dlgProduit").showModal();
+  (i == null ? el.ref : el.nom).focus();
+}
+
+function majApercu(){
+  const el = $("#formProduit").elements;
+  const src = el.photo.value.trim() || el.photos.value.split(/\n|;/).map(s => s.trim()).find(Boolean) || "";
+  $("#apercuProduit").innerHTML = src
+    ? `<img src="${esc(src)}" alt="" onerror="this.style.visibility='hidden'"><span class="aide">Aperçu de la photo principale</span>`
+    : `<span class="aide">Pas de photo : l'icône « ${esc(el.icone.value)} » sera affichée sur le site.</span>`;
+}
+["photo","photos","icone"].forEach(n => $("#formProduit").elements[n].addEventListener("input", majApercu));
+
+$("#formProduit").addEventListener("submit", e => {
+  e.preventDefault();
+  const el = $("#formProduit").elements;
+  const d = {
+    ref: el.ref.value.trim(), marque: el.marque.value.trim(), nom: el.nom.value.trim(),
+    rayon: el.rayon.value, famille: el.famille.value.trim(), prix: Number(el.prix.value) || 0,
+    icone: el.icone.value, dispo: el.dispo.value, cap: el.cap.value.trim(),
+    specs: el.specs.value.split("\n").map(s => s.trim()).filter(Boolean).join(" | "),
+    photo: el.photo.value.trim(),
+    photos: el.photos.value.split(/\n|;/).map(s => s.trim()).filter(Boolean),
+    description: el.description.value.trim(),
+    actif: el.actif.checked
+  };
+  const erreurs = [];
+  if (!d.ref) erreurs.push("La référence est obligatoire.");
+  if (!d.nom) erreurs.push("Le nom est obligatoire.");
+  if (d.prix <= 0) erreurs.push("Le prix doit être supérieur à 0.");
+  const doublon = produits.findIndex((p, j) => j !== indexEdition && p.ref.toLowerCase() === d.ref.toLowerCase());
+  if (d.ref && doublon !== -1) erreurs.push(`La référence ${d.ref} existe déjà (${produits[doublon].nom}).`);
+  if (erreurs.length) { $("#erreurProduit").textContent = erreurs.join(" "); return; }
+  if (!d.photo && d.photos.length) d.photo = d.photos[0];
+  if (d.photo && !d.photos.includes(d.photo)) d.photos.unshift(d.photo);
+
+  const ajout = indexEdition == null;
+  let p;
+  if (ajout) {
+    p = d;
+    produits.push(p);
+    $("#recherche").value = p.ref;
+    $("#filtreRayon").value = "";
+    $("#filtreStatut").value = "";
+    page = 1;
+  } else {
+    p = Object.assign(produits[indexEdition], d);
+  }
+  lignesModifiees.add(p);
+  modifsCatalogue = true;
+  $("#dlgProduit").close();
+  remplirSelects();
+  rendreCatalogue();
+  majEtat();
+  toast(`« ${p.nom} » ${ajout ? "ajouté" : "modifié"} — pense à enregistrer.`);
+});
+
+$("#enregistrerCatalogue").addEventListener("click", async () => {
+  const sansPrix = produits.filter(p => p.actif && !(p.prix > 0));
+  if (sansPrix.length) {
+    toast(`${sansPrix.length} produit(s) visible(s) sans prix, par ex. ${sansPrix[0].ref}. Mets un prix ou masque-les avant d'enregistrer.`, true);
+    $("#recherche").value = sansPrix[0].ref; $("#filtreRayon").value = ""; $("#filtreStatut").value = ""; page = 1;
+    rendreCatalogue();
+    return;
+  }
+  const vus = new Set(), doublons = new Set();
+  produits.forEach(p => { const k = p.ref.toLowerCase(); if (vus.has(k)) doublons.add(p.ref); vus.add(k); });
+  if (doublons.size) { toast("Références en double : " + [...doublons].slice(0,5).join(", "), true); return; }
+
+  const bouton = $("#enregistrerCatalogue");
+  bouton.disabled = true;
+  bouton.textContent = "Enregistrement…";
+  try {
+    const mode = await sauver("catalogue.csv", versCSV(), "catalogue.precedent.csv");
+    modifsCatalogue = false; suppressions = 0;
+    lignesModifiees.clear();
+    rendreCatalogue();
+    toast(mode === "ecrit"
+      ? `Catalogue enregistré (${fmt(produits.length)} produits). Recharge le site pour voir les changements.`
+      : "catalogue.csv téléchargé : remplace l'ancien fichier dans le dossier du site.");
+  } catch(e) {
+    toast("Échec de l'enregistrement : " + e.message, true);
+  } finally {
+    bouton.textContent = "Enregistrer le catalogue";
+    majEtat();
+  }
+});
+
+/* ---------- promos ---------- */
+function apercuPromo(p){
+  return p.photo ? `<img src="${esc(p.photo)}" alt="" onerror="this.style.visibility='hidden'">` : `<span>Pas de photo</span>`;
+}
+function rendrePromos(){
+  $("#listePromos").innerHTML = promos.length ? promos.map((p, i) => `
+    <article class="promo" data-i="${i}">
+      <div class="promo-tete">
+        <strong>Promo ${i+1}</strong>
+        <span class="espace"></span>
+        <button type="button" class="bt bt--petit" data-action="monter"${i===0?" disabled":""} aria-label="Monter la promo ${i+1}">↑</button>
+        <button type="button" class="bt bt--petit" data-action="descendre"${i===promos.length-1?" disabled":""} aria-label="Descendre la promo ${i+1}">↓</button>
+        <button type="button" class="bt bt--petit bt--danger" data-action="retirer">Retirer</button>
+      </div>
+      <div class="promo-corps">
+        <div class="promo-apercu">${apercuPromo(p)}</div>
+        <div class="promo-champs">
+          <button type="button" class="bt bt--petit" data-action="choisir">Remplir depuis le catalogue…</button>
+          <label>Marque<input data-champ="marque" value="${esc(p.marque)}"></label>
+          <label>Nom du produit<input data-champ="nom" value="${esc(p.nom)}"></label>
+          <div class="deux">
+            <label>Prix promo (F CFA)<input type="number" min="0" step="100" inputmode="numeric" data-champ="prix" value="${p.prix ? Math.round(p.prix) : ""}"></label>
+            <label>Prix barré (facultatif)<input type="number" min="0" step="100" inputmode="numeric" data-champ="prixBarre" value="${p.prixBarre === "" ? "" : Math.round(p.prixBarre)}"></label>
+          </div>
+          <label>Photo (chemin ou lien)<input data-champ="photo" value="${esc(p.photo)}"></label>
+          <label>Icône de repli<select data-champ="icone">${ICONES.map(x => `<option${x===p.icone?" selected":""}>${x}</option>`).join("")}</select></label>
+          <fieldset><legend>Arguments (jusqu'à 4)</legend>
+            ${[0,1,2,3].map(k => `<input data-champ="point" data-k="${k}" value="${esc(p.points[k]||"")}" aria-label="Argument ${k+1}">`).join("")}
+          </fieldset>
+        </div>
+      </div>
+    </article>`).join("") : `<p class="vide">Aucune promo. Ajoute jusqu'à 4 produits.</p>`;
+  $("#ajouterPromo").disabled = promos.length >= 4;
+  $("#genererPromo").disabled = promos.length >= 4;
+  $("#compteurPromos").textContent = `${promos.length} / 4`;
+}
+
+$("#listePromos").addEventListener("input", e => {
+  const art = e.target.closest("article[data-i]");
+  const c = e.target.dataset.champ;
+  if (!art || !c) return;
+  const p = promos[+art.dataset.i];
+  if (c === "point") p.points[+e.target.dataset.k] = e.target.value;
+  else if (c === "prix") p.prix = Number(e.target.value) || 0;
+  else if (c === "prixBarre") p.prixBarre = e.target.value === "" ? "" : (Number(e.target.value) || "");
+  else p[c] = e.target.value;
+  if (c === "photo") art.querySelector(".promo-apercu").innerHTML = apercuPromo(p);
+  modifsPromos = true;
+  majEtat();
+});
+$("#listePromos").addEventListener("click", e => {
+  const b = e.target.closest("button[data-action]");
+  if (!b) return;
+  const i = +b.closest("article").dataset.i;
+  const a = b.dataset.action;
+  if (a === "choisir") { ouvrirChoix(i); return; }
+  if (a === "monter" && i > 0) [promos[i-1], promos[i]] = [promos[i], promos[i-1]];
+  else if (a === "descendre" && i < promos.length-1) [promos[i+1], promos[i]] = [promos[i], promos[i+1]];
+  else if (a === "retirer") {
+    if (!confirm(`Retirer la promo ${i+1} (${promos[i].nom || "sans nom"}) ?`)) return;
+    promos.splice(i, 1);
+  }
+  modifsPromos = true;
+  rendrePromos();
+  majEtat();
+});
+$("#ajouterPromo").addEventListener("click", () => {
+  if (promos.length >= 4) return;
+  promos.push(normPromo({}));
+  modifsPromos = true;
+  rendrePromos();
+  majEtat();
+  ouvrirChoix(promos.length - 1);
+});
+$("#genererPromo").addEventListener("click", () => {
+  if (promos.length >= 4) return;
+  const dejaUtilises = new Set(promos.map(p => p.nom));
+  const eligibles = produits.filter(p => p.actif && p.prix > 0 && p.nom && p.photo && !dejaUtilises.has(p.nom));
+  if (!eligibles.length) { toast("Aucun produit avec photo disponible à ajouter en promo.", true); return; }
+  const p = eligibles[Math.floor(Math.random() * eligibles.length)];
+  const nouvelle = normPromo({});
+  nouvelle.ref = p.ref;
+  nouvelle.marque = p.marque;
+  nouvelle.nom = p.nom;
+  nouvelle.prix = Math.round(p.prix);
+  nouvelle.photo = p.photo;
+  nouvelle.icone = ICONES.includes(p.icone) ? p.icone : "frigo";
+  nouvelle.prixBarre = "";
+  nouvelle.points = p.specs.split("|").map(s => s.trim().replace(/\s*:\s*/, " ")).filter(Boolean).slice(0,4);
+  promos.push(nouvelle);
+  modifsPromos = true;
+  rendrePromos();
+  majEtat();
+  toast(`Promo remplie avec « ${p.nom} » (produit tiré au hasard du catalogue). Mets un prix barré seulement si c'est ton vrai prix habituel.`);
+});
+
+function ouvrirChoix(i){
+  modeChoix = "promo";
+  promoCible = i;
+  $("#rechercheChoix").value = "";
+  rendreChoix();
+  $("#dlgChoix").showModal();
+  $("#rechercheChoix").focus();
+}
+function ouvrirChoixPopulaire(){
+  modeChoix = "populaire";
+  $("#rechercheChoix").value = "";
+  rendreChoix();
+  $("#dlgChoix").showModal();
+  $("#rechercheChoix").focus();
+}
+function rendreChoix(){
+  const mots = norm($("#rechercheChoix").value).trim().split(/\s+/).filter(Boolean);
+  const res = [];
+  for (const p of produits) {
+    if (!p.actif) continue;
+    if (mots.length && !mots.every(m => norm(p.ref+" "+p.marque+" "+p.nom+" "+p.cap).includes(m))) continue;
+    res.push(p);
+    if (res.length >= 30) break;
+  }
+  $("#resultatsChoix").innerHTML = res.length ? res.map(p => `
+    <li><button type="button" data-ref="${esc(p.ref)}">
+      ${p.photo ? `<img src="${esc(p.photo)}" alt="" loading="lazy">` : `<span class="sans"></span>`}
+      <span class="choix-txt"><b>${esc(p.marque)}</b> ${esc(p.nom)}<small>${esc(p.ref)} · ${fmt(p.prix)} F CFA</small></span>
+    </button></li>`).join("") : `<li class="vide">Aucun produit trouvé.</li>`;
+}
+$("#rechercheChoix").addEventListener("input", rendreChoix);
+$("#resultatsChoix").addEventListener("click", e => {
+  const b = e.target.closest("button[data-ref]");
+  if (!b) return;
+  const p = produits.find(x => x.ref === b.dataset.ref);
+  if (!p) return;
+
+  if (modeChoix === "populaire") {
+    if (populairesRefs.includes(p.ref)) { toast(`« ${p.nom} » est déjà dans les produits populaires.`, true); return; }
+    populairesRefs.push(p.ref);
+    modifsPopulaires = true;
+    $("#dlgChoix").close();
+    rendreListePopulaires();
+    majEtat();
+    toast(`« ${p.nom} » ajouté aux produits populaires.`);
+    return;
+  }
+
+  const cible = promos[promoCible];
+  if (!cible) return;
+  cible.ref = p.ref;
+  cible.marque = p.marque;
+  cible.nom = p.nom;
+  cible.prix = Math.round(p.prix);
+  cible.photo = p.photo;
+  cible.icone = ICONES.includes(p.icone) ? p.icone : "frigo";
+  // Nouveau produit : l'ancien prix barré et les anciens arguments ne s'appliquent plus.
+  cible.prixBarre = "";
+  cible.points = p.specs.split("|").map(s => s.trim().replace(/\s*:\s*/, " ")).filter(Boolean).slice(0,4);
+  modifsPromos = true;
+  $("#dlgChoix").close();
+  rendrePromos();
+  majEtat();
+  toast(`Promo ${promoCible+1} remplie avec « ${p.nom} ». Mets un prix barré seulement si c'est ton vrai prix habituel.`);
+});
+
+$("#enregistrerPromos").addEventListener("click", async () => {
+  if (!promos.length) { toast("Garde au moins une promo : sans promo, le site afficherait des exemples par défaut.", true); return; }
+  const erreurs = [];
+  promos.forEach((p, i) => {
+    if (!p.nom.trim()) erreurs.push(`Promo ${i+1} : nom manquant.`);
+    if (!(p.prix > 0)) erreurs.push(`Promo ${i+1} : prix manquant.`);
+    if (p.prixBarre !== "" && p.prixBarre <= p.prix) erreurs.push(`Promo ${i+1} : le prix barré doit être plus élevé que le prix promo.`);
+  });
+  if (erreurs.length) { toast(erreurs.join(" "), true); return; }
+
+  const bouton = $("#enregistrerPromos");
+  bouton.disabled = true;
+  bouton.textContent = "Enregistrement…";
+  try {
+    const mode = await sauver("promos.json", versJSON(), "promos.precedent.json");
+    modifsPromos = false;
+    toast(mode === "ecrit"
+      ? "Promos enregistrées. Recharge le site pour voir le nouveau carrousel."
+      : "promos.json téléchargé : remplace l'ancien fichier dans le dossier du site.");
+  } catch(e) {
+    toast("Échec de l'enregistrement : " + e.message, true);
+  } finally {
+    bouton.textContent = "Enregistrer les promos";
+    majEtat();
+  }
+});
+
+/* ---------- produits populaires ---------- */
+function rendreListePopulaires(){
+  $("#listePopulaires").innerHTML = populairesRefs.length ? populairesRefs.map((ref, i) => {
+    const p = produits.find(x => x.ref === ref);
+    return `
+    <article class="promo" data-i="${i}">
+      <div class="promo-tete">
+        <strong>${i+1}. ${p ? esc(p.marque) : "Référence introuvable"}</strong>
+        <span class="espace"></span>
+        <button type="button" class="bt bt--petit" data-action="monter"${i===0?" disabled":""} aria-label="Monter">↑</button>
+        <button type="button" class="bt bt--petit" data-action="descendre"${i===populairesRefs.length-1?" disabled":""} aria-label="Descendre">↓</button>
+        <button type="button" class="bt bt--petit bt--danger" data-action="retirer">Retirer</button>
+      </div>
+      <div class="promo-corps">
+        <div class="promo-apercu">${p && p.photo ? `<img src="${esc(p.photo)}" alt="" onerror="this.style.visibility='hidden'">` : `<span>${p ? "Pas de photo" : "⚠"}</span>`}</div>
+        <div class="promo-champs">
+          ${p
+            ? `<p style="margin:0 0 4px;font-weight:700">${esc(p.nom)}</p><p style="margin:0;color:var(--acier-60)">${esc(p.ref)} · ${fmt(p.prix)} F CFA</p>`
+            : `<p style="margin:0;color:var(--prix)">Référence « ${esc(ref)} » introuvable dans le catalogue actuel (produit supprimé ou renommé) — retire cette ligne.</p>`}
+        </div>
+      </div>
+    </article>`;
+  }).join("") : `<p class="vide">Aucun produit populaire. Ajoute jusqu'à 12 produits.</p>`;
+  $("#ajouterPopulaire").disabled = populairesRefs.length >= 12;
+  $("#compteurPopulaires").textContent = `${populairesRefs.length} / 12`;
+}
+$("#listePopulaires").addEventListener("click", e => {
+  const b = e.target.closest("button[data-action]");
+  if (!b) return;
+  const i = +b.closest("article").dataset.i;
+  const a = b.dataset.action;
+  if (a === "monter" && i > 0) [populairesRefs[i-1], populairesRefs[i]] = [populairesRefs[i], populairesRefs[i-1]];
+  else if (a === "descendre" && i < populairesRefs.length-1) [populairesRefs[i+1], populairesRefs[i]] = [populairesRefs[i], populairesRefs[i+1]];
+  else if (a === "retirer") populairesRefs.splice(i, 1);
+  modifsPopulaires = true;
+  rendreListePopulaires();
+  majEtat();
+});
+$("#ajouterPopulaire").addEventListener("click", () => {
+  if (populairesRefs.length >= 12) return;
+  ouvrirChoixPopulaire();
+});
+$("#enregistrerPopulaires").addEventListener("click", async () => {
+  const bouton = $("#enregistrerPopulaires");
+  bouton.disabled = true;
+  bouton.textContent = "Enregistrement…";
+  try {
+    const texte = JSON.stringify(populairesRefs, null, 2) + "\n";
+    const mode = await sauver("populaires.json", texte, "populaires.precedent.json");
+    modifsPopulaires = false;
+    toast(mode === "ecrit"
+      ? "Produits populaires enregistrés. Recharge le site pour voir le résultat."
+      : "populaires.json téléchargé : remplace l'ancien fichier dans le dossier du site.");
+  } catch(e) {
+    toast("Échec de l'enregistrement : " + e.message, true);
+  } finally {
+    bouton.textContent = "Enregistrer";
+    majEtat();
+  }
+});
+
+/* ---------- état, navigation, divers ---------- */
+function majEtat(){
+  $("#enregistrerCatalogue").disabled = !modifsCatalogue;
+  $("#enregistrerPromos").disabled = !modifsPromos;
+  $("#enregistrerPopulaires").disabled = !modifsPopulaires;
+  $("#pastilleCat").hidden = !modifsCatalogue;
+  $("#pastillePromos").hidden = !modifsPromos;
+  $("#pastillePopulaires").hidden = !modifsPopulaires;
+  const parts = [];
+  if (lignesModifiees.size) parts.push(`${lignesModifiees.size} produit${lignesModifiees.size>1?"s":""} modifié${lignesModifiees.size>1?"s":""}`);
+  if (suppressions) parts.push(`${suppressions} supprimé${suppressions>1?"s":""}`);
+  $("#etatCat").textContent = modifsCatalogue ? `${parts.join(", ")} — non enregistré` : "Tout est enregistré";
+  $("#etatPromos").textContent = modifsPromos ? "Modifications non enregistrées" : "Tout est enregistré";
+  $("#etatPopulaires").textContent = modifsPopulaires ? "Modifications non enregistrées" : "Tout est enregistré";
+}
+
+let minuteurToast;
+function toast(msg, erreur){
+  const t = $("#toast");
+  t.textContent = msg;
+  t.className = "toast" + (erreur ? " toast--erreur" : "");
+  t.hidden = false;
+  clearTimeout(minuteurToast);
+  minuteurToast = setTimeout(() => { t.hidden = true; }, erreur ? 7000 : 4500);
+}
+
+document.querySelectorAll(".onglet").forEach(b => b.addEventListener("click", () => {
+  document.querySelectorAll(".onglet").forEach(x => x.setAttribute("aria-selected", x === b ? "true" : "false"));
+  $("#panCatalogue").hidden = b.dataset.pan !== "catalogue";
+  $("#panPromos").hidden = b.dataset.pan !== "promos";
+  $("#panPopulaires").hidden = b.dataset.pan !== "populaires";
+}));
+document.querySelectorAll("[data-fermer]").forEach(b => b.addEventListener("click", () => b.closest("dialog").close()));
+
+let minuteurRecherche;
+$("#recherche").addEventListener("input", () => {
+  clearTimeout(minuteurRecherche);
+  minuteurRecherche = setTimeout(() => { page = 1; rendreCatalogue(); }, 150);
+});
+$("#filtreRayon").addEventListener("change", () => { page = 1; rendreCatalogue(); });
+$("#filtreStatut").addEventListener("change", () => { page = 1; rendreCatalogue(); });
+$("#pagePrec").addEventListener("click", () => { page--; rendreCatalogue(); window.scrollTo({top:0}); });
+$("#pageSuiv").addEventListener("click", () => { page++; rendreCatalogue(); window.scrollTo({top:0}); });
+$("#ajouterProduit").addEventListener("click", () => ouvrirEdition(null));
+$("#regenererFiches").addEventListener("click", async () => {
+  const bouton = $("#regenererFiches");
+  bouton.disabled = true;
+  try { await regenererFichesProduit(); }
+  catch(e) { toast("Échec de la génération : " + e.message, true); bouton.textContent = "Régénérer les fiches produit"; }
+  finally { bouton.disabled = false; }
+});
+$("#ouvrirDossier").addEventListener("click", ouvrirDossier);
+$("#reprendre").addEventListener("click", reprendre);
+$("#recharger").addEventListener("click", async () => {
+  if ((modifsCatalogue || modifsPromos) && !confirm("Abandonner les modifications non enregistrées et relire les fichiers ?")) return;
+  try { await chargerDepuis(dossier); toast("Fichiers rechargés."); } catch(e) { toast(e.message, true); }
+});
+$("#fichiersManuels").addEventListener("change", async e => {
+  const fichiers = [...e.target.files];
+  const csv = fichiers.find(f => /\.csv$/i.test(f.name));
+  const json = fichiers.find(f => /\.json$/i.test(f.name));
+  if (!csv) { toast("Choisis au moins le fichier catalogue.csv.", true); return; }
+  try {
+    produits = analyserCatalogue(await csv.text());
+    promos = json ? analyserPromos(await json.text()) : [];
+    dossier = null;
+    demarrerConsole();
+  } catch(err) { toast(err.message, true); }
+});
+
+window.addEventListener("beforeunload", e => {
+  if (modifsCatalogue || modifsPromos || modifsPopulaires) { e.preventDefault(); e.returnValue = ""; }
+});
+
+(async function init(){
+  if (!peutEcrire) {
+    $("#nonSupporte").hidden = false;
+    $("#ouvrirDossier").disabled = true;
+    return;
+  }
+  try {
+    const h = await kvGet("dossier");
+    if (h) { $("#reprendre").hidden = false; $("#reprendre").textContent = `Reprendre avec « ${h.name} »`; }
+  } catch(_) {}
+})();
+</script>
+</body>
+</html>
