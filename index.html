@@ -426,22 +426,6 @@ a{color:inherit;text-decoration:none}
 .pied p,.pied li{font-size:14px;color:#B9C4C8;line-height:1.65}
 .pied ul{list-style:none;margin:0;padding:0}
 .pied .logo{color:var(--email);font-size:22px}
-.lien-flux{background:none;border:none;padding:0;color:var(--jour);font-weight:600;cursor:pointer;text-decoration:underline;font-size:14px}
-
-/* ---------- Flux Meta ---------- */
-.flux{display:none;position:fixed;inset:0;z-index:70;background:var(--email);flex-direction:column}
-.flux[data-ouvert="1"]{display:flex}
-.flux .haut{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:13px var(--pad);border-bottom:1px solid var(--chrome);background:var(--blanc)}
-.flux .haut h2{font-size:17px}
-.flux .expl{padding:14px var(--pad);font-size:14px;color:var(--acier-60);border-bottom:1px solid var(--chrome)}
-.flux pre{
-  flex:1;overflow:auto;margin:0;padding:16px var(--pad);
-  font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;font-size:12.5px;line-height:1.6;
-  background:var(--blanc);
-}
-.flux .actions{display:flex;gap:9px}
-.bt{border:1px solid var(--chrome);background:var(--blanc);border-radius:var(--r);padding:9px 13px;font-weight:600;cursor:pointer;font-size:14px}
-.bt--plein{background:var(--acier);color:var(--email);border-color:var(--acier)}
 
 /* ---------- Bouton flottant ---------- */
 .flottant{
@@ -598,8 +582,6 @@ a{color:inherit;text-decoration:none}
         <li>Solde en espèces à la livraison</li>
         <li>Orange Money accepté</li>
       </ul>
-      <h3 style="margin-top:18px">Pour la pub</h3>
-      <button class="lien-flux" id="btnFlux" type="button">Voir le flux produit Meta</button>
     </div>
   </div>
 </footer>
@@ -679,17 +661,6 @@ a{color:inherit;text-decoration:none}
 
 <div class="avis-panier" id="avisPanier" data-visible="0"></div>
 
-<div class="flux" id="flux" role="dialog" aria-modal="true" aria-labelledby="fluxTitre">
-  <div class="haut">
-    <h2 id="fluxTitre">Flux produit — catalogue Meta</h2>
-    <div class="actions">
-      <button class="bt" id="fluxCopier" type="button">Copier</button>
-      <button class="bt bt--plein" id="fluxFermer" type="button">Fermer</button>
-    </div>
-  </div>
-  <p class="expl">Ce fichier est généré à partir du même catalogue que le site. Déposez-le sur une URL fixe (par exemple <code>sandagasoldes.com/feed.xml</code>) et déclarez-la dans le Commerce Manager avec une actualisation programmée. Meta fabrique alors les pubs carrousel, la boutique Instagram et le catalogue WhatsApp à partir de là.</p>
-  <pre id="fluxContenu"></pre>
-</div>
 
 <script>
 /* ============================================================
@@ -1193,17 +1164,8 @@ function fermerAvecHistorique(){
   etatHistoriquePanneau = false;
   if(history.state && history.state.sandagaPanneau) history.back();
 }
-function fermerFluxVisuel(){
-  $("#flux").dataset.ouvert="0";
-  document.body.style.overflow="";
-}
-function fermerFlux(){
-  fermerFluxVisuel();
-  fermerAvecHistorique();
-}
 window.addEventListener("popstate", ()=>{
   etatHistoriquePanneau = false;
-  if($("#flux").dataset.ouvert==="1") fermerFluxVisuel();
   if($("#panneauPanier").dataset.ouvert==="1") fermerPanierVisuel();
   if($("#panneau").dataset.ouvert==="1") fermerVisuel();
 });
@@ -1423,34 +1385,6 @@ function fermer(){
 }
 
 /* ------------------------------------------------------------
-   FLUX PRODUIT META
-   ------------------------------------------------------------ */
-function genererFlux(){
-  const items = CATALOGUE.map(p=>`    <item>
-      <g:id>${esc(p.ref)}</g:id>
-      <g:title>${esc(p.marque+" "+p.nom)}</g:title>
-      <g:description>${esc(p.nom+" "+p.marque+". "+Object.entries(p.specs).map(([k,v])=>k+" : "+v).join(". ")+". Livraison et installation à Dakar.")}</g:description>
-      <g:availability>${p.dispo==="jour"?"in stock":"available for order"}</g:availability>
-      <g:condition>new</g:condition>
-      <g:price>${p.prix} XOF</g:price>
-      <g:link>${SITE}/produit/${esc(refUrl(p.ref))}.html</g:link>
-      <g:image_link>${esc(p.photo ? (p.photo.startsWith("http") ? p.photo : SITE+"/"+p.photo) : SITE+"/img/"+p.ref.toLowerCase()+".jpg")}</g:image_link>
-      <g:brand>${esc(p.marque)}</g:brand>
-      <g:product_type>${esc(RAYONS.find(r=>r.id===p.rayon).nom+" &gt; "+p.famille)}</g:product_type>
-    </item>`).join("\n");
-
-  return `<?xml version="1.0" encoding="UTF-8"?>
-<rss version="2.0" xmlns:g="http://base.google.com/ns/1.0">
-  <channel>
-    <title>Sandaga Soldes — Électroménager Dakar</title>
-    <link>${SITE}</link>
-    <description>Catalogue produit pour les pubs carrousel Meta, la boutique Instagram et le catalogue WhatsApp.</description>
-${items}
-  </channel>
-</rss>`;
-}
-
-/* ------------------------------------------------------------
    BRANCHEMENTS
    ------------------------------------------------------------ */
 function init(){
@@ -1530,7 +1464,6 @@ function init(){
   $("#panierZone").addEventListener("change",e=>{etat.zone=e.target.value;$("#pZone").value=etat.zone;majLivraisonPanier();});
   document.addEventListener("keydown",e=>{
     if(e.key!=="Escape") return;
-    if($("#flux").dataset.ouvert==="1"){ fermerFlux(); return; }
     if($("#panneauPanier").dataset.ouvert==="1") fermerPanier();
     else if($("#panneau").dataset.ouvert==="1") fermer();
   });
@@ -1544,22 +1477,6 @@ function init(){
   const btnHaut = $("#btnHaut");
   window.addEventListener("scroll", ()=>{ btnHaut.hidden = window.scrollY < 500; }, {passive:true});
   btnHaut.addEventListener("click", ()=> window.scrollTo({top:0, behavior:"smooth"}));
-
-  // flux
-  $("#btnFlux").addEventListener("click",()=>{
-    $("#fluxContenu").textContent = genererFlux();
-    $("#flux").dataset.ouvert="1";
-    document.body.style.overflow="hidden";
-    $("#fluxFermer").focus();
-    ouvrirAvecHistorique();
-  });
-  $("#fluxFermer").addEventListener("click",fermerFlux);
-  $("#fluxCopier").addEventListener("click",async()=>{
-    const b=$("#fluxCopier");
-    try{ await navigator.clipboard.writeText(genererFlux()); b.textContent="Copié"; }
-    catch(_){ b.textContent="Copie refusée par le navigateur"; }
-    setTimeout(()=>b.textContent="Copier",1800);
-  });
 
   remplirMarques();
   remplirSousFiltres();
