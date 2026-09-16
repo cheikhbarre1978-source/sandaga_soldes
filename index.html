@@ -949,6 +949,29 @@ function moinsCherParMarqueDabord(liste){
   return liste.slice().sort((a,b)=>(rang.get(a)-rang.get(b)) || (a.prix-b.prix));
 }
 
+// Vue "Tout" : le fichier catalogue.csv regroupe les produits par rayon (tous
+// les climatiseurs à la suite, puis tous les frigos, etc.), donc sans ce
+// mélange on ne verrait qu'un seul rayon pendant les premiers écrans. On
+// alterne les rayons (dans l'ordre de RAYONS_VALIDES), chacun trié par
+// moinsCherParMarqueDabord, pour un catalogue varié dès le début.
+function melangerParRayon(liste){
+  const parRayon = new Map();
+  liste.forEach(p=>{
+    if(!parRayon.has(p.rayon)) parRayon.set(p.rayon, []);
+    parRayon.get(p.rayon).push(p);
+  });
+  const groupes = RAYONS_VALIDES
+    .filter(id=>parRayon.has(id))
+    .map(id=>moinsCherParMarqueDabord(parRayon.get(id)));
+  const resultat = [];
+  for(let i=0; resultat.length<liste.length; i++){
+    for(const g of groupes){
+      if(i<g.length) resultat.push(g[i]);
+    }
+  }
+  return resultat;
+}
+
 /* ------------------------------------------------------------
    RENDU
    ------------------------------------------------------------ */
@@ -972,6 +995,7 @@ function filtrer(){
   else if(etat.tri==="prix-desc") r.sort((a,b)=>b.prix-a.prix);
   else if(etat.tri==="marque")    r.sort((a,b)=>a.marque.localeCompare(b.marque) || a.nom.localeCompare(b.nom));
   else if(etat.rayon!=="tout") r = moinsCherParMarqueDabord(r);
+  else r = melangerParRayon(r);
   return r;
 }
 
