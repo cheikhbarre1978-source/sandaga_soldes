@@ -1115,17 +1115,54 @@ function majLivraisonPanier(lignes){
   }
 }
 function ouvrirPanier(){
-  if($("#panneau").dataset.ouvert==="1") fermer();
+  if($("#panneau").dataset.ouvert==="1") fermerVisuel();
   rendrePanier();
   $("#voile").dataset.ouvert="1";
   $("#panneauPanier").dataset.ouvert="1";
   document.body.style.overflow="hidden";
+  ouvrirAvecHistorique();
 }
-function fermerPanier(){
+function fermerPanierVisuel(){
   $("#voile").dataset.ouvert="0";
   $("#panneauPanier").dataset.ouvert="0";
   document.body.style.overflow="";
 }
+function fermerPanier(){
+  fermerPanierVisuel();
+  fermerAvecHistorique();
+}
+
+/* Sur mobile, le bouton "retour" du téléphone ne doit pas quitter le site
+   quand une fiche produit / le panier / le flux WhatsApp est ouvert par-dessus
+   la page — il doit d'abord refermer ce qui est ouvert. On pousse une seule
+   entrée d'historique tant qu'au moins un de ces panneaux est affiché, et on
+   la consomme (history.back()) quand on referme via un bouton, pour que
+   l'historique reste cohérent avec ce qui est vraiment affiché. */
+let etatHistoriquePanneau = false;
+function ouvrirAvecHistorique(){
+  if(etatHistoriquePanneau) return;
+  etatHistoriquePanneau = true;
+  history.pushState({sandagaPanneau:true}, "", location.href);
+}
+function fermerAvecHistorique(){
+  if(!etatHistoriquePanneau) return;
+  etatHistoriquePanneau = false;
+  if(history.state && history.state.sandagaPanneau) history.back();
+}
+function fermerFluxVisuel(){
+  $("#flux").dataset.ouvert="0";
+  document.body.style.overflow="";
+}
+function fermerFlux(){
+  fermerFluxVisuel();
+  fermerAvecHistorique();
+}
+window.addEventListener("popstate", ()=>{
+  etatHistoriquePanneau = false;
+  if($("#flux").dataset.ouvert==="1") fermerFluxVisuel();
+  if($("#panneauPanier").dataset.ouvert==="1") fermerPanierVisuel();
+  if($("#panneau").dataset.ouvert==="1") fermerVisuel();
+});
 
 /* nom de fichier de la fiche produit — doit rester identique à celui utilisé
    par le générateur de pages (generate_product_pages.js) */
@@ -1296,7 +1333,7 @@ function majLivraison(){
 }
 
 function ouvrir(p){
-  if($("#panneauPanier").dataset.ouvert==="1") fermerPanier();
+  if($("#panneauPanier").dataset.ouvert==="1") fermerPanierVisuel();
   etat.produit = p;
   $("#pRef").textContent = "Réf. "+p.ref;
   const photos = (p.photos && p.photos.length) ? p.photos : (p.photo ? [p.photo] : []);
@@ -1326,12 +1363,17 @@ function ouvrir(p){
   $("#panneau").dataset.ouvert="1";
   document.body.style.overflow="hidden";
   $("#pFermer").focus();
+  ouvrirAvecHistorique();
 }
 
-function fermer(){
+function fermerVisuel(){
   $("#voile").dataset.ouvert="0";
   $("#panneau").dataset.ouvert="0";
   document.body.style.overflow="";
+}
+function fermer(){
+  fermerVisuel();
+  fermerAvecHistorique();
 }
 
 /* ------------------------------------------------------------
@@ -1442,7 +1484,7 @@ function init(){
   $("#panierZone").addEventListener("change",e=>{etat.zone=e.target.value;$("#pZone").value=etat.zone;majLivraisonPanier();});
   document.addEventListener("keydown",e=>{
     if(e.key!=="Escape") return;
-    if($("#flux").dataset.ouvert==="1"){ $("#flux").dataset.ouvert="0"; document.body.style.overflow=""; return; }
+    if($("#flux").dataset.ouvert==="1"){ fermerFlux(); return; }
     if($("#panneauPanier").dataset.ouvert==="1") fermerPanier();
     else if($("#panneau").dataset.ouvert==="1") fermer();
   });
@@ -1458,10 +1500,9 @@ function init(){
     $("#flux").dataset.ouvert="1";
     document.body.style.overflow="hidden";
     $("#fluxFermer").focus();
+    ouvrirAvecHistorique();
   });
-  $("#fluxFermer").addEventListener("click",()=>{
-    $("#flux").dataset.ouvert="0"; document.body.style.overflow="";
-  });
+  $("#fluxFermer").addEventListener("click",fermerFlux);
   $("#fluxCopier").addEventListener("click",async()=>{
     const b=$("#fluxCopier");
     try{ await navigator.clipboard.writeText(genererFlux()); b.textContent="Copié"; }
