@@ -89,6 +89,15 @@ td input,td select{border:1px solid var(--chrome);border-radius:var(--r);padding
 .barre-enreg{position:sticky;bottom:0;z-index:5;display:flex;gap:12px;align-items:center;justify-content:flex-end;background:var(--email);border-top:1px solid var(--chrome);padding:12px 0;margin-top:6px}
 #etatCat,#etatPromos{font-size:13.5px;color:var(--acier-60)}
 
+/* flux Meta */
+.flux-apercu{
+  max-height:420px;overflow:auto;margin:0;padding:16px;
+  background:var(--blanc);border:1px solid var(--chrome);border-radius:var(--r);
+  font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;font-size:12.5px;line-height:1.6;
+  white-space:pre-wrap;word-break:break-word;
+}
+.flux-apercu:empty::before{content:"Clique « Générer le flux » pour voir un aperçu ici.";color:var(--acier-60);font-family:inherit}
+
 /* promos */
 .promos-grille{display:grid;gap:16px;grid-template-columns:1fr;padding-bottom:10px}
 @media(min-width:1000px){.promos-grille{grid-template-columns:1fr 1fr}}
@@ -174,6 +183,7 @@ dialog::backdrop{background:rgba(23,37,43,.45)}
       <button type="button" class="onglet" role="tab" aria-selected="true" data-pan="catalogue">Catalogue<span class="pastille" id="pastilleCat" hidden></span></button>
       <button type="button" class="onglet" role="tab" aria-selected="false" data-pan="promos">Promos de la semaine<span class="pastille" id="pastillePromos" hidden></span></button>
       <button type="button" class="onglet" role="tab" aria-selected="false" data-pan="populaires">Produits populaires<span class="pastille" id="pastillePopulaires" hidden></span></button>
+      <button type="button" class="onglet" role="tab" aria-selected="false" data-pan="flux">Flux Meta</button>
     </div>
   </nav>
 
@@ -236,6 +246,20 @@ dialog::backdrop{background:rgba(23,37,43,.45)}
       <div class="barre-enreg">
         <span id="etatPopulaires"></span>
         <button type="button" class="bt bt--ok" id="enregistrerPopulaires" disabled>Enregistrer</button>
+      </div>
+    </section>
+
+    <section id="panFlux" hidden>
+      <div class="outils">
+        <p class="intro">Fichier <code>feed.xml</code> généré à partir du même catalogue que le site, au format que Meta attend pour les pubs carrousel, la boutique Instagram et le catalogue WhatsApp. Génère-le, dépose-le sur le site à une URL fixe (<code>sandagasoldes.com/feed.xml</code>), puis déclare cette URL dans le Commerce Manager avec une actualisation programmée.</p>
+        <span class="espace"></span>
+        <button type="button" class="bt" id="genererFlux">Générer le flux</button>
+      </div>
+      <pre class="flux-apercu" id="fluxApercu"></pre>
+      <div class="barre-enreg">
+        <span id="etatFlux"></span>
+        <button type="button" class="bt" id="copierFlux" disabled>Copier</button>
+        <button type="button" class="bt bt--ok" id="enregistrerFlux" disabled>Enregistrer feed.xml</button>
       </div>
     </section>
   </main>
@@ -305,6 +329,7 @@ let dossier = null;
 let produits = [];
 let promos = [];
 let populairesRefs = [];
+let fluxTexte = "";
 let modifsCatalogue = false, modifsPromos = false, modifsPopulaires = false, suppressions = 0;
 const lignesModifiees = new Set();
 let page = 1;
@@ -348,7 +373,8 @@ async function sauver(nom, texte, nomPrecedent){
     await ecrireFichier(nom, texte);
     return "ecrit";
   }
-  const blob = new Blob([texte], {type: nom.endsWith(".json") ? "application/json" : "text/csv;charset=utf-8"});
+  const type = nom.endsWith(".json") ? "application/json" : nom.endsWith(".xml") ? "application/xml" : "text/csv;charset=utf-8";
+  const blob = new Blob([texte], {type});
   const a = document.createElement("a");
   a.href = URL.createObjectURL(blob);
   a.download = nom;
@@ -630,6 +656,49 @@ function genererSitemap(actifs){
     ...actifs.map(p => `  <url><loc>${SITE}/produit/${refUrl(p.ref)}.html</loc><lastmod>${aujourdhui}</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>`)
   ];
   return `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls.join("\n")}\n</urlset>\n`;
+}
+
+/* ------------------------------------------------------------
+   FLUX PRODUIT META — catalogue au format que Meta attend pour les
+   pubs carrousel, la boutique Instagram et le catalogue WhatsApp.
+   ------------------------------------------------------------ */
+function genererFluxMeta(){
+  const nomsRayons = Object.fromEntries(RAYONS);
+  const idsRayonsValides = new Set(RAYONS.map(r => r[0]));
+  // Mêmes critères de visibilité que le site public et regenererFichesProduit() :
+  // un produit absent du site ne doit pas apparaître dans le flux publicitaire.
+  const actifs = produits.filter(p => p.ref && p.actif && p.nom.trim() && p.prix > 0 && idsRayonsValides.has(p.rayon));
+
+  const items = actifs.map(p => {
+    const specs = parseSpecsLigne(p.specs);
+    const specsTexte = Object.entries(specs).map(([k,v]) => `${k} : ${v}`).join(", ");
+    const descriptionTexte = p.description
+      ? p.description
+      : `${p.marque} ${p.nom}${specsTexte ? " — " + specsTexte : ""}. Livraison et installation à Dakar.`;
+    const imageAbs = absPhoto(p.photo) || `${SITE}/img/${p.ref.toLowerCase()}.jpg`;
+    return `    <item>
+      <g:id>${esc(p.ref)}</g:id>
+      <g:title>${esc(`${p.marque} ${p.nom}`.trim())}</g:title>
+      <g:description>${esc(descriptionTexte)}</g:description>
+      <g:availability>${p.dispo === "jour" ? "in stock" : "available for order"}</g:availability>
+      <g:condition>new</g:condition>
+      <g:price>${Math.round(p.prix)} XOF</g:price>
+      <g:link>${SITE}/produit/${refUrl(p.ref)}.html</g:link>
+      <g:image_link>${esc(imageAbs)}</g:image_link>
+      <g:brand>${esc(p.marque)}</g:brand>
+      <g:product_type>${esc(`${nomsRayons[p.rayon]} > ${p.famille}`)}</g:product_type>
+    </item>`;
+  }).join("\n");
+
+  return `<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:g="http://base.google.com/ns/1.0">
+  <channel>
+    <title>Sandaga Soldes — Électroménager Dakar</title>
+    <link>${SITE}</link>
+    <description>Catalogue produit pour les pubs carrousel Meta, la boutique Instagram et le catalogue WhatsApp.</description>
+${items}
+  </channel>
+</rss>`;
 }
 
 async function regenererFichesProduit(){
@@ -1189,6 +1258,37 @@ $("#enregistrerPopulaires").addEventListener("click", async () => {
   }
 });
 
+$("#genererFlux").addEventListener("click", () => {
+  fluxTexte = genererFluxMeta();
+  $("#fluxApercu").textContent = fluxTexte;
+  $("#copierFlux").disabled = false;
+  $("#enregistrerFlux").disabled = false;
+  $("#etatFlux").textContent = "Flux généré, pas encore déposé sur le site.";
+});
+$("#copierFlux").addEventListener("click", async () => {
+  const bouton = $("#copierFlux");
+  try { await navigator.clipboard.writeText(fluxTexte); bouton.textContent = "Copié"; }
+  catch(_) { bouton.textContent = "Copie refusée par le navigateur"; }
+  setTimeout(() => bouton.textContent = "Copier", 1800);
+});
+$("#enregistrerFlux").addEventListener("click", async () => {
+  const bouton = $("#enregistrerFlux");
+  bouton.disabled = true;
+  bouton.textContent = "Enregistrement…";
+  try {
+    const mode = await sauver("feed.xml", fluxTexte, "feed.precedent.xml");
+    $("#etatFlux").textContent = "feed.xml à jour, déposé le " + new Date().toLocaleString("fr-FR");
+    toast(mode === "ecrit"
+      ? "feed.xml enregistré à la racine du site."
+      : "feed.xml téléchargé : dépose-le à la racine du site (à côté de index.html).");
+  } catch(e) {
+    toast("Échec de l'enregistrement : " + e.message, true);
+  } finally {
+    bouton.textContent = "Enregistrer feed.xml";
+    bouton.disabled = false;
+  }
+});
+
 /* ---------- état, navigation, divers ---------- */
 function majEtat(){
   $("#enregistrerCatalogue").disabled = !modifsCatalogue;
@@ -1220,6 +1320,7 @@ document.querySelectorAll(".onglet").forEach(b => b.addEventListener("click", ()
   $("#panCatalogue").hidden = b.dataset.pan !== "catalogue";
   $("#panPromos").hidden = b.dataset.pan !== "promos";
   $("#panPopulaires").hidden = b.dataset.pan !== "populaires";
+  $("#panFlux").hidden = b.dataset.pan !== "flux";
 }));
 document.querySelectorAll("[data-fermer]").forEach(b => b.addEventListener("click", () => b.closest("dialog").close()));
 
