@@ -74,7 +74,7 @@ function resumerProduit(p) {
     nom: p.nom,
     prix_fcfa: p.prix,
     capacite: p.cap,
-    disponibilite: p.dispo === 'jour' ? 'en stock, livrable aujourd\'hui (à reconfirmer)' : 'sur commande, environ 5 jours',
+    disponibilite: p.dispo === 'jour' ? 'en stock, livrable aujourd\'hui (à reconfirmer)' : 'sur commande, délai à confirmer',
     caracteristiques: p.specs,
   };
 }

@@ -253,7 +253,7 @@ dialog::backdrop{background:rgba(23,37,43,.45)}
       <label>Famille<input name="famille" list="listeFamilles" autocomplete="off"></label>
       <label>Prix (F CFA) *<input name="prix" type="number" min="0" step="500" inputmode="numeric"></label>
       <label>Capacité / taille<input name="cap" placeholder="ex. 200 L, 7 kg, 55&quot;" autocomplete="off"></label>
-      <label>Livraison<select name="dispo"><option value="commande">Sous 5 jours (sur commande)</option><option value="jour">Livré aujourd'hui (en stock)</option></select></label>
+      <label>Livraison<select name="dispo"><option value="jour">Livré aujourd'hui (en stock)</option><option value="commande">Sur commande</option></select></label>
       <label>Icône de repli<select name="icone"></select></label>
       <label class="large">Caractéristiques <span class="aide">une par ligne, format « Clé: Valeur »</span><textarea name="specs" rows="4"></textarea></label>
       <label class="large">Photo principale <span class="aide">chemin (images/…) ou lien internet</span><input name="photo" autocomplete="off"></label>
@@ -774,7 +774,7 @@ function rendreCatalogue(){
       <td class="c-produit"><span class="t-marque">${esc(p.marque)}</span><span class="t-nom">${esc(p.nom)}</span><span class="t-famille">${esc(p.famille)}${p.cap ? " · "+esc(p.cap) : ""}</span></td>
       <td>${esc(nomsRayons[p.rayon] || p.rayon)}</td>
       <td class="c-prix"><input type="number" min="0" step="500" inputmode="numeric" data-champ="prix" value="${Math.round(p.prix)}" aria-label="Prix de ${esc(p.nom)}"></td>
-      <td><select data-champ="dispo" aria-label="Livraison de ${esc(p.nom)}"><option value="commande"${p.dispo==="commande"?" selected":""}>Sous 5 jours</option><option value="jour"${p.dispo==="jour"?" selected":""}>Aujourd'hui</option></select></td>
+      <td><select data-champ="dispo" aria-label="Livraison de ${esc(p.nom)}"><option value="jour"${p.dispo==="jour"?" selected":""}>Aujourd'hui</option><option value="commande"${p.dispo==="commande"?" selected":""}>Sur commande</option></select></td>
       <td><label class="bascule"><input type="checkbox" data-champ="actif"${p.actif?" checked":""}><span>${p.actif?"Visible":"Masqué"}</span></label></td>
       <td class="c-actions"><button type="button" class="bt bt--petit" data-action="modifier">Modifier</button> <button type="button" class="bt bt--petit bt--danger" data-action="supprimer">Supprimer</button></td>
     </tr>`;
