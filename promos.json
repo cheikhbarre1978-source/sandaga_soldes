@@ -1,20 +1,5 @@
 [
   {
-    "ref": "TVHIS75-75Q6NQL",
-    "marque": "Hisense",
-    "nom": "Téléviseur Hisense 75' LED Smart vidaa 4K QLED quantum dot 75q6q",
-    "icone": "tv",
-    "photo": "images/TVHIS75-75Q6NQL-2.png",
-    "prix": 545000,
-    "prixBarre": "",
-    "points": [
-      "Type QLED",
-      "Taille 75 pouces",
-      "Fonctions Smart",
-      "Résolution 4K UHD"
-    ]
-  },
-  {
     "ref": "REFSMA19-STR190",
     "marque": "Smart Technology",
     "nom": "réfrigérateur Smart Technology 2portes 160 litres gris str190m",
@@ -29,21 +14,6 @@
     ]
   },
   {
-    "ref": "MALSAM21KG-21KG",
-    "marque": "Samsung",
-    "nom": "Machine à laver Samsung 21 kg/12 kg sechage inverter noir wd21t6300gv/nq + installation gratuite",
-    "icone": "hublot",
-    "photo": "images/MALSAM21KG-21KG-1.png",
-    "prix": 691000,
-    "prixBarre": "",
-    "points": [
-      "Type Inverter",
-      "Capacité 21 kg",
-      "Couleur Noir",
-      "Garantie 12 mois"
-    ]
-  },
-  {
     "ref": "FONFIN25-HD2503",
     "marque": "Finix",
     "nom": "Fontaine finix avec frigo et glacon blanc hd2503z (310x325x960mm)",
@@ -52,6 +22,35 @@
     "prix": 103000,
     "prixBarre": "",
     "points": [
+      "Couleur Blanc",
+      "Garantie 12 mois"
+    ]
+  },
+  {
+    "ref": "SPLAST12-12000B",
+    "marque": "Astech",
+    "nom": "Split Astech 12000btu 1.5 CV 12rbr410",
+    "icone": "split",
+    "photo": "images/SPLAST12-12000B-1.jpg",
+    "prix": 152000,
+    "prixBarre": "",
+    "points": [
+      "Type Split",
+      "Capacité 12000 BTU",
+      "Garantie 12 mois"
+    ]
+  },
+  {
+    "ref": "MALAST12KG-TWT1",
+    "marque": "Astech",
+    "nom": "Machine à laver Astech 12 kg semi automatique top load blanc twt12-b102nl",
+    "icone": "semiauto",
+    "photo": "images/MALAST12KG-TWT1-2.png",
+    "prix": 143500,
+    "prixBarre": "",
+    "points": [
+      "Type Semi automatique",
+      "Capacité 12 kg",
       "Couleur Blanc",
       "Garantie 12 mois"
     ]
