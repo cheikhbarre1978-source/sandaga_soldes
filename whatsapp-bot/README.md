@@ -24,7 +24,7 @@ Répond aux clients sur WhatsApp à partir du **vrai catalogue** (`catalogue.csv
    npm install
    ```
 3. Copie `.env.example` en `.env` et remplis :
-   - `ANTHROPIC_API_KEY` — crée une clé sur [console.anthropic.com](https://console.anthropic.com) (Settings → API Keys). Attention, l'utilisation de l'API est payante à l'usage (quelques centimes par conversation en général).
+   - `GEMINI_API_KEY` — crée une clé gratuite sur [aistudio.google.com/apikey](https://aistudio.google.com/apikey) (aucune carte bancaire requise, gratuit jusqu'à 1500 messages/jour).
    - `OWNER_WHATSAPP_NUMBER` — ton numéro WhatsApp personnel (celui qui recevra les transmissions), au format `221781234567` (indicatif + numéro, sans espace ni `+`).
 4. Lance le bot :
    ```bash

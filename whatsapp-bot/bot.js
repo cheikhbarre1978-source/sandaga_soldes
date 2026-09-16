@@ -5,6 +5,7 @@
 require('dotenv').config();
 const path = require('path');
 const qrcode = require('qrcode-terminal');
+const QRCode = require('qrcode');
 const pino = require('pino');
 const {
   default: makeWASocket,
@@ -14,12 +15,13 @@ const {
 } = require('@whiskeysockets/baileys');
 const { repondre, fmt } = require('./assistant');
 
-if (!process.env.ANTHROPIC_API_KEY) {
-  console.error("ERREUR : ANTHROPIC_API_KEY manquante. Copie .env.example en .env et remplis-le.");
+if (!process.env.GEMINI_API_KEY) {
+  console.error("ERREUR : GEMINI_API_KEY manquante. Copie .env.example en .env et remplis-le.");
   process.exit(1);
 }
 
 const DOSSIER_SESSION = path.join(__dirname, 'session');
+const NUMERO_JUMELAGE = process.env.BOT_WHATSAPP_NUMBER?.replace(/\D/g, '');
 const OWNER_JID = process.env.OWNER_WHATSAPP_NUMBER
   ? process.env.OWNER_WHATSAPP_NUMBER.replace(/\D/g, '') + '@s.whatsapp.net'
   : null;
@@ -35,18 +37,37 @@ async function demarrer() {
 
   sock.ev.on('creds.update', saveCreds);
 
+  // Jumelage par code à taper plutôt que par QR code : plus simple quand on n'a
+  // pas le terminal sous les yeux (le QR, lui, expire au bout de ~30 secondes).
+  if (NUMERO_JUMELAGE && !sock.authState.creds.registered) {
+    setTimeout(async () => {
+      try {
+        const code = await sock.requestPairingCode(NUMERO_JUMELAGE);
+        console.log(`\n=== CODE DE JUMELAGE : ${code} ===`);
+        console.log('Sur le téléphone : WhatsApp > Appareils connectés > Connecter un appareil');
+        console.log('> "Associer avec le numéro de téléphone", puis tape ce code.\n');
+      } catch (e) {
+        console.log('Impossible de générer le code de jumelage :', e.message);
+      }
+    }, 4000);
+  }
+
   sock.ev.on('connection.update', (maj) => {
     const { connection, lastDisconnect, qr } = maj;
     if (qr) {
       console.log('\n=== Scanne ce QR code avec WhatsApp sur le téléphone du 78 880 08 08 ===');
       console.log('(WhatsApp > Paramètres > Appareils connectés > Connecter un appareil)\n');
       qrcode.generate(qr, { small: true });
+      QRCode.toFile(path.join(__dirname, 'qrcode.png'), qr, { width: 400 }).catch(() => {});
     }
     if (connection === 'close') {
       const codeErreur = lastDisconnect?.error?.output?.statusCode;
       const doitReconnecter = codeErreur !== DisconnectReason.loggedOut;
-      console.log('Connexion fermée.', doitReconnecter ? 'Nouvelle tentative...' : 'Déconnecté (relance et rescanne le QR).');
-      if (doitReconnecter) demarrer();
+      console.log('Connexion fermée. Code :', codeErreur, '-', lastDisconnect?.error?.message);
+      console.log(doitReconnecter ? 'Nouvelle tentative dans 5s...' : 'Déconnecté (relance et rescanne le QR).');
+      // Sans ce délai, un refus côté WhatsApp déclenche une boucle de reconnexion
+      // immédiate qui peut faire signaler le numéro.
+      if (doitReconnecter) setTimeout(demarrer, 5000);
     } else if (connection === 'open') {
       console.log('✅ Bot connecté à WhatsApp et prêt à répondre.');
     }

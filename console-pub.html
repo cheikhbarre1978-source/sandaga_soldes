@@ -1,0 +1,452 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Sandaga Soldes — Générateur d'affiches</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --email:#F1F2EE;
+  --blanc:#FFFFFF;
+  --acier:#17252B;
+  --acier-60:#5A6B72;
+  --chrome:#CBD1CD;
+  --chrome-clair:#E3E6E2;
+  --prix:#C81E2B;
+  --jour:#F5A300;
+  --vert:#128C7E;
+  --r:4px;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;background:var(--email);color:var(--acier);
+  font-family:"Archivo",system-ui,-apple-system,"Segoe UI",sans-serif;
+  font-size:15px;line-height:1.5;
+}
+header{background:var(--acier);color:var(--email);padding:14px 20px}
+header h1{margin:0;font-size:18px;font-weight:700}
+header p{margin:4px 0 0;font-size:13px;color:var(--chrome)}
+.zone{display:grid;grid-template-columns:360px 1fr;gap:24px;padding:24px;align-items:start}
+@media(max-width:900px){.zone{grid-template-columns:1fr}}
+
+.panneau{background:var(--blanc);border:1px solid var(--chrome);border-radius:var(--r);padding:16px}
+.panneau h2{margin:0 0 12px;font-size:15px;font-weight:700}
+label{display:block;font-size:13px;font-weight:600;margin:12px 0 4px}
+input[type=text],input[type=search],select,textarea{
+  width:100%;padding:9px 11px;border:1px solid var(--chrome);border-radius:var(--r);
+  font-family:inherit;font-size:14px;background:var(--blanc);color:var(--acier);
+}
+textarea{resize:vertical;min-height:70px;line-height:1.45}
+button{
+  font-family:inherit;font-size:14px;font-weight:600;padding:10px 16px;
+  border:1px solid var(--acier);border-radius:var(--r);background:var(--acier);color:var(--blanc);cursor:pointer;
+}
+button.secondaire{background:var(--blanc);color:var(--acier)}
+button:disabled{opacity:.45;cursor:not-allowed}
+.resultats{max-height:320px;overflow:auto;border:1px solid var(--chrome);border-radius:var(--r);margin-top:8px}
+.resultat{display:flex;gap:10px;align-items:center;padding:8px 10px;border-bottom:1px solid var(--chrome-clair);cursor:pointer;background:none;border-radius:0;width:100%;text-align:left;color:inherit;font-weight:400;border-left:0;border-right:0;border-top:0}
+.resultat:last-child{border-bottom:0}
+.resultat:hover{background:var(--chrome-clair)}
+.resultat img{width:42px;height:42px;object-fit:contain;flex:none;background:var(--email);border-radius:3px}
+.resultat .r-nom{font-size:13px;font-weight:500;line-height:1.3}
+.resultat .r-prix{font-size:12px;color:var(--prix);font-weight:700}
+.etat{font-size:13px;color:var(--acier-60);margin-top:10px}
+.barre-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}
+fieldset{border:1px solid var(--chrome);border-radius:var(--r);padding:10px 12px;margin:14px 0 0}
+legend{font-size:12px;font-weight:700;padding:0 5px;text-transform:uppercase;letter-spacing:.05em;color:var(--acier-60)}
+.choix-format{display:flex;gap:8px;flex-wrap:wrap}
+.choix-format button{padding:7px 12px;font-size:13px}
+.choix-format button[aria-pressed=true]{background:var(--prix);border-color:var(--prix);color:#fff}
+
+/* ---------- L'affiche elle-même (ce qui sera exporté en image) ---------- */
+.scene{display:flex;justify-content:center;overflow:auto;padding:4px}
+#affiche{
+  width:1080px;background:var(--blanc);flex:none;
+  transform-origin:top center;position:relative;
+  font-family:"Archivo",system-ui,sans-serif;color:var(--acier);
+  display:flex;flex-direction:column;
+}
+#affiche.carre{height:1080px}
+#affiche.portrait{height:1350px}
+
+.aff-tete{
+  display:flex;align-items:center;justify-content:space-between;gap:20px;
+  padding:34px 44px;border-bottom:5px solid var(--prix);flex:none;
+}
+.aff-marque{display:flex;align-items:center;gap:18px}
+.aff-logo{height:86px;width:auto;display:block}
+.aff-tel{
+  display:flex;align-items:center;gap:12px;background:var(--vert);color:#fff;
+  padding:12px 22px;border-radius:999px;font-size:31px;font-weight:700;white-space:nowrap;
+}
+.aff-tel svg{width:34px;height:34px;flex:none}
+
+.aff-corps{flex:1;display:flex;gap:30px;padding:30px 40px;min-height:0}
+.aff-visuel{flex:none;width:498px;display:flex;flex-direction:column;gap:18px}
+.aff-photo{
+  flex:1;background:var(--email);border-radius:10px;display:flex;align-items:center;justify-content:center;
+  padding:14px;min-height:0;overflow:hidden;
+}
+.aff-photo img{width:100%;height:100%;object-fit:contain;display:block}
+.aff-prix{
+  background:var(--prix);color:#fff;border-radius:10px;padding:18px 22px;text-align:center;flex:none;
+}
+.aff-prix .montant{font-size:74px;font-weight:800;line-height:1;letter-spacing:-.02em;white-space:nowrap}
+.aff-prix .devise{font-size:30px;font-weight:700;margin-left:8px}
+.aff-prix .ancien{
+  font-size:29px;font-weight:600;opacity:.82;text-decoration:line-through;margin-top:8px;
+}
+
+.aff-infos{flex:1;display:flex;flex-direction:column;justify-content:center;min-width:0}
+.aff-marque-nom{
+  font-size:25px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--prix);
+}
+.aff-nom{
+  font-size:44px;font-weight:800;line-height:1.14;margin:10px 0 0;
+  overflow-wrap:break-word;
+}
+.aff-liste{list-style:none;margin:26px 0 0;padding:0;display:flex;flex-direction:column;gap:14px}
+.aff-liste li{display:flex;gap:14px;align-items:flex-start;font-size:29px;line-height:1.3}
+.aff-liste .coche{
+  flex:none;width:36px;height:36px;border-radius:50%;background:var(--vert);color:#fff;
+  display:flex;align-items:center;justify-content:center;font-size:21px;font-weight:700;margin-top:1px;
+}
+.aff-liste b{font-weight:700}
+.aff-badge{
+  position:absolute;top:210px;right:0;background:var(--jour);color:var(--acier);
+  font-size:30px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;
+  padding:13px 30px 13px 26px;border-radius:8px 0 0 8px;
+}
+.aff-pied{
+  flex:none;background:var(--acier);color:var(--email);padding:26px 44px;
+  display:flex;align-items:center;justify-content:space-between;gap:20px;font-size:27px;
+}
+.aff-pied .site{font-weight:700;color:#fff}
+.aff-pied .livraison{display:flex;align-items:center;gap:12px;color:var(--chrome)}
+
+.legende{
+  margin-top:16px;background:var(--blanc);border:1px solid var(--chrome);border-radius:var(--r);padding:14px 16px;
+}
+.legende h2{margin:0 0 8px;font-size:14px}
+#texteFb{width:100%;min-height:150px}
+.aide{font-size:12.5px;color:var(--acier-60);margin-top:6px}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Générateur d'affiches — Sandaga Soldes</h1>
+  <p>Choisis un produit du catalogue, télécharge l'image, publie-la sur Facebook.</p>
+</header>
+
+<div class="zone">
+
+  <div>
+    <div class="panneau">
+      <h2>1. Choisir le produit</h2>
+      <label for="recherche">Rechercher dans le catalogue</label>
+      <input type="search" id="recherche" placeholder="frigo, climatiseur 12000, samsung…" autocomplete="off">
+      <div class="resultats" id="resultats"></div>
+      <p class="etat" id="etat">Chargement du catalogue…</p>
+    </div>
+
+    <div class="panneau" style="margin-top:16px">
+      <h2>2. Ajuster l'affiche</h2>
+
+      <fieldset>
+        <legend>Format</legend>
+        <div class="choix-format">
+          <button type="button" data-format="portrait" aria-pressed="true">Portrait (fil Facebook)</button>
+          <button type="button" data-format="carre" aria-pressed="false">Carré</button>
+        </div>
+      </fieldset>
+
+      <label for="badge">Badge (laisser vide pour aucun)</label>
+      <input type="text" id="badge" placeholder="ex. PROMO, NOUVEAU, -10%">
+
+      <label for="ancienPrix">Ancien prix barré (facultatif)</label>
+      <input type="text" id="ancienPrix" placeholder="ex. 195 000">
+
+      <label for="argumentaire">Caractéristiques affichées (une par ligne)</label>
+      <textarea id="argumentaire" placeholder="Une caractéristique par ligne"></textarea>
+      <p class="aide">Pré-rempli depuis la fiche produit. Modifiable librement.</p>
+
+      <div class="barre-actions">
+        <button type="button" id="telecharger" disabled>Télécharger l'image</button>
+        <button type="button" class="secondaire" id="reinit" disabled>Réinitialiser le texte</button>
+      </div>
+    </div>
+  </div>
+
+  <div>
+    <div class="scene">
+      <div id="affiche" class="portrait">
+        <div class="aff-tete">
+          <div class="aff-marque">
+            <img class="aff-logo" src="logo.jpg" alt="Sandaga Soldes">
+          </div>
+          <div class="aff-tel">
+            <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.5 14.4c-.3-.2-1.7-.9-2-1-.3-.1-.5-.1-.7.1-.2.3-.7 1-.9 1.2-.2.2-.3.2-.6.1-.3-.2-1.2-.5-2.4-1.5-.9-.8-1.5-1.8-1.6-2.1-.2-.3 0-.4.1-.6l.5-.5c.1-.2.2-.3.3-.5 0-.2 0-.4-.1-.5 0-.2-.7-1.6-.9-2.2-.2-.5-.5-.5-.7-.5h-.6c-.2 0-.5.1-.8.4-.3.3-1 1-1 2.5s1.1 2.9 1.2 3.1c.1.2 2.1 3.2 5.1 4.5.7.3 1.3.5 1.7.6.7.2 1.4.2 1.9.1.6-.1 1.7-.7 2-1.4.2-.7.2-1.3.2-1.4-.1-.2-.3-.2-.6-.4z"/><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm0 18.2c-1.6 0-3.1-.4-4.4-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2z"/></svg>
+            78 880 08 08
+          </div>
+        </div>
+
+        <div class="aff-badge" id="affBadge" hidden></div>
+
+        <div class="aff-corps">
+          <div class="aff-visuel">
+            <div class="aff-photo"><img id="affPhoto" src="" alt=""></div>
+            <div class="aff-prix">
+              <div><span class="montant" id="affPrix">—</span><span class="devise">F CFA</span></div>
+              <div class="ancien" id="affAncien" hidden></div>
+            </div>
+          </div>
+          <div class="aff-infos">
+            <div class="aff-marque-nom" id="affMarque">—</div>
+            <h2 class="aff-nom" id="affNom">Choisis un produit à gauche</h2>
+            <ul class="aff-liste" id="affListe"></ul>
+          </div>
+        </div>
+
+        <div class="aff-pied">
+          <span class="site">sandagasoldes.com</span>
+          <span class="livraison">Livraison à Dakar · Paiement à la livraison</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="legende">
+      <h2>Texte à copier dans la publication Facebook</h2>
+      <textarea id="texteFb" readonly></textarea>
+      <div class="barre-actions">
+        <button type="button" class="secondaire" id="copierTexte" disabled>Copier le texte</button>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+const $ = s => document.querySelector(s);
+let PRODUITS = [];
+let produitActuel = null;
+let format = 'portrait';
+
+const fmtPrix = n => Math.round(n).toLocaleString('fr-FR').replace(/ | /g, ' ');
+
+// ---- Chargement du catalogue (même fichier que le site) ----
+fetch('catalogue.csv', { cache: 'no-store' })
+  .then(r => { if (!r.ok) throw new Error(r.status); return r.text(); })
+  .then(texte => {
+    const lignes = Papa.parse(texte, { header: true, skipEmptyLines: true }).data;
+    PRODUITS = lignes
+      .filter(p => p.ref && (p.actif || '').toLowerCase() !== 'non')
+      .map(p => ({
+        ref: p.ref,
+        marque: p.marque || '',
+        nom: p.nom || '',
+        prix: Number(p.prix) || 0,
+        specs: p.specs || '',
+        cap: p.cap || '',
+        photo: (p.photo || '').trim(),
+      }));
+    $('#etat').textContent = PRODUITS.length + ' produits chargés. Tape une recherche ci-dessus.';
+    chercher('');
+  })
+  .catch(e => {
+    $('#etat').innerHTML = "Impossible de charger <b>catalogue.csv</b>. Ouvre cette page via le serveur local " +
+      "(<b>demarrer-le-site.bat</b>, puis <b>localhost:5180/console-pub.html</b>), pas par double-clic sur le fichier.";
+  });
+
+function chercher(requete) {
+  const mots = requete.toLowerCase().split(/\s+/).filter(Boolean);
+  const trouves = PRODUITS.filter(p => {
+    const foin = (p.ref + ' ' + p.marque + ' ' + p.nom + ' ' + p.cap).toLowerCase();
+    return mots.every(m => foin.includes(m));
+  }).slice(0, 60);
+
+  const zone = $('#resultats');
+  zone.innerHTML = '';
+  trouves.forEach(p => {
+    const b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'resultat';
+    const img = document.createElement('img');
+    img.src = p.photo || '';
+    img.alt = '';
+    const box = document.createElement('div');
+    const nom = document.createElement('div');
+    nom.className = 'r-nom';
+    nom.textContent = p.nom;
+    const prix = document.createElement('div');
+    prix.className = 'r-prix';
+    prix.textContent = fmtPrix(p.prix) + ' F CFA';
+    box.append(nom, prix);
+    b.append(img, box);
+    b.addEventListener('click', () => choisir(p));
+    zone.appendChild(b);
+  });
+  if (!trouves.length) zone.innerHTML = '<p class="etat" style="padding:10px">Aucun produit trouvé.</p>';
+}
+
+$('#recherche').addEventListener('input', e => chercher(e.target.value));
+
+// ---- Sélection d'un produit ----
+function specsParDefaut(p) {
+  const lignes = p.specs.split('|').map(s => s.trim()).filter(Boolean);
+  if (!lignes.length && p.cap) lignes.push(p.cap);
+  lignes.push('Garantie 1 an · Facture à notre nom');
+  lignes.push('Livraison rapide à Dakar');
+  return lignes.slice(0, 6).join('\n');
+}
+
+function choisir(p) {
+  produitActuel = p;
+  $('#argumentaire').value = specsParDefaut(p);
+  $('#ancienPrix').value = '';
+  $('#telecharger').disabled = false;
+  $('#reinit').disabled = false;
+  $('#copierTexte').disabled = false;
+  rendre();
+}
+
+// ---- Rendu de l'affiche ----
+function rendre() {
+  if (!produitActuel) return;
+  const p = produitActuel;
+
+  $('#affMarque').textContent = p.marque;
+  $('#affNom').textContent = p.nom;
+  $('#affPrix').textContent = fmtPrix(p.prix);
+  $('#affPhoto').src = p.photo || '';
+  $('#affPhoto').alt = p.nom;
+
+  const ancien = $('#ancienPrix').value.trim();
+  const zoneAncien = $('#affAncien');
+  zoneAncien.hidden = !ancien;
+  zoneAncien.textContent = ancien ? 'au lieu de ' + ancien + ' F CFA' : '';
+
+  const badge = $('#badge').value.trim();
+  const zoneBadge = $('#affBadge');
+  zoneBadge.hidden = !badge;
+  zoneBadge.textContent = badge;
+
+  const liste = $('#affListe');
+  liste.innerHTML = '';
+  $('#argumentaire').value.split('\n').map(s => s.trim()).filter(Boolean).slice(0, 6).forEach(ligne => {
+    const li = document.createElement('li');
+    const coche = document.createElement('span');
+    coche.className = 'coche';
+    coche.textContent = '✓';
+    const txt = document.createElement('span');
+    // "Capacité: 12000 BTU" → l'intitulé en gras, la valeur en normal
+    const sep = ligne.indexOf(':');
+    if (sep > 0 && sep < 26) {
+      const b = document.createElement('b');
+      b.textContent = ligne.slice(0, sep + 1) + ' ';
+      txt.append(b, document.createTextNode(ligne.slice(sep + 1).trim()));
+    } else {
+      txt.textContent = ligne;
+    }
+    li.append(coche, txt);
+    liste.appendChild(li);
+  });
+
+  majTexteFacebook();
+  ajusterEchelle();
+}
+
+['#badge', '#ancienPrix', '#argumentaire'].forEach(sel => {
+  $(sel).addEventListener('input', rendre);
+});
+
+document.querySelectorAll('[data-format]').forEach(b => {
+  b.addEventListener('click', () => {
+    format = b.dataset.format;
+    document.querySelectorAll('[data-format]').forEach(x => x.setAttribute('aria-pressed', String(x === b)));
+    $('#affiche').className = format;
+    ajusterEchelle();
+  });
+});
+
+$('#reinit').addEventListener('click', () => {
+  if (!produitActuel) return;
+  $('#argumentaire').value = specsParDefaut(produitActuel);
+  $('#badge').value = '';
+  $('#ancienPrix').value = '';
+  rendre();
+});
+
+// L'affiche fait 1080px de large : on la réduit visuellement pour l'aperçu,
+// sans toucher à sa taille réelle (l'export reste en pleine résolution).
+function ajusterEchelle() {
+  const scene = document.querySelector('.scene');
+  const aff = $('#affiche');
+  const dispo = scene.clientWidth - 8;
+  const echelle = Math.min(1, dispo / 1080);
+  aff.style.transform = 'scale(' + echelle + ')';
+  scene.style.height = (aff.offsetHeight * echelle + 8) + 'px';
+}
+window.addEventListener('resize', ajusterEchelle);
+
+// ---- Texte de la publication ----
+function majTexteFacebook() {
+  const p = produitActuel;
+  if (!p) return;
+  const args = $('#argumentaire').value.split('\n').map(s => s.trim()).filter(Boolean);
+  const ancien = $('#ancienPrix').value.trim();
+  const lignes = [
+    '🔥 ' + p.nom.toUpperCase(),
+    '',
+    '💰 ' + fmtPrix(p.prix) + ' F CFA' + (ancien ? ' au lieu de ' + ancien + ' F CFA' : ''),
+    '',
+    ...args.map(a => '✅ ' + a),
+    '',
+    '📞 Commandez au 78 880 08 08 (WhatsApp)',
+    '🚚 Livraison à Dakar · Paiement à la livraison',
+    '🛒 Tout le catalogue : sandagasoldes.com',
+  ];
+  $('#texteFb').value = lignes.join('\n');
+}
+
+$('#copierTexte').addEventListener('click', async () => {
+  await navigator.clipboard.writeText($('#texteFb').value);
+  const b = $('#copierTexte');
+  b.textContent = 'Texte copié ✓';
+  setTimeout(() => { b.textContent = 'Copier le texte'; }, 1800);
+});
+
+// ---- Export en image ----
+$('#telecharger').addEventListener('click', async () => {
+  const bouton = $('#telecharger');
+  const aff = $('#affiche');
+  bouton.disabled = true;
+  bouton.textContent = 'Génération…';
+
+  // html2canvas ne gère pas le zoom d'aperçu : on rend l'affiche à sa taille réelle le temps de la capture.
+  const transformeAvant = aff.style.transform;
+  aff.style.transform = 'none';
+  try {
+    const toile = await html2canvas(aff, { scale: 1, backgroundColor: '#FFFFFF', useCORS: true, logging: false });
+    const lien = document.createElement('a');
+    lien.download = 'sandaga-' + (produitActuel?.ref || 'affiche').replace(/[^a-zA-Z0-9-]/g, '') + '.png';
+    lien.href = toile.toDataURL('image/png');
+    lien.click();
+  } catch (e) {
+    alert("La génération de l'image a échoué : " + e.message);
+  } finally {
+    aff.style.transform = transformeAvant;
+    bouton.textContent = "Télécharger l'image";
+    bouton.disabled = false;
+  }
+});
+
+ajusterEchelle();
+</script>
+</body>
+</html>

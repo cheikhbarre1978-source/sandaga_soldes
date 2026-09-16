@@ -6,6 +6,7 @@ whatsapp-bot/node_modules/
 whatsapp-bot/.env
 whatsapp-bot/session/
 whatsapp-bot/conversations/
+whatsapp-bot/qrcode.png
 
 # Sauvegardes automatiques locales (pas utiles en ligne)
 *.precedent.csv

@@ -1,15 +1,15 @@
-// Cerveau du bot : appelle Claude avec deux outils (chercher_produits,
+// Cerveau du bot : appelle Gemini (Google) avec deux outils (chercher_produits,
 // transmettre_a_un_humain). Le modèle n'a JAMAIS le catalogue en mémoire —
 // il doit systématiquement appeler l'outil de recherche avant d'annoncer un
 // prix ou une disponibilité. C'est ce qui garantit qu'on ne confirme jamais
 // une dispo sans vérifier.
 const fs = require('fs');
 const path = require('path');
-const Anthropic = require('@anthropic-ai/sdk');
+const { GoogleGenAI, Type } = require('@google/genai');
 const { rechercherProduits } = require('./catalog');
 
-const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
-const MODELE = 'claude-sonnet-5';
+const genai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+const MODELE = 'gemini-flash-lite-latest';
 
 const ZONES = [
   { nom: 'Plateau / Médina', frais: 3000, delai: "aujourd'hui" },
@@ -44,11 +44,11 @@ const OUTILS = [
   {
     name: 'chercher_produits',
     description: "Cherche dans le vrai catalogue Sandaga Soldes. À utiliser AVANT toute réponse sur un produit, un prix ou une disponibilité. Renvoie les produits qui correspondent (ou une liste vide si rien ne correspond).",
-    input_schema: {
-      type: 'object',
+    parameters: {
+      type: Type.OBJECT,
       properties: {
-        requete: { type: 'string', description: "Termes de recherche en français (ex: 'frigo 200 litres', 'climatiseur 12000 btu', 'machine a laver samsung')." },
-        rayon: { type: 'string', description: "Optionnel. Un parmi : froid, lavage, cuisson, clim, ventilation, petit, entretien, tv." },
+        requete: { type: Type.STRING, description: "Termes de recherche en français (ex: 'frigo 200 litres', 'climatiseur 12000 btu', 'machine a laver samsung')." },
+        rayon: { type: Type.STRING, description: "Optionnel. Un parmi : froid, lavage, cuisson, clim, ventilation, petit, entretien, tv." },
       },
       required: ['requete'],
     },
@@ -56,11 +56,11 @@ const OUTILS = [
   {
     name: 'transmettre_a_un_humain',
     description: "Transmet la conversation à un vendeur humain de Sandaga Soldes. À utiliser si le client le demande, semble frustré, a une demande hors catalogue, ou si tu ne comprends pas malgré une reformulation.",
-    input_schema: {
-      type: 'object',
+    parameters: {
+      type: Type.OBJECT,
       properties: {
-        raison: { type: 'string', description: 'Pourquoi la conversation est transmise (courte phrase).' },
-        resume: { type: 'string', description: "Résumé de la demande du client, pour que le vendeur n'ait pas à tout relire." },
+        raison: { type: Type.STRING, description: 'Pourquoi la conversation est transmise (courte phrase).' },
+        resume: { type: Type.STRING, description: "Résumé de la demande du client, pour que le vendeur n'ait pas à tout relire." },
       },
       required: ['raison', 'resume'],
     },
@@ -137,45 +137,43 @@ async function repondreSequentiel(jid, messageClient) {
 
   let transfertDemande = null;
   let tours = 0;
-  let messages = historique.map(m => ({ role: m.role, content: m.content }));
+  let contents = historique.map(m => ({ role: m.role, parts: [{ text: m.content }] }));
 
   while (tours < 4) {
     tours++;
-    const reponse = await anthropic.messages.create({
+    const reponse = await genai.models.generateContent({
       model: MODELE,
-      max_tokens: 700,
-      system: SYSTEM_PROMPT,
-      tools: OUTILS,
-      messages,
+      contents,
+      config: {
+        systemInstruction: SYSTEM_PROMPT,
+        tools: [{ functionDeclarations: OUTILS }],
+        maxOutputTokens: 700,
+      },
     });
 
-    const appelsOutil = reponse.content.filter(b => b.type === 'tool_use');
-    const texte = reponse.content.filter(b => b.type === 'text').map(b => b.text).join('\n').trim();
+    const appelsOutil = reponse.functionCalls || [];
 
     if (!appelsOutil.length) {
-      historique.push({ role: 'assistant', content: texte });
+      const texte = (reponse.text || '').trim();
+      historique.push({ role: 'model', content: texte });
       sauverHistorique(jid, historique);
       return { texte, transfert: transfertDemande };
     }
 
-    messages.push({ role: 'assistant', content: reponse.content });
-    const resultatsOutils = [];
+    contents.push(reponse.candidates[0].content);
+    const partsReponses = [];
     for (const appel of appelsOutil) {
       if (appel.name === 'transmettre_a_un_humain') {
-        transfertDemande = appel.input;
+        transfertDemande = appel.args;
       }
-      const resultat = executerOutil(appel.name, appel.input);
-      resultatsOutils.push({ type: 'tool_result', tool_use_id: appel.id, content: JSON.stringify(resultat) });
+      const resultat = executerOutil(appel.name, appel.args);
+      partsReponses.push({ functionResponse: { name: appel.name, id: appel.id, response: resultat } });
     }
-    messages.push({ role: 'user', content: resultatsOutils });
-
-    if (texte) {
-      // le modèle a parfois un texte + un appel d'outil dans le même tour ; on le garde pour la suite si besoin
-    }
+    contents.push({ role: 'user', parts: partsReponses });
   }
 
   const repli = "Désolé, je n'arrive pas à traiter ta demande là, je transmets directement à un conseiller.";
-  historique.push({ role: 'assistant', content: repli });
+  historique.push({ role: 'model', content: repli });
   sauverHistorique(jid, historique);
   return { texte: repli, transfert: transfertDemande || { raison: 'limite technique atteinte', resume: messageClient } };
 }
