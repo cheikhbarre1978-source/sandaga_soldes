@@ -242,6 +242,17 @@ a{color:inherit;text-decoration:none}
 .souschip:hover{color:var(--acier);border-color:var(--acier-60)}
 .souschip[aria-pressed="true"]{background:var(--acier);border-color:var(--acier);color:var(--blanc)}
 
+/* Sous-filtres : même couleur "vedette" que le rayon parent sélectionné. */
+.souschip[data-vedette]{font-weight:700}
+.souschip[data-vedette="bleu"]{color:#1D5FAE;border-color:#1D5FAE55}
+.souschip[data-vedette="orange"]{color:#D9660B;border-color:#F5821F66}
+.souschip[data-vedette="jaune"]{color:#9A7A00;border-color:#FBC02D77}
+.souschip[data-vedette="rouge"]{color:#C81E1E;border-color:#E3242466}
+.souschip[data-vedette="bleu"][aria-pressed="true"]{background:#1D5FAE;border-color:#1D5FAE;color:var(--blanc)}
+.souschip[data-vedette="orange"][aria-pressed="true"]{background:#F5821F;border-color:#F5821F;color:var(--blanc)}
+.souschip[data-vedette="jaune"][aria-pressed="true"]{background:#FBC02D;border-color:#FBC02D;color:var(--acier)}
+.souschip[data-vedette="rouge"][aria-pressed="true"]{background:#E32424;border-color:#E32424;color:var(--blanc)}
+
 /* ---------- Filtres ---------- */
 .filtres{display:flex;flex-wrap:wrap;gap:10px;align-items:center;padding:18px 0 4px}
 .filtres select{
@@ -1257,10 +1268,12 @@ function remplirSousFiltres(){
 
   if(options.length < 2){ zone.hidden = true; return; }
   zone.hidden = false;
+  const vedette = RAYONS.find(r=>r.id===etat.rayon)?.vedette;
   options.forEach(o=>{
     const b = document.createElement("button");
     b.type = "button"; b.className = "souschip"; b.textContent = o.nom;
     b.dataset.souscat = o.id;
+    if(vedette) b.dataset.vedette = vedette;
     b.setAttribute("aria-pressed", etat.souscat===o.id ? "true":"false");
     b.addEventListener("click",()=>{
       etat.souscat = etat.souscat===o.id ? "" : o.id;
