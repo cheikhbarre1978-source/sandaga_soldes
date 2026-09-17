@@ -104,8 +104,24 @@ async function traiterMessage(sock, msg) {
   if (!texte.trim()) return;
 
   await sock.sendPresenceUpdate('composing', jid);
-  const { texte: reponseTexte, transfert } = await repondre(jid, texte);
+  const { texte: reponseTexte, transfert, commande } = await repondre(jid, texte);
   await sock.sendMessage(jid, { text: reponseTexte });
+
+  if (commande && OWNER_JID) {
+    const numeroClient = jid.split('@')[0];
+    await sock.sendMessage(OWNER_JID, {
+      text:
+        `🛒 *NOUVELLE COMMANDE*\n\n` +
+        `*Client :* ${commande.nom_client || '—'}\n` +
+        `*WhatsApp :* wa.me/${numeroClient}\n` +
+        `*Téléphone :* ${commande.telephone || 'même numéro'}\n\n` +
+        `*Livraison :* ${commande.zone || '—'}\n` +
+        `*Adresse :* ${commande.adresse || '—'}\n\n` +
+        `*Produits :*\n${commande.produits || '—'}\n\n` +
+        `*TOTAL : ${commande.total || '—'}*\n` +
+        (commande.note ? `\n_${commande.note}_` : ''),
+    });
+  }
 
   if (transfert && OWNER_JID) {
     const numeroClient = jid.split('@')[0];
