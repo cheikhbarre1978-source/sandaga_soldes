@@ -13,6 +13,9 @@ whatsapp-bot/qrcode.png
 *.precedent2.csv
 *.precedent.json
 
+# Documents internes contenant des mots de passe — jamais sur un dépôt public
+Console-admin-Sandaga-Soldes.docx
+
 # Fichiers système
 Thumbs.db
 .DS_Store
