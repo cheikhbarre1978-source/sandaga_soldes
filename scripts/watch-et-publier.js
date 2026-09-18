@@ -61,3 +61,7 @@ FICHIERS_SURVEILLES.forEach((nomFichier) => {
 });
 
 console.log(`[${horodatage()}] Surveillance active sur : ${FICHIERS_SURVEILLES.join(', ')}`);
+
+// Rattrape les modifications faites pendant que la surveillance était arrêtée (PC éteint, redémarrage…) :
+// publier-core.bat ne fait rien s'il n'y a aucun changement à publier.
+planifierPublication();
