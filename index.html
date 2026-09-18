@@ -270,9 +270,30 @@ a{color:inherit;text-decoration:none}
 /* ---------- Grille produits ---------- */
 /* ---------- Les plus demandés ---------- */
 .populaires{background:var(--blanc);border-bottom:1px solid var(--chrome)}
-.populaires-titre{padding:20px 0 4px;font-size:19px}
-.populaires-piste{display:flex;gap:14px;overflow-x:auto;padding:14px 0 22px;scrollbar-width:thin}
-.populaires-piste .fiche{flex:none;width:180px}
+.populaires-tete{display:flex;align-items:baseline;justify-content:space-between;gap:4px 14px;flex-wrap:wrap;padding-top:20px}
+.populaires-titre{font-size:19px}
+.populaires-aide{font-size:13px;font-weight:600;color:var(--acier-60);white-space:nowrap;transition:opacity .4s}
+.populaires-aide.vu{opacity:0}
+.populaires-aide .fleche{display:inline-block}
+@media(prefers-reduced-motion:no-preference){
+  .populaires-aide .fleche{animation:pousser 1.5s ease-in-out infinite}
+  @keyframes pousser{0%,100%{transform:translateX(0)}50%{transform:translateX(6px)}}
+}
+/* Le dégradé à droite signale qu'il y a d'autres produits ; il disparaît en bout de piste. */
+.populaires-cadre{position:relative}
+.populaires-cadre::after{
+  content:"";position:absolute;top:0;right:0;bottom:0;width:38px;pointer-events:none;
+  background:linear-gradient(to right,rgba(255,255,255,0),var(--blanc));transition:opacity .25s;
+}
+.populaires-cadre.fin::after{opacity:0}
+.populaires-piste{display:flex;gap:14px;overflow-x:auto;padding:14px 0 12px;scrollbar-width:thin;scroll-snap-type:x proximity}
+.populaires-piste .fiche{flex:none;width:180px;scroll-snap-align:start}
+@media(hover:none){
+  .populaires-piste{scrollbar-width:none}
+  .populaires-piste::-webkit-scrollbar{display:none}
+}
+.populaires-barre{position:relative;height:4px;margin:0 0 22px;border-radius:2px;background:var(--chrome-clair,#E3E6E2)}
+.populaires-barre span{position:absolute;top:0;bottom:0;left:0;width:30%;border-radius:2px;background:var(--prix)}
 @media(min-width:700px){.populaires-piste .fiche{width:210px}}
 
 .grille{
@@ -543,8 +564,14 @@ a{color:inherit;text-decoration:none}
 
 <section class="populaires" id="sectionPopulaires" hidden>
   <div class="wrap">
-    <h2 class="populaires-titre">🔥 Les plus demandés</h2>
-    <div class="populaires-piste" id="populairesGrille"></div>
+    <div class="populaires-tete">
+      <h2 class="populaires-titre">🔥 Les plus demandés</h2>
+      <p class="populaires-aide" id="populairesAide" hidden></p>
+    </div>
+    <div class="populaires-cadre" id="populairesCadre">
+      <div class="populaires-piste" id="populairesGrille" role="region" aria-label="Les plus demandés, à faire défiler horizontalement" tabindex="0"></div>
+    </div>
+    <div class="populaires-barre" id="populairesBarre" aria-hidden="true" hidden><span id="populairesCurseur"></span></div>
   </div>
 </section>
 
@@ -1051,6 +1078,30 @@ function rendrePopulaires(){
   const zone = $("#populairesGrille");
   zone.innerHTML = "";
   produits.forEach(p => zone.appendChild(carte(p)));
+  $("#populairesAide").innerHTML = `${produits.length} produits · faites glisser <span class="fleche" aria-hidden="true">→</span>`;
+  $("#populairesAide").classList.remove("vu");
+  zone.scrollLeft = 0;
+  if (!zone.dataset.pret){
+    zone.dataset.pret = "1";
+    zone.addEventListener("scroll", majIndicateursPopulaires, {passive:true});
+    window.addEventListener("resize", majIndicateursPopulaires);
+  }
+  majIndicateursPopulaires();
+}
+// Repères pour comprendre qu'on peut faire défiler : phrase d'aide, dégradé à droite, barre de progression.
+function majIndicateursPopulaires(){
+  const zone = $("#populairesGrille"), cadre = $("#populairesCadre");
+  const barre = $("#populairesBarre"), curseur = $("#populairesCurseur"), aide = $("#populairesAide");
+  const trop = zone.scrollWidth - zone.clientWidth;
+  const defilable = trop > 2;
+  barre.hidden = !defilable;
+  aide.hidden = !defilable;
+  if (!defilable){ cadre.classList.add("fin"); return; }
+  const part = zone.clientWidth / zone.scrollWidth;
+  curseur.style.width = (part * 100) + "%";
+  curseur.style.left = ((zone.scrollLeft / trop) * (1 - part) * 100) + "%";
+  cadre.classList.toggle("fin", zone.scrollLeft >= trop - 2);
+  if (zone.scrollLeft > 12) aide.classList.add("vu");
 }
 function nbArticlesPanier(){
   // avant le chargement du vrai catalogue, on ne peut pas encore savoir quelles lignes
