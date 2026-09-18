@@ -22,6 +22,18 @@ function parseSpecsLigne(specsStr){
   return out;
 }
 
+// Même logique que console-admin.html : le flux Meta reçoit un texte simple (introduction + points forts).
+function descriptionPlate(txt){
+  const paras = [], points = [];
+  String(txt||"").replace(/\r/g,"").split(/\n\s*\n/).map(b=>b.trim()).filter(Boolean).forEach(b=>{
+    const lignes = b.split("\n").map(l=>l.trim()).filter(Boolean);
+    const titre = lignes[0].toLowerCase().replace(/\s*:\s*$/,"");
+    if (titre === "points forts") lignes.slice(1).forEach(l => points.push(l.replace(/^[•\-*]\s*/,"")));
+    else if (titre !== "caractéristiques" && titre !== "caracteristiques") paras.push(lignes.join("\n"));
+  });
+  return [...paras, points.length ? "Points forts : " + points.join(" ; ") + "." : ""].filter(Boolean).join(" ").replace(/\s+/g," ").trim();
+}
+
 function analyserCatalogue(texte){
   const res = Papa.parse(texte, {header:true, skipEmptyLines:true});
   return res.data.map(l => ({
@@ -48,7 +60,7 @@ function genererFluxMeta(produits){
     const specs = parseSpecsLigne(p.specs);
     const specsTexte = Object.entries(specs).map(([k,v]) => `${k} : ${v}`).join(", ");
     const descriptionTexte = p.description
-      ? p.description
+      ? descriptionPlate(p.description)
       : `${p.marque} ${p.nom}${specsTexte ? " — " + specsTexte : ""}. Livraison et installation à Dakar.`;
     const imageAbs = absPhoto(p.photo) || `${SITE}/img/${p.ref.toLowerCase()}.jpg`;
     return `    <item>
