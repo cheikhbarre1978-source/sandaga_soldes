@@ -4,6 +4,7 @@
 // les conversations qui doivent passer par un humain.
 require('dotenv').config();
 const path = require('path');
+const http = require('http');
 const qrcode = require('qrcode-terminal');
 const QRCode = require('qrcode');
 const pino = require('pino');
@@ -25,6 +26,23 @@ const NUMERO_JUMELAGE = process.env.BOT_WHATSAPP_NUMBER?.replace(/\D/g, '');
 const OWNER_JID = process.env.OWNER_WHATSAPP_NUMBER
   ? process.env.OWNER_WHATSAPP_NUMBER.replace(/\D/g, '') + '@s.whatsapp.net'
   : null;
+
+// État exposé à /health pour la surveillance externe (UptimeRobot) — reflète
+// la vraie connexion WhatsApp, pas juste "le processus tourne encore".
+let connecteAWhatsapp = false;
+
+const PORT_SANTE = Number(process.env.HEALTH_PORT) || 3001;
+http.createServer((req, res) => {
+  if (req.url === '/health') {
+    res.writeHead(connecteAWhatsapp ? 200 : 503, { 'Content-Type': 'text/plain' });
+    res.end(connecteAWhatsapp ? 'OK' : 'DOWN');
+    return;
+  }
+  res.writeHead(404);
+  res.end();
+}).listen(PORT_SANTE, '0.0.0.0', () => {
+  console.log(`Endpoint de santé sur le port ${PORT_SANTE} (/health).`);
+});
 
 async function demarrer() {
   const { state, saveCreds } = await useMultiFileAuthState(DOSSIER_SESSION);
@@ -61,6 +79,7 @@ async function demarrer() {
       QRCode.toFile(path.join(__dirname, 'qrcode.png'), qr, { width: 400 }).catch(() => {});
     }
     if (connection === 'close') {
+      connecteAWhatsapp = false;
       const codeErreur = lastDisconnect?.error?.output?.statusCode;
       const doitReconnecter = codeErreur !== DisconnectReason.loggedOut;
       console.log('Connexion fermée. Code :', codeErreur, '-', lastDisconnect?.error?.message);
@@ -69,6 +88,7 @@ async function demarrer() {
       // immédiate qui peut faire signaler le numéro.
       if (doitReconnecter) setTimeout(demarrer, 5000);
     } else if (connection === 'open') {
+      connecteAWhatsapp = true;
       console.log('✅ Bot connecté à WhatsApp et prêt à répondre.');
     }
   });
