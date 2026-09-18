@@ -1450,8 +1450,17 @@ function init(){
     clearTimeout(t);
     t=setTimeout(()=>{etat.q=e.target.value; rendre();},140);
   });
-  $("#btnRech").addEventListener("click",()=>{etat.q=$("#q").value; rendre();});
-  $("#q").addEventListener("keydown",e=>{if(e.key==="Enter"){etat.q=e.target.value;rendre();}});
+  // Bouton « Chercher » / Entrée : affiche les résultats ET y amène l'écran (comme les rayons),
+  // sinon sur téléphone on reste en haut de page sans voir que la recherche a fonctionné.
+  const lancerRecherche = ()=>{
+    clearTimeout(t);
+    etat.q = $("#q").value;
+    rendre();
+    $("#q").blur();
+    $("#catalogue").scrollIntoView({behavior:"smooth", block:"start"});
+  };
+  $("#btnRech").addEventListener("click", lancerRecherche);
+  $("#q").addEventListener("keydown",e=>{if(e.key==="Enter"){e.preventDefault(); lancerRecherche();}});
 
   // filtres
   $("#fMarque").addEventListener("change",e=>{etat.marque=e.target.value;rendre();});
