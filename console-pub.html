@@ -76,55 +76,59 @@ legend{font-size:12px;font-weight:700;padding:0 5px;text-transform:uppercase;let
 
 .aff-tete{
   display:flex;align-items:center;justify-content:space-between;gap:20px;
-  padding:34px 44px;border-bottom:5px solid var(--prix);flex:none;
+  padding:24px 40px;border-bottom:5px solid var(--prix);flex:none;
 }
 .aff-marque{display:flex;align-items:center;gap:18px}
-.aff-logo{height:86px;width:auto;display:block}
+.aff-logo{height:72px;width:auto;display:block}
 .aff-tel{
   display:flex;align-items:center;gap:12px;background:var(--vert);color:#fff;
-  padding:12px 22px;border-radius:999px;font-size:31px;font-weight:700;white-space:nowrap;
+  padding:10px 20px;border-radius:999px;font-size:28px;font-weight:700;white-space:nowrap;
 }
-.aff-tel svg{width:34px;height:34px;flex:none}
+.aff-tel svg{width:30px;height:30px;flex:none}
 
-.aff-corps{flex:1;display:flex;gap:30px;padding:30px 40px;min-height:0}
-.aff-visuel{flex:none;width:498px;display:flex;flex-direction:column;gap:18px}
+.aff-corps{flex:1;display:flex;gap:24px;padding:24px 30px;min-height:0}
+.aff-visuel{flex:1 1 0;min-width:0;display:flex;flex-direction:column;gap:14px}
 .aff-photo{
-  flex:1;background:var(--email);border-radius:10px;display:flex;align-items:center;justify-content:center;
-  padding:14px;min-height:0;overflow:hidden;
+  flex:1;background:var(--blanc);border:2px solid var(--chrome-clair);border-radius:10px;padding:4px;min-height:0;overflow:hidden;
+  display:flex;
 }
-.aff-photo img{width:100%;height:100%;object-fit:contain;display:block}
+/* Fond en "contain" plutôt qu'une <img> en object-fit : html2canvas (export PNG) ignore
+   object-fit et étirait la photo pour remplir le cadre. */
+#affPhoto{
+  flex:1;min-height:0;background-repeat:no-repeat;background-position:center;background-size:contain;
+}
 .aff-prix{
-  background:var(--prix);color:#fff;border-radius:10px;padding:18px 22px;text-align:center;flex:none;
+  background:var(--prix);color:#fff;border-radius:10px;padding:14px 20px;text-align:center;flex:none;
 }
-.aff-prix .montant{font-size:74px;font-weight:800;line-height:1;letter-spacing:-.02em;white-space:nowrap}
-.aff-prix .devise{font-size:30px;font-weight:700;margin-left:8px}
+.aff-prix .montant{font-size:68px;font-weight:800;line-height:1;letter-spacing:-.02em;white-space:nowrap}
+.aff-prix .devise{font-size:28px;font-weight:700;margin-left:8px}
 .aff-prix .ancien{
-  font-size:29px;font-weight:600;opacity:.82;text-decoration:line-through;margin-top:8px;
+  font-size:26px;font-weight:600;opacity:.82;text-decoration:line-through;margin-top:6px;
 }
 
-.aff-infos{flex:1;display:flex;flex-direction:column;justify-content:center;min-width:0}
+.aff-infos{flex:none;width:330px;display:flex;flex-direction:column;justify-content:center;min-width:0}
 .aff-marque-nom{
-  font-size:25px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--prix);
+  font-size:22px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--prix);
 }
 .aff-nom{
-  font-size:44px;font-weight:800;line-height:1.14;margin:10px 0 0;
+  font-size:36px;font-weight:800;line-height:1.14;margin:8px 0 0;
   overflow-wrap:break-word;
 }
-.aff-liste{list-style:none;margin:26px 0 0;padding:0;display:flex;flex-direction:column;gap:14px}
-.aff-liste li{display:flex;gap:14px;align-items:flex-start;font-size:29px;line-height:1.3}
+.aff-liste{list-style:none;margin:20px 0 0;padding:0;display:flex;flex-direction:column;gap:12px}
+.aff-liste li{display:flex;gap:12px;align-items:flex-start;font-size:24px;line-height:1.3}
 .aff-liste .coche{
-  flex:none;width:36px;height:36px;border-radius:50%;background:var(--vert);color:#fff;
-  display:flex;align-items:center;justify-content:center;font-size:21px;font-weight:700;margin-top:1px;
+  flex:none;width:30px;height:30px;border-radius:50%;background:var(--vert);color:#fff;
+  display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:700;margin-top:1px;
 }
 .aff-liste b{font-weight:700}
 .aff-badge{
-  position:absolute;top:210px;right:0;background:var(--jour);color:var(--acier);
-  font-size:30px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;
-  padding:13px 30px 13px 26px;border-radius:8px 0 0 8px;
+  position:absolute;top:170px;right:0;background:var(--jour);color:var(--acier);
+  font-size:26px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;
+  padding:11px 28px 11px 24px;border-radius:8px 0 0 8px;
 }
 .aff-pied{
-  flex:none;background:var(--acier);color:var(--email);padding:26px 44px;
-  display:flex;align-items:center;justify-content:space-between;gap:20px;font-size:27px;
+  flex:none;background:var(--acier);color:var(--email);padding:20px 40px;
+  display:flex;align-items:center;justify-content:space-between;gap:20px;font-size:24px;
 }
 .aff-pied .site{font-weight:700;color:#fff}
 .aff-pied .livraison{display:flex;align-items:center;gap:12px;color:var(--chrome)}
@@ -201,7 +205,7 @@ legend{font-size:12px;font-weight:700;padding:0 5px;text-transform:uppercase;let
 
         <div class="aff-corps">
           <div class="aff-visuel">
-            <div class="aff-photo"><img id="affPhoto" src="" alt=""></div>
+            <div class="aff-photo"><div id="affPhoto" role="img" aria-label=""></div></div>
             <div class="aff-prix">
               <div><span class="montant" id="affPrix">—</span><span class="devise">F CFA</span></div>
               <div class="ancien" id="affAncien" hidden></div>
@@ -324,8 +328,8 @@ function rendre() {
   $('#affMarque').textContent = p.marque;
   $('#affNom').textContent = p.nom;
   $('#affPrix').textContent = fmtPrix(p.prix);
-  $('#affPhoto').src = p.photo || '';
-  $('#affPhoto').alt = p.nom;
+  $('#affPhoto').style.backgroundImage = p.photo ? 'url(' + JSON.stringify(p.photo) + ')' : 'none';
+  $('#affPhoto').setAttribute('aria-label', p.nom);
 
   const ancien = $('#ancienPrix').value.trim();
   const zoneAncien = $('#affAncien');
