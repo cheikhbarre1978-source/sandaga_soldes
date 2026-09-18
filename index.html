@@ -287,7 +287,19 @@ a{color:inherit;text-decoration:none}
 }
 .populaires-cadre.fin::after{opacity:0}
 .populaires-piste{display:flex;gap:14px;overflow-x:auto;padding:14px 0 12px;scrollbar-width:thin;scroll-snap-type:x proximity}
-.populaires-piste .fiche{flex:none;width:180px;scroll-snap-align:start}
+.populaires-piste .fiche{flex:none;width:180px;scroll-snap-align:start;border-width:2px;border-color:var(--v,#F5821F)}
+.populaires-piste .fiche:hover{border-color:var(--v,#F5821F)}
+/* Cadres colorés comme les onglets de rayon (couleurs du logo) ; orange par défaut. */
+.populaires-piste .fiche[data-vedette="bleu"]{--v:#1D5FAE;--v-fond:#1D5FAE12}
+.populaires-piste .fiche[data-vedette="orange"]{--v:#F5821F;--v-fond:#F5821F14}
+.populaires-piste .fiche[data-vedette="jaune"]{--v:#FBC02D;--v-fond:#FBC02D1f}
+.populaires-piste .fiche[data-vedette="rouge"]{--v:#E32424;--v-fond:#E3242412}
+.populaires-piste .corps{background:var(--v-fond,#F5821F14);padding:9px 11px 11px}
+/* Cartes plus courtes : photo moins haute, nom limité à 2 lignes, une seule ligne de détail. */
+.populaires-piste .visuel{aspect-ratio:4/3}
+.populaires-piste .titre{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.populaires-piste .cap{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.populaires-piste .tarif{padding-top:6px}
 @media(hover:none){
   .populaires-piste{scrollbar-width:none}
   .populaires-piste::-webkit-scrollbar{display:none}
@@ -1077,7 +1089,11 @@ function rendrePopulaires(){
   if (!produits.length) return;
   const zone = $("#populairesGrille");
   zone.innerHTML = "";
-  produits.forEach(p => zone.appendChild(carte(p)));
+  produits.forEach(p => {
+    const c = carte(p);
+    c.dataset.vedette = RAYONS.find(r => r.id === p.rayon)?.vedette || "orange";
+    zone.appendChild(c);
+  });
   $("#populairesAide").innerHTML = `${produits.length} produits · faites glisser <span class="fleche" aria-hidden="true">→</span>`;
   $("#populairesAide").classList.remove("vu");
   zone.scrollLeft = 0;
