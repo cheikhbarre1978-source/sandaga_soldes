@@ -5,6 +5,7 @@
 require('dotenv').config();
 const path = require('path');
 const http = require('http');
+const https = require('https');
 const qrcode = require('qrcode-terminal');
 const QRCode = require('qrcode');
 const pino = require('pino');
@@ -27,9 +28,15 @@ const OWNER_JID = process.env.OWNER_WHATSAPP_NUMBER
   ? process.env.OWNER_WHATSAPP_NUMBER.replace(/\D/g, '') + '@s.whatsapp.net'
   : null;
 
-// État exposé à /health pour la surveillance externe (UptimeRobot) — reflète
-// la vraie connexion WhatsApp, pas juste "le processus tourne encore".
+// État de connexion WhatsApp, et référence vers la connexion active — utilisés
+// à la fois par /health (surveillance externe) et par l'auto-surveillance
+// ci-dessous (alerte le propriétaire directement sur WhatsApp).
 let connecteAWhatsapp = false;
+let sockActif = null;
+let deconnecteDepuis = null;
+let siteHorsLigne = false;
+let echecsConsecutifsSite = 0;
+let surveillanceDemarree = false;
 
 const PORT_SANTE = Number(process.env.HEALTH_PORT) || 3001;
 http.createServer((req, res) => {
@@ -44,6 +51,44 @@ http.createServer((req, res) => {
   console.log(`Endpoint de santé sur le port ${PORT_SANTE} (/health).`);
 });
 
+function alerterProprietaire(texte) {
+  if (!OWNER_JID || !sockActif) return;
+  sockActif.sendMessage(OWNER_JID, { text: texte }).catch(() => {});
+}
+
+function verifierSite() {
+  const requete = https.get('https://sandagasoldes.com', { timeout: 10000 }, (res) => {
+    res.resume();
+    if (res.statusCode >= 200 && res.statusCode < 400) {
+      if (siteHorsLigne) {
+        siteHorsLigne = false;
+        alerterProprietaire('✅ *Sandaga Soldes* — le site est de nouveau en ligne (sandagasoldes.com).');
+      }
+      echecsConsecutifsSite = 0;
+    } else {
+      signalerEchecSite(`code HTTP ${res.statusCode}`);
+    }
+  });
+  requete.on('timeout', () => { requete.destroy(); signalerEchecSite('délai dépassé'); });
+  requete.on('error', (e) => signalerEchecSite(e.message));
+}
+
+function signalerEchecSite(raison) {
+  echecsConsecutifsSite++;
+  // 2 échecs de suite (~10 min) avant d'alerter, pour éviter une fausse alerte
+  // sur un simple ralentissement passager.
+  if (echecsConsecutifsSite >= 2 && !siteHorsLigne) {
+    siteHorsLigne = true;
+    alerterProprietaire(`⚠️ *Sandaga Soldes* — le site sandagasoldes.com semble injoignable (${raison}). Vérifiez dès que possible.`);
+  }
+}
+
+function demarrerAutoSurveillance() {
+  if (surveillanceDemarree) return;
+  surveillanceDemarree = true;
+  setInterval(verifierSite, 5 * 60 * 1000);
+}
+
 async function demarrer() {
   const { state, saveCreds } = await useMultiFileAuthState(DOSSIER_SESSION);
 
@@ -52,6 +97,7 @@ async function demarrer() {
     logger: pino({ level: 'silent' }), // mets 'debug' si tu dois diagnostiquer un souci de connexion
     printQRInTerminal: false,
   });
+  sockActif = sock;
 
   sock.ev.on('creds.update', saveCreds);
 
@@ -80,6 +126,7 @@ async function demarrer() {
     }
     if (connection === 'close') {
       connecteAWhatsapp = false;
+      if (!deconnecteDepuis) deconnecteDepuis = Date.now();
       const codeErreur = lastDisconnect?.error?.output?.statusCode;
       const doitReconnecter = codeErreur !== DisconnectReason.loggedOut;
       console.log('Connexion fermée. Code :', codeErreur, '-', lastDisconnect?.error?.message);
@@ -90,6 +137,16 @@ async function demarrer() {
     } else if (connection === 'open') {
       connecteAWhatsapp = true;
       console.log('✅ Bot connecté à WhatsApp et prêt à répondre.');
+      demarrerAutoSurveillance();
+      if (deconnecteDepuis) {
+        const minutes = Math.round((Date.now() - deconnecteDepuis) / 60000);
+        // On ignore les micro-coupures de quelques secondes (reconnexions
+        // normales) pour ne pas envoyer une alerte à chaque redémarrage.
+        if (minutes >= 1) {
+          alerterProprietaire(`🔄 *Awa* a été déconnectée puis reconnectée (coupure d'environ ${minutes} min).`);
+        }
+        deconnecteDepuis = null;
+      }
     }
   });
 
