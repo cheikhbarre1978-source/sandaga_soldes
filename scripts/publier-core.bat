@@ -32,5 +32,13 @@ if errorlevel 1 exit /b 1
 git push
 if errorlevel 1 exit /b 1
 
-echo [4/4] Termine ! Le site https://sandagasoldes.com est a jour.
+echo [4/5] Synchronisation du catalogue avec le serveur Awa...
+scp -i "%USERPROFILE%\.ssh\sandaga_vps" -o StrictHostKeyChecking=accept-new -o BatchMode=yes -o ConnectTimeout=10 catalogue.csv root@187.124.179.166:/root/catalogue.csv >nul 2>&1
+if errorlevel 1 (
+    echo ATTENTION : le site est publie, mais la synchronisation vers le serveur Awa a echoue.
+) else (
+    echo Catalogue synchronise avec le serveur Awa.
+)
+
+echo [5/5] Termine ! Le site https://sandagasoldes.com est a jour.
 exit /b 0
