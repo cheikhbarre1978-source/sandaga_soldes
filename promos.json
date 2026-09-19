@@ -1,46 +1,5 @@
 [
   {
-    "ref": "REFSMA19-STR190",
-    "marque": "Smart Technology",
-    "nom": "réfrigérateur Smart Technology 2portes 160 litres gris str190m",
-    "icone": "frigo",
-    "photo": "images/REFSMA19-STR190-1.jpg",
-    "prix": 121500,
-    "prixBarre": "",
-    "points": [
-      "Capacité 160 L",
-      "Couleur Gris",
-      "Garantie 12 mois"
-    ]
-  },
-  {
-    "ref": "FONFIN25-HD2503",
-    "marque": "Finix",
-    "nom": "Fontaine finix avec frigo et glacon blanc hd2503z (310x325x960mm)",
-    "icone": "frigo",
-    "photo": "images/FONFIN25-HD2503-1.png",
-    "prix": 103000,
-    "prixBarre": "",
-    "points": [
-      "Couleur Blanc",
-      "Garantie 12 mois"
-    ]
-  },
-  {
-    "ref": "SPLAST12-12000B",
-    "marque": "Astech",
-    "nom": "Split Astech 12000btu 1.5 CV 12rbr410",
-    "icone": "split",
-    "photo": "images/SPLAST12-12000B-1.jpg",
-    "prix": 152000,
-    "prixBarre": "",
-    "points": [
-      "Type Split",
-      "Capacité 12000 BTU",
-      "Garantie 12 mois"
-    ]
-  },
-  {
     "ref": "MALAST12KG-TWT1",
     "marque": "Astech",
     "nom": "Machine à laver Astech 12 kg semi automatique top load blanc twt12-b102nl",
@@ -52,6 +11,48 @@
       "Type Semi automatique",
       "Capacité 12 kg",
       "Couleur Blanc",
+      "Garantie 12 mois"
+    ]
+  },
+  {
+    "ref": "TVAST43-43GT302",
+    "marque": "Astech",
+    "nom": "Téléviseur Astech 43 \" Smart google tv 43gt3027h/43gt3030hq",
+    "icone": "tv",
+    "photo": "images/TVAST43-43GT302-1.png",
+    "prix": 128000,
+    "prixBarre": "",
+    "points": [
+      "Type LED",
+      "Taille 43 pouces",
+      "Fonctions Smart, Google TV",
+      "Garantie 12 mois"
+    ]
+  },
+  {
+    "ref": "REFAST18-CF1800",
+    "marque": "Astech",
+    "nom": "réfrigérateur Astech combine 3tiroirs gris fc180s",
+    "icone": "frigo",
+    "photo": "images/REFAST18-CF1800-1.png",
+    "prix": 158000,
+    "prixBarre": "",
+    "points": [
+      "Couleur Gris",
+      "Garantie 12 mois"
+    ]
+  },
+  {
+    "ref": "SPLAST12-12000I",
+    "marque": "Astech",
+    "nom": "Split Astech 12000btu 1.5 CV inverter ast12rtv30c/ast12rtv31ma",
+    "icone": "split",
+    "photo": "images/SPLAST12-12000I-1.jpg",
+    "prix": 152000,
+    "prixBarre": "",
+    "points": [
+      "Type Split",
+      "Capacité 12000 BTU",
       "Garantie 12 mois"
     ]
   }
