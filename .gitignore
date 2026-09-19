@@ -16,6 +16,12 @@ whatsapp-bot/qrcode.png
 # Documents internes contenant des mots de passe — jamais sur un dépôt public
 Console-admin-Sandaga-Soldes.docx
 
+# Documents de travail (tableurs, Word) posés dans le dossier : restent sur le PC
+Catalogue_prix_corriges.xlsx
+*.xls
+*.docx
+~$*
+
 # Fichiers système
 Thumbs.db
 .DS_Store

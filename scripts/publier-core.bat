@@ -9,10 +9,23 @@ if errorlevel 1 (
     exit /b 1
 )
 
+rem Seuls les fichiers du site modifies par la console sont publies automatiquement :
+rem tout autre fichier pose dans le dossier (Excel, notes, documents...) reste sur le PC.
+set "CHEMINS=catalogue.csv promos.json populaires.json feed.xml sitemap.xml produit images"
+
 set "CHANGEMENTS="
-for /f "delims=" %%i in ('git status --porcelain') do set "CHANGEMENTS=1"
+for /f "delims=" %%i in ('git status --porcelain -- %CHEMINS%') do set "CHANGEMENTS=1"
 
 if not defined CHANGEMENTS (
+    rem Rattrape une publication precedente dont l'envoi avait echoue (coupure internet).
+    set "EN_ATTENTE="
+    for /f "delims=" %%i in ('git log origin/main..HEAD --oneline 2^>nul') do set "EN_ATTENTE=1"
+    if defined EN_ATTENTE (
+        echo Envoi d'une publication precedente restee en attente...
+        git push
+        if errorlevel 1 exit /b 1
+        exit /b 0
+    )
     echo Aucun changement detecte depuis la derniere mise en ligne.
     exit /b 0
 )
@@ -26,7 +39,12 @@ node "scripts\generer_feed.js"
 if errorlevel 1 exit /b 1
 
 echo [3/4] Envoi vers GitHub...
-git add -A
+git add -A -- %CHEMINS%
+git diff --cached --quiet
+if not errorlevel 1 (
+    echo Aucun changement a publier.
+    exit /b 0
+)
 git commit -m "Mise a jour du catalogue depuis la console d'administration"
 if errorlevel 1 exit /b 1
 git push
