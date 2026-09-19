@@ -173,7 +173,7 @@ async function traiterMessage(sock, msg) {
     // Message vocal, image, etc. — phase 1 : on le dit honnêtement au client.
     if (msg.message?.audioMessage) {
       await sock.sendMessage(jid, {
-        text: "Je ne peux pas encore écouter les messages vocaux 🙏 Peux-tu m'écrire ta demande en texte ? Un conseiller peut aussi t'écouter si besoin, dis-le-moi.",
+        text: "Je ne peux pas encore écouter les messages vocaux 🙏 Pouvez-vous m'écrire votre demande en texte ? Un conseiller peut aussi vous écouter si besoin, dites-le-moi.",
       });
     }
     return;
@@ -184,14 +184,18 @@ async function traiterMessage(sock, msg) {
   const { texte: reponseTexte, transfert, commande } = await repondre(jid, texte);
   await sock.sendMessage(jid, { text: reponseTexte });
 
+  // WhatsApp masque souvent le numéro (identifiant "@lid") : on n'affiche un lien wa.me
+  // que si on connaît le vrai numéro, sinon on renvoie vers la discussion de la boutique.
+  const pn = [jid, msg.key.remoteJidAlt].find(j => j && j.endsWith('@s.whatsapp.net'));
+  const lienWhatsApp = pn ? `wa.me/${pn.split('@')[0]}` : 'numéro masqué par WhatsApp, répondre depuis la discussion sur le WhatsApp de la boutique';
+
   if (commande && OWNER_JID) {
-    const numeroClient = jid.split('@')[0];
     await sock.sendMessage(OWNER_JID, {
       text:
         `🛒 *NOUVELLE COMMANDE*\n\n` +
         `*Client :* ${commande.nom_client || '—'}\n` +
-        `*WhatsApp :* wa.me/${numeroClient}\n` +
-        `*Téléphone :* ${commande.telephone || 'même numéro'}\n\n` +
+        `*Téléphone :* ${commande.telephone || '—'}\n` +
+        `*WhatsApp :* ${lienWhatsApp}\n\n` +
         `*Livraison :* ${commande.zone || '—'}\n` +
         `*Adresse :* ${commande.adresse || '—'}\n\n` +
         `*Produits :*\n${commande.produits || '—'}\n\n` +
@@ -201,11 +205,11 @@ async function traiterMessage(sock, msg) {
   }
 
   if (transfert && OWNER_JID) {
-    const numeroClient = jid.split('@')[0];
     await sock.sendMessage(OWNER_JID, {
       text:
         `🔔 *Conversation à reprendre*\n` +
-        `Client : wa.me/${numeroClient}\n` +
+        (transfert.telephone ? `Téléphone : ${transfert.telephone}\n` : '') +
+        `WhatsApp : ${lienWhatsApp}\n` +
         `Raison : ${transfert.raison || '—'}\n` +
         `Résumé : ${transfert.resume || '—'}`,
     });
