@@ -17,7 +17,7 @@ whatsapp-bot/qrcode.png
 Console-admin-Sandaga-Soldes.docx
 
 # Documents de travail (tableurs, Word) posés dans le dossier : restent sur le PC
-Catalogue_prix_corriges.xlsx
+*.xlsx
 *.xls
 *.docx
 ~$*
