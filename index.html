@@ -189,47 +189,48 @@ a{color:inherit;text-decoration:none}
 .rayons{border-bottom:1px solid var(--chrome);background:var(--blanc)}
 .rayons .piste{display:flex;gap:9px;overflow-x:auto;scrollbar-width:thin;padding:14px var(--pad)}
 .rayon{
-  flex:none;cursor:pointer;
-  padding:10px 17px;font-weight:600;font-size:14.5px;white-space:nowrap;
+  flex:none;cursor:pointer;display:inline-flex;align-items:center;gap:7px;
+  padding:8px 16px 8px 11px;font-weight:600;font-size:14.5px;white-space:nowrap;
   border:1px solid var(--chrome);border-radius:999px;background:var(--blanc);color:var(--acier-60);
+  transition:border-color .15s,background-color .15s,box-shadow .15s;
 }
 .rayon:hover{color:var(--acier);border-color:var(--acier-60)}
 .rayon[aria-pressed="true"]{color:var(--acier);border-color:var(--acier);background:var(--chrome-clair)}
+.rayon:focus-visible{outline:2px solid var(--ton,var(--acier));outline-offset:2px}
+.rayon .ico{flex:none;display:grid;place-items:center;width:24px;height:24px;color:var(--ton,var(--acier-60))}
+.rayon .ico svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:6;stroke-linecap:round;stroke-linejoin:round}
+.rayon .txt{display:flex;flex-direction:column;min-width:0}
+.rayon .nb{display:none}
+/* Teinte de chaque rayon vedette : --ton (texte, icône), --fond (fond léger), --bord (cadre au repos) */
+.rayon[data-vedette="bleu"]{--ton:#1D5FAE;--fond:#1D5FAE14;--bord:#1D5FAE59}
+.rayon[data-vedette="orange"]{--ton:#D9660B;--fond:#F5821F1c;--bord:#F5821F80}
+.rayon[data-vedette="jaune"]{--ton:#8C6D00;--fond:#FBC02D24;--bord:#FBC02D99}
+.rayon[data-vedette="rouge"]{--ton:#C81E1E;--fond:#E3242414;--bord:#E3242466}
 
 /* Rayons vedettes — les 4 couleurs du mot "SOLDES" du logo, pour les
    rayons les plus fournis (placés au centre de la piste). */
-.rayon[data-vedette]{font-weight:800}
-.rayon[data-vedette="bleu"]{color:#1D5FAE;border-color:#1D5FAE55}
-.rayon[data-vedette="orange"]{color:#D9660B;border-color:#F5821F66}
-.rayon[data-vedette="jaune"]{color:#9A7A00;border-color:#FBC02D77}
-.rayon[data-vedette="rouge"]{color:#C81E1E;border-color:#E3242466}
-.rayon[data-vedette="bleu"][aria-pressed="true"]{border-color:#1D5FAE;background:#1D5FAE14}
-.rayon[data-vedette="orange"][aria-pressed="true"]{border-color:#F5821F;background:#F5821F1c}
-.rayon[data-vedette="jaune"][aria-pressed="true"]{border-color:#FBC02D;background:#FBC02D22}
-.rayon[data-vedette="rouge"][aria-pressed="true"]{border-color:#E32424;background:#E3242414}
+.rayon[data-vedette]{font-weight:800;color:var(--ton);border-color:var(--bord)}
+.rayon[data-vedette][aria-pressed="true"]{border-color:var(--ton);background:var(--fond)}
 
-/* Sur mobile, les rayons deviennent une grille bien rangée de petits boutons
-   de même taille (2 par ligne), plutôt qu'un bandeau à faire défiler
-   horizontalement ou des puces de largeurs inégales. */
+/* Sur mobile, les rayons deviennent une grille de tuiles de même taille (2 par ligne) :
+   pastille d'icône colorée, nom, nombre d'articles. Rayon choisi : tuile teintée,
+   pastille pleine. Les rayons non vedettes (dont "Tout") restent en gris acier. */
 @media(max-width:759px){
   .rayons{border-bottom:none}
-  .rayons .piste{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;padding:14px var(--pad)}
+  .rayons .piste{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;padding:14px 0}
   .rayon{
-    width:100%;text-align:center;white-space:normal;line-height:1.25;padding:12px 10px;font-size:13.5px;
-    border:1px solid var(--chrome);border-radius:var(--r);background:var(--blanc);
+    width:100%;min-height:62px;display:flex;align-items:center;gap:9px;text-align:left;
+    white-space:normal;line-height:1.2;padding:9px;font-size:13px;font-weight:700;
+    border:1.5px solid var(--bord,var(--chrome));border-radius:12px;background:var(--blanc);
+    color:var(--ton,var(--acier));box-shadow:0 1px 3px rgba(23,37,43,.07);
   }
-  /* sélection générique (rayons non-vedettes, dont "Tout") : neutre, pour ne pas
-     se confondre avec le rouge réservé au rayon vedette "Téléviseurs" */
-  .rayon[aria-pressed="true"]{border-color:var(--acier);background:var(--chrome-clair)}
-  .rayon[data-vedette]{border-bottom:1px solid var(--chrome);border-bottom-width:1px}
-  .rayon[data-vedette="bleu"]{border-color:#1D5FAE}
-  .rayon[data-vedette="orange"]{border-color:#F5821F}
-  .rayon[data-vedette="jaune"]{border-color:#FBC02D}
-  .rayon[data-vedette="rouge"]{border-color:#E32424}
-  .rayon[data-vedette="bleu"][aria-pressed="true"]{background:#1D5FAE14}
-  .rayon[data-vedette="orange"][aria-pressed="true"]{background:#F5821F1c}
-  .rayon[data-vedette="jaune"][aria-pressed="true"]{background:#FBC02D22}
-  .rayon[data-vedette="rouge"][aria-pressed="true"]{background:#E3242414}
+  .rayon .ico{width:36px;height:36px;border-radius:10px;background:var(--fond,var(--chrome-clair))}
+  .rayon .ico svg{width:27px;height:27px}
+  .rayon .nom{hyphens:auto}
+  .rayon .nb{display:block;margin-top:2px;font-size:11.5px;font-weight:500;color:var(--acier-60)}
+  .rayon:active{transform:scale(.98)}
+  .rayon[aria-pressed="true"]{border-color:var(--ton,var(--acier));background:var(--fond,var(--chrome-clair));box-shadow:none}
+  .rayon[aria-pressed="true"] .ico{background:var(--ton,var(--acier));color:var(--blanc)}
 }
 
 /* ---------- Sous-filtres (famille / taille selon le rayon) ---------- */
@@ -1424,6 +1425,19 @@ function remplirPromo(){
   if (PROMOS_SEMAINE.length > 1) demarrerCarrouselPromo();
 }
 
+const ICONE_RAYON = {
+  tout:'<svg viewBox="0 0 100 100"><rect x="16" y="16" width="29" height="29" rx="6"/><rect x="55" y="16" width="29" height="29" rx="6"/><rect x="16" y="55" width="29" height="29" rx="6"/><rect x="55" y="55" width="29" height="29" rx="6"/></svg>',
+  ventilation:ICONES.ventilo, froid:ICONES.frigo, cuisson:ICONES.cuisine, clim:ICONES.split,
+  tv:ICONES.tv, petit:ICONES.blender, lavage:ICONES.hublot
+};
+// Nombre d'articles sous chaque rayon (affiché sur téléphone), mis à jour quand le vrai catalogue arrive.
+function majComptesRayons(){
+  document.querySelectorAll(".rayon").forEach(b=>{
+    const n = b.dataset.rayon==="tout" ? CATALOGUE.length : CATALOGUE.filter(p=>p.rayon===b.dataset.rayon).length;
+    b.querySelector(".nb").textContent = n + (n>1 ? " articles" : " article");
+  });
+}
+
 function remplirMarques(){
   const select = $("#fMarque");
   select.querySelectorAll("option:not(:first-child)").forEach(o=>o.remove());
@@ -1518,7 +1532,8 @@ function init(){
   const piste = $("#piste");
   RAYONS.forEach(r=>{
     const b=document.createElement("button");
-    b.className="rayon"; b.type="button"; b.textContent=r.nom;
+    b.className="rayon"; b.type="button";
+    b.innerHTML = `<span class="ico" aria-hidden="true">${ICONE_RAYON[r.id]||""}</span><span class="txt"><span class="nom">${esc(r.nom)}</span><span class="nb"></span></span>`;
     b.dataset.rayon=r.id;
     if(r.vedette) b.dataset.vedette=r.vedette;
     b.setAttribute("aria-pressed", r.id===etat.rayon ? "true":"false");
@@ -1613,6 +1628,7 @@ function init(){
   window.addEventListener("scroll", ()=>{ btnHaut.hidden = window.scrollY < 500; }, {passive:true});
   btnHaut.addEventListener("click", ()=> window.scrollTo({top:0, behavior:"smooth"}));
 
+  majComptesRayons();
   remplirMarques();
   remplirSousFiltres();
   remplirPromo();
@@ -1642,6 +1658,7 @@ function init(){
     .then(lignes=>{
       CATALOGUE = lignes;
       catalogueChargee = true;
+      majComptesRayons();
       remplirMarques();
       remplirSousFiltres();
       rendre();
