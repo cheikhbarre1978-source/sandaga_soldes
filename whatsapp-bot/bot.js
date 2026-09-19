@@ -181,8 +181,9 @@ async function traiterMessage(sock, msg) {
   if (!texte.trim()) return;
 
   await sock.sendPresenceUpdate('composing', jid);
-  const { texte: reponseTexte, transfert, commande } = await repondre(jid, texte);
-  await sock.sendMessage(jid, { text: reponseTexte });
+  const { texte: reponseTexte, transfert, commande, photos } = await repondre(jid, texte);
+  if (reponseTexte) await sock.sendMessage(jid, { text: reponseTexte });
+  await envoyerPhotos(sock, jid, photos || []);
 
   // WhatsApp masque souvent le numéro (identifiant "@lid") : on n'affiche un lien wa.me
   // que si on connaît le vrai numéro, sinon on renvoie vers la discussion de la boutique.
@@ -213,6 +214,34 @@ async function traiterMessage(sock, msg) {
         `Raison : ${transfert.raison || '—'}\n` +
         `Résumé : ${transfert.resume || '—'}`,
     });
+  }
+}
+
+// Une fiche par produit proposé : photo + numéro, nom, prix, disponibilité, atout, lien.
+// Prix, disponibilité et lien viennent du catalogue, jamais du texte de l'IA.
+// Si la même photo vient d'être envoyée à ce client (moins de 15 min), on renvoie la fiche sans photo.
+const DELAI_RENVOI_PHOTO_MS = 15 * 60 * 1000;
+const photosEnvoyees = new Map(); // "jid|ref" -> horodatage
+async function envoyerPhotos(sock, jid, cartes) {
+  for (const c of cartes) {
+    const cle = jid + '|' + c.ref;
+    const legende =
+      `${c.numero} *${c.titre}*\n` +
+      `*${fmt(c.prix)} F CFA* · ${c.dispo}\n` +
+      (c.atout ? `✓ ${c.atout}\n` : '') +
+      `🔗 ${c.lien}`;
+    const recente = Date.now() - (photosEnvoyees.get(cle) || 0) < DELAI_RENVOI_PHOTO_MS;
+    try {
+      if (!c.photo || recente) throw new Error('fiche sans photo');
+      await sock.sendMessage(jid, { image: { url: c.photo }, caption: legende });
+      photosEnvoyees.set(cle, Date.now());
+    } catch (e) {
+      await sock.sendMessage(jid, { text: legende }).catch(() => {});
+    }
+  }
+  if (photosEnvoyees.size > 5000) {
+    const limite = Date.now() - DELAI_RENVOI_PHOTO_MS;
+    for (const [k, t] of photosEnvoyees) if (t < limite) photosEnvoyees.delete(k);
   }
 }
 

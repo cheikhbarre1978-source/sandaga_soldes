@@ -6,7 +6,7 @@
 const fs = require('fs');
 const path = require('path');
 const { GoogleGenAI, Type } = require('@google/genai');
-const { rechercherProduits } = require('./catalog');
+const { rechercherProduits, produitParRef, lienProduit, photoProduit } = require('./catalog');
 
 const genai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
 const MODELE = 'gemini-flash-lite-latest';
@@ -29,7 +29,7 @@ const ZONES_TEXTE = ZONES.map(z => `- ${z.nom} : ${fmt(z.frais)} F CFA, livré $
 const SYSTEM_PROMPT = `Tu es Awa, la conseillère WhatsApp de Sandaga Soldes, une boutique d'électroménager et de téléviseurs à Dakar (Sénégal).
 
 TON PERSONNAGE :
-- Tu t'appelles Awa. Tu te présentes par ton prénom au premier message d'une conversation ("Bonjour, ici Awa de Sandaga Soldes 🙂"), jamais ensuite.
+- Tu t'appelles Awa. Tu te présentes par ton prénom au premier message d'une conversation ("Bonjour, ici Awa de Sandaga Soldes 🙂" — en reprenant le salut du client : "Bonsoir", "Salam"…), jamais ensuite.
 - Tu es une vendeuse digitale à la sénégalaise : chaleureuse et naturelle, jamais robotique, convaincante sans être agressive, réactive.
 - Le client doit sentir qu'il a en face de lui une bonne commerciale qui cherche vraiment la meilleure affaire POUR LUI, pas quelqu'un qui vend pour vendre. Si un modèle moins cher lui suffit, tu le lui dis.
 - Tu vouvoies le client par défaut. S'il te tutoie ou écrit de façon très familière, tu peux passer au tutoiement.
@@ -46,6 +46,14 @@ TES 5 RÉFLEXES DE VENTE :
 4. Lever l'objection (prix, livraison, qualité, garantie, taille…) avec les vrais avantages de la maison : livraison le jour même à Dakar si la commande est validée avant 16h, facture à notre nom, garantie 1 an, paiement en espèces ou Wave À LA LIVRAISON (le client ne paie rien d'avance s'il préfère), installation comprise. Hésitation : rassure avec le paiement à la livraison et la garantie.
 5. Conclure : termine chaque message par une question qui fait avancer la vente ("Je vous prépare la commande ?", "Vous êtes dans quelle zone pour la livraison ?").
 - Pense au complément utile quand c'est pertinent (stabilisateur avec un frigo ou une télé, rallonge, support mural) — uniquement s'il existe dans le catalogue.
+
+PRÉSENTATION DES PRODUITS — c'est l'outil "montrer_produits" qui présente les produits, pas ton texte :
+- Chaque fois que tu proposes un ou plusieurs produits (3 maximum), ou que le client demande une photo, tu appelles "montrer_produits". Le client reçoit alors, juste APRÈS ton message, une fiche par produit : photo, numéro 1️⃣ 2️⃣ 3️⃣, nom, prix exact, disponibilité, ton atout et le lien de la fiche. Tout est mis en forme automatiquement.
+- Pour chaque produit tu donnes : la référence exacte, un titre court et clair (marque + type + la caractéristique qui compte : litres, BTU, pouces, kg, puissance… jamais le code modèle du fournisseur — ex. "Mixeur Astech 1,5 L 600 W", pas "Mixeur Astech 1.5 litres 2 en 1 600 W bl06nbk"), et un atout court et vrai tiré des caractéristiques.
+- Ton message texte, lui, ne liste PAS les produits, ne donne PAS leurs prix et ne contient jamais de lien (sinon tout apparaît en double). Il fait 1 à 3 lignes : une accroche qui annonce les propositions, ton conseil en citant le numéro, et ta question.
+  Exemple de message texte : "Pour votre studio avec 150 000 F, voici mes 2 meilleurs choix 👇 Mon conseil : le 1️⃣, il rentre dans votre budget et il a une fontaine intégrée. Répondez 1 ou 2 et je vous le prépare 🙂"
+- N'annonce jamais une photo sans appeler "montrer_produits" dans le même tour.
+- Quand le client a déjà choisi, tu parles de SON produit sans le re-présenter.
 
 NÉGOCIATION — à la façon de Sandaga, mais honnête :
 - Discuter le prix fait partie de l'expérience : tu joues le jeu avec le sourire, sans te vexer ni t'excuser.
@@ -65,12 +73,13 @@ RÈGLES ABSOLUES — à respecter à chaque message, sans exception :
 2. Si la recherche ne donne rien, ne bloque pas la vente : dis-le simplement et rebondis tout de suite sur ce qui existe de plus proche dans le catalogue.
 3. Tu ne promets jamais une date au-delà de ce que les zones de livraison annoncent, et tu n'inventes aucune remise : tu vends au prix du catalogue (voir NÉGOCIATION).
 4. Si le client veut parler à un humain, semble mécontent, a une demande hors catalogue (SAV, garantie déjà en cours, réclamation, problème de paiement) ou si tu n'es pas sûr de bien comprendre après une reformulation, demande-lui son numéro si tu ne l'as pas encore, appelle l'outil "transmettre_a_un_humain" et informe le client qu'un conseiller va le recontacter.
-5. Style WhatsApp : messages courts, naturels, un seul emoji maximum si utile. Formatage WhatsApp uniquement : *gras* avec une seule étoile, jamais de markdown ** ou de tableaux. Pas de longues listes numérotées façon document. Écris comme on tape sur WhatsApp, pas comme un site web.
+5. Style WhatsApp : messages courts, naturels, un seul emoji maximum si utile (en plus de 👇 et des numéros 1️⃣ 2️⃣ 3️⃣ quand tu présentes des produits). Formatage WhatsApp uniquement : *gras* avec une seule étoile, jamais de markdown ** ou de tableaux, jamais de tirets de liste façon document. Écris comme on tape sur WhatsApp, pas comme un site web.
 6. Le client peut écrire en français, en wolof, ou un mélange des deux — réponds dans la même langue/registre que lui, en restant naturel. Si tu ne comprends vraiment pas un message (ex. note vocale mal transcrite), demande poliment de reformuler plutôt que de deviner.
 7. Prix toujours en F CFA. Voici les zones de livraison et leurs frais (données fixes, pas besoin de les chercher) :
 ${ZONES_TEXTE}
 8. Tu ne gères ni paiement ni encaissement toi-même : le client paie un acompte Wave à la commande (recommandé) ou solde en espèces/Wave à la livraison — rappelle-le si le client demande comment payer.
-9. Reste concis. Une réponse WhatsApp fait 2 à 5 lignes, pas un roman.`;
+9. Reste concis. Une réponse WhatsApp fait 2 à 5 lignes, pas un roman.
+10. VOUVOIEMENT : tu vouvoies TOUJOURS le client ("vous", "votre"), sauf s'il te tutoie clairement lui-même en premier. "Bonjour, je cherche…" n'est PAS un tutoiement.`;
 
 const OUTILS = [
   {
@@ -83,6 +92,29 @@ const OUTILS = [
         rayon: { type: Type.STRING, description: "Optionnel. Un parmi : froid, lavage, cuisson, clim, ventilation, petit, entretien, tv." },
       },
       required: ['requete'],
+    },
+  },
+  {
+    name: 'montrer_produits',
+    description: "Présente au client les produits que tu proposes : une fiche par produit (photo, numéro, nom, prix exact, disponibilité, atout, lien) envoyée juste après ton message. À appeler chaque fois que tu proposes des produits (3 maximum) ou que le client demande une photo.",
+    parameters: {
+      type: Type.OBJECT,
+      properties: {
+        produits: {
+          type: Type.ARRAY,
+          description: 'Les produits proposés, dans l\'ordre (ils seront numérotés 1️⃣, 2️⃣, 3️⃣).',
+          items: {
+            type: Type.OBJECT,
+            properties: {
+              ref: { type: Type.STRING, description: 'Référence exacte du produit, telle que renvoyée par chercher_produits.' },
+              titre: { type: Type.STRING, description: 'Nom court et clair : marque + type + caractéristique clé, sans code modèle (ex. "Réfrigérateur Astech 1 porte 220 L avec fontaine").' },
+              atout: { type: Type.STRING, description: 'Un atout court et vrai, tiré des caractéristiques du produit (8 mots maximum).' },
+            },
+            required: ['ref', 'titre', 'atout'],
+          },
+        },
+      },
+      required: ['produits'],
     },
   },
   {
@@ -139,10 +171,42 @@ function telephoneValide(brut) {
   return /^(7[05678]|33)\d{7}$/.test(chiffres);
 }
 
-function executerOutil(nom, args) {
+// La liste des produits présentés n'est plus dans le texte d'Awa : on la garde dans l'historique
+// sous forme de "mémo" (jamais envoyé comme message), rappelé au modèle à chaque tour. Ainsi
+// "la photo du 2" désigne bien le 2e produit présenté, qui garde son numéro.
+const NUMEROS = ['1️⃣', '2️⃣', '3️⃣'];
+
+function executerOutil(nom, args, ctx = {}) {
   if (nom === 'chercher_produits') {
     const resultats = rechercherProduits(args.requete, { rayon: args.rayon });
     return { trouve: resultats.length, produits: resultats.map(resumerProduit) };
+  }
+  if (nom === 'montrer_produits') {
+    const demandes = (Array.isArray(args.produits) ? args.produits : []).slice(0, 3);
+    const refs = demandes.map(d => String(d.ref || '').toLowerCase());
+    const precedente = ctx.proposition || [];
+    const dejaProposes = refs.length > 0 && refs.every(r => precedente.includes(r));
+    const ordre = dejaProposes ? precedente : refs;
+    if (!dejaProposes) ctx.nouvelleProposition = true;
+    const cartes = [], introuvables = [];
+    demandes.forEach((d, i) => {
+      const p = produitParRef(d.ref);
+      if (!p) { introuvables.push(d.ref); return; }
+      const rang = ordre.indexOf(String(d.ref).toLowerCase());
+      cartes.push({
+        numero: NUMEROS[rang >= 0 ? rang : i],
+        ref: p.ref,
+        titre: String(d.titre || p.nom).trim(),
+        atout: String(d.atout || '').trim(),
+        prix: p.prix,
+        dispo: p.dispo === 'jour' ? "livrable aujourd'hui" : 'sur commande',
+        photo: photoProduit(p),
+        lien: lienProduit(p),
+      });
+    });
+    // Les cartes (photo, prix, lien) partent vers bot.js ; le modèle ne reçoit que le compte rendu,
+    // pour qu'il ne recopie pas les liens dans son texte.
+    return { envoyees: cartes.length, introuvables, _cartes: cartes };
   }
   if (nom === 'enregistrer_commande') {
     if (!telephoneValide(args.telephone)) {
@@ -203,8 +267,16 @@ async function repondreSequentiel(jid, messageClient) {
 
   let transfertDemande = null;
   let commandeEnregistree = null;
+  let photos = [];
   let tours = 0;
-  let contents = historique.map(m => ({ role: m.role, parts: [{ text: m.content }] }));
+  let contents = historique.filter(m => m.role === 'user' || m.role === 'model')
+    .map(m => ({ role: m.role, parts: [{ text: m.content }] }));
+
+  const memo = [...historique].reverse().find(m => m.role === 'memo');
+  const ctx = { proposition: memo ? memo.refs : [] };
+  const consignes = memo
+    ? `${SYSTEM_PROMPT}\n\nPRODUITS DÉJÀ PRÉSENTÉS À CE CLIENT (fiches déjà envoyées, dans cet ordre) :\n${memo.content}\nQuand le client parle du "1", du "2" ou du "3", ce sont CES produits : pour les remontrer, appelle "montrer_produits" avec ces références exactes, sans refaire de recherche.`
+    : SYSTEM_PROMPT;
 
   while (tours < 4) {
     tours++;
@@ -212,7 +284,7 @@ async function repondreSequentiel(jid, messageClient) {
       model: MODELE,
       contents,
       config: {
-        systemInstruction: SYSTEM_PROMPT,
+        systemInstruction: consignes,
         tools: [{ functionDeclarations: OUTILS }],
         maxOutputTokens: 700,
       },
@@ -223,14 +295,25 @@ async function repondreSequentiel(jid, messageClient) {
     if (!appelsOutil.length) {
       const texte = (reponse.text || '').trim();
       historique.push({ role: 'model', content: texte });
+      if (ctx.nouvelleProposition && photos.length) {
+        historique.push({
+          role: 'memo',
+          refs: photos.map(c => c.ref.toLowerCase()),
+          content: photos.map(c => `${c.numero} réf. ${c.ref} — ${c.titre} — ${fmt(c.prix)} F CFA`).join('\n'),
+        });
+      }
       sauverHistorique(jid, historique);
-      return { texte, transfert: transfertDemande, commande: commandeEnregistree };
+      return { texte, transfert: transfertDemande, commande: commandeEnregistree, photos };
     }
 
     contents.push(reponse.candidates[0].content);
     const partsReponses = [];
     for (const appel of appelsOutil) {
-      const resultat = executerOutil(appel.name, appel.args);
+      const resultat = executerOutil(appel.name, appel.args, ctx);
+      if (appel.name === 'montrer_produits') {
+        photos = resultat._cartes;
+        delete resultat._cartes;
+      }
       if (appel.name === 'transmettre_a_un_humain') {
         transfertDemande = appel.args;
       }
@@ -245,7 +328,7 @@ async function repondreSequentiel(jid, messageClient) {
   const repli = "Désolée, je n'arrive pas à traiter votre demande là 🙏 Je passe le relais à un collègue, il vous répond très vite.";
   historique.push({ role: 'model', content: repli });
   sauverHistorique(jid, historique);
-  return { texte: repli, transfert: transfertDemande || { raison: 'limite technique atteinte', resume: messageClient }, commande: commandeEnregistree };
+  return { texte: repli, transfert: transfertDemande || { raison: 'limite technique atteinte', resume: messageClient }, commande: commandeEnregistree, photos: [] };
 }
 
 module.exports = { repondre, fmt, ZONES, telephoneValide };

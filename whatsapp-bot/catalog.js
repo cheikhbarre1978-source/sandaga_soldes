@@ -54,6 +54,7 @@ function chargerCatalogue(force = false) {
       dispo: String(l.dispo || '').trim().toLowerCase() === 'jour' ? 'jour' : 'commande',
       cap: String(l.cap || '').trim(),
       specs: analyserSpecs(l.specs),
+      photo: String(l.photo || '').trim(),
       actif: String(l.actif || 'oui').trim().toLowerCase() !== 'non',
     }))
     .filter(p => p.ref && p.nom && p.actif && p.prix > 0 && RAYONS_VALIDES.has(p.rayon));
@@ -89,4 +90,14 @@ function rayonsDisponibles() {
   return [...new Set(chargerCatalogue().map(p => p.rayon))];
 }
 
-module.exports = { chargerCatalogue, rechercherProduits, produitParRef, rayonsDisponibles, CSV_PATH };
+// Mêmes URL que le site (refUrl de index.html / scripts/regenerer_fiches.js).
+const SITE = 'https://sandagasoldes.com';
+function lienProduit(p) {
+  return `${SITE}/produit/${p.ref.toLowerCase().replace(/[\/\\:*?"<>|]+/g, '-')}.html`;
+}
+function photoProduit(p) {
+  if (!p.photo) return '';
+  return /^https?:\/\//.test(p.photo) ? p.photo : `${SITE}/${p.photo.replace(/^\//, '')}`;
+}
+
+module.exports = { chargerCatalogue, rechercherProduits, produitParRef, rayonsDisponibles, lienProduit, photoProduit, CSV_PATH };
